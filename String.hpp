@@ -58,7 +58,7 @@ public:
     template <typename... FormatArguments>
     static String stringWithFormat(String format, FormatArguments&&... formatArguments)
     {
-        return MutableString{Internal::stringWithFormat(256, format.asUTF8(), MutableStringInternal::stringArgumentAsCharacter(formatArguments)...)};
+        return String{MutableStringInternal{Internal::stringWithFormat(256, format.asUTF8(), MutableStringInternal::stringArgumentAsCharacter(formatArguments)...)}};
     }
 
     static String stringWithUTF8(const character* other)

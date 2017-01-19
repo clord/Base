@@ -296,8 +296,12 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::subString(count st
 
 std::shared_ptr<MutableStringInternal> MutableStringInternal::lowerCaseString() const
 {
-    auto input = this->c_str();
     auto inputLength = this->length();
+    if (!inputLength) {
+        return { std::make_shared<MutableStringInternal>() };
+    }
+
+    auto input = this->c_str();
     auto worstCaseOutputLength = inputLength * 2;
     character output[worstCaseOutputLength];
     memset(output, 0, worstCaseOutputLength);

@@ -130,6 +130,11 @@ String String::stringByFilteringNonPrintableCharactersIn(const String& other)
     return { Internal::stringByFilteringNonPrintableCharactersIn(other) };
 }
 
+String String::stringByJoiningArrayWithString(const Array<String>& array, String join)
+{
+    return { Internal::stringByJoiningArrayWithString(array, join) };
+}
+
 // -- Class Methods
 
 uinteger32 String::hashFor(const character* string)

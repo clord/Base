@@ -74,6 +74,7 @@ public:
     static String stringWithUTF16AtAndSize(const byte*, count);
     static String stringWithUTF16(const Blob&);
     static String stringByFilteringNonPrintableCharactersIn(const String&);
+    static String stringByJoiningArrayWithString(const Array<String>&, String);
 
     // -- Class Methods
     static uinteger32 hashFor(const character*);

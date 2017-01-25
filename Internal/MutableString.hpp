@@ -46,6 +46,7 @@ namespace NxA {
 
 class String;
 class MutableString;
+template <class T> class Array;
 
 struct MutableStringInternal : public Object::Internal, public std::string
 {
@@ -90,6 +91,7 @@ struct MutableStringInternal : public Object::Internal, public std::string
     static std::shared_ptr<MutableStringInternal> stringWithUTF16AtAndSize(const byte* data, count size);
     static std::shared_ptr<MutableStringInternal> stringWithUTF16(const Blob& other);
     static std::shared_ptr<MutableStringInternal> stringByFilteringNonPrintableCharactersIn(const String& other);
+    static std::shared_ptr<MutableStringInternal> stringByJoiningArrayWithString(const Array<String>&, String);
 
     // -- Operators
     bool operator==(const character* other) const;

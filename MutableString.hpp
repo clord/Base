@@ -68,6 +68,8 @@ public:
 
     static MutableString stringWithRepeatedCharacter(count, character);
 
+    static MutableString stringByJoiningArrayWithString(const Array<String>&, String);
+
     // -- Operators
     bool operator==(const String& other) const;
     bool operator!=(const String& other) const

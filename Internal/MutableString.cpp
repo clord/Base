@@ -23,6 +23,7 @@
 #include "Base/MutableString.hpp"
 #include "Base/Internal/MutableString.hpp"
 #include "Base/String.hpp"
+#include "Base/Array.hpp"
 #include "Base/Assert.hpp"
 
 using namespace NxA;
@@ -158,6 +159,19 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::stringWithUTF16(co
     return MutableStringInternal::stringWithUTF16AtAndSize(other.data(), other.size());
 }
 
+std::shared_ptr<MutableStringInternal> MutableStringInternal::stringByJoiningArrayWithString(const Array<String>& array, String join)
+{
+    std::string result;
+    auto i = array.begin();
+    while (i != array.end()) {
+        result.append(i->asStdString());
+        ++i;
+        if (i != array.end()) {
+            result.append(join.asStdString());
+        }
+    }
+    return std::make_shared<MutableStringInternal>(std::move(result));
+}
 
 uinteger32 MutableStringInternal::classHash() const
 {

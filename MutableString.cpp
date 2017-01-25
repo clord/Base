@@ -59,6 +59,11 @@ MutableString MutableString::stringWithRepeatedCharacter(count number, character
     return { Internal::stringWithRepeatedCharacter(number, specificChar) };
 }
 
+MutableString MutableString::stringByJoiningArrayWithString(const Array<String>& array, String join)
+{
+    return { Internal::stringByJoiningArrayWithString(array, join) };
+}
+
 // -- Operators
 
 bool MutableString::operator==(const String& other) const

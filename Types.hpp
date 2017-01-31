@@ -67,6 +67,14 @@ inline constexpr Optional<typename std::decay<T>::type>
 makeOptional(T&& v) {
     return Optional<typename std::decay<T>::type>(std::forward<T>(v));
 }
+template<typename T, typename Function>
+auto maybe(const NxA::Optional<T>& arg, Function && f) -> NxA::Optional<typename std::result_of<Function(T)>::type>
+{
+    if (!arg) {
+        return nothing;
+    }
+    return {f(*arg)};
+}
 
 // -- Template used by default to produce the name of unknown types.
 template <typename T>

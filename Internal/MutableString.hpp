@@ -76,9 +76,8 @@ struct MutableStringInternal : public Object::Internal, public std::string
 
             NXA_ASSERT_FALSE(finalStringLength < 0 || finalStringLength >= std::numeric_limits<count>::max());
 
-            buffer.resize(finalStringLength);
-
             if (finalStringLength < sizeGuess) {
+                buffer.resize(finalStringLength);
                 return MutableStringInternal{std::move(buffer)};
             }
         }

@@ -27,6 +27,7 @@
 #include "Base/Platform.hpp"
 #include "Base/Assert.hpp"
 #include "Base/File.hpp"
+#include "Base/Platform.hpp"
 
 #include <boost/filesystem.hpp>
 
@@ -35,6 +36,7 @@
 #include <string>
 #include <errno.h>
 #include <dirent.h>
+#include <pwd.h>
 
 using namespace NxA;
 
@@ -237,6 +239,30 @@ String File::temporaryDirectoryPath()
     }
 
     return String(path.string());
+}
+
+String File::userHomeDirectoryPath()
+{
+    if (Platform::CurrentPlatform == Platform::Kind::OSX) {
+        const char* homeDirectory = nullptr;
+
+        struct passwd* pwd = getpwuid(getuid());
+        if (pwd) {
+            homeDirectory = pwd->pw_dir;
+        }
+        else {
+            // -- try the $HOME environment variable
+            homeDirectory = getenv("HOME");
+        }
+
+        return String(homeDirectory);
+    }
+    else {
+        // -- Should return the path specified by the USERPROFILE environment variable.
+        // -- or the path formed by concatenating the HOMEDRIVE and HOMEPATH environment variables.
+        NXA_ALOG("Unsupported Platform.");
+        return { };
+    }
 }
 
 timestamp File::modificationDateInSecondsSince1970ForFile(const String& path)

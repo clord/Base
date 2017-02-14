@@ -227,7 +227,7 @@ Array<String> File::pathsForFilesInDirectory(const String& path)
     return { std::move(pathsFound) };
 }
 
-String File::TemporaryDirectory()
+String File::temporaryDirectoryPath()
 {
     boost::system::error_code error;
     auto path = boost::filesystem::temp_directory_path(error);

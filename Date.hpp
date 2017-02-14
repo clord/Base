@@ -36,6 +36,7 @@ public:
     static String formattedStringWithTimestampAndFormat(timestamp, const character*);
 
     static timestamp currentDateInSecondsSinceJanuary1st1970();
+    static timestamp currentGMTDateInSecondsSinceJanuary1st1970();
 };
 
 }

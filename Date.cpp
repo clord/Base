@@ -23,6 +23,7 @@
 #include "Base/Date.hpp"
 
 #include <iostream>
+#include <ctime>
 #include <time.h>
 
 #pragma clang diagnostic push
@@ -54,4 +55,11 @@ String Date::formattedStringWithTimestampAndFormat(timestamp time, const charact
 timestamp Date::currentDateInSecondsSinceJanuary1st1970()
 {
     return std::time(nullptr);
+}
+
+timestamp Date::currentGMTDateInSecondsSinceJanuary1st1970()
+{
+    auto currentTime = std::time(nullptr);
+    auto gmtTime = std::gmtime(&currentTime);
+    return std::mktime(gmtTime);
 }

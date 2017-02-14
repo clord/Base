@@ -173,3 +173,13 @@ void MutableBlob::padToAlignment(integer32 alignment)
 {
     internal->padToAlignment(alignment);
 }
+
+String MutableBlob::description() const
+{
+    return internal->description();
+}
+
+String MutableBlob::description(const DescriberState& state) const
+{
+    return internal->description();
+}

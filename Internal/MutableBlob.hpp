@@ -157,6 +157,8 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
         }
     }
 
+    String description() const;
+
     // -- Overriden Object::Internal Instance Methods
     uinteger32 classHash() const override
     {

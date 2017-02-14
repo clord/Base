@@ -144,7 +144,12 @@ String Blob::base64String() const
     return internal->base64String();
 }
 
+String Blob::description() const
+{
+    return internal->description();
+}
+
 String Blob::description(const DescriberState& state) const
 {
-    return internal->base64String();
+    return internal->description();
 }

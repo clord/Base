@@ -239,6 +239,7 @@ int base64_decode_block(const char* code_in, const int length_in, char* plaintex
 }
 
 #include "Base/Types.hpp"
+#include "Base/MutableString.hpp"
 
 namespace NxA {
 
@@ -438,4 +439,15 @@ String MutableBlobInternal::base64String() const
     else {
         return { };
     }
+}
+
+String MutableBlobInternal::description() const
+{
+    MutableString result;
+
+    for (integer index = 0; index < this->size(); ++index) {
+        result.append(String::stringWithFormat("%02x", (*this)[index]));
+    }
+
+    return std::move(result);
 }

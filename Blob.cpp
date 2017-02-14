@@ -118,7 +118,6 @@ bool Blob::classNameIs(const character* className) const
     return !::strcmp(Blob::staticClassName(), className);
 }
 
-
 uinteger32 Blob::staticClassHash()
 {
     static uinteger32 result = String::hashFor(Blob::staticClassName());

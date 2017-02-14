@@ -51,10 +51,6 @@ public:
     template<count size> String(const character (&chars)[size]) : String{ chars, size - 1 } { }
 
     // -- Factory Methods
-
-
-// -- Factory Methods
-
     template <typename... FormatArguments>
     static String stringWithFormat(String format, FormatArguments&&... formatArguments)
     {

@@ -368,7 +368,6 @@ namespace NxA {
         ((uint64_t*)out)[0] = h1;
         ((uint64_t*)out)[1] = h2;
     }
-
 }
 
 // -- MutableBlobInternal Class

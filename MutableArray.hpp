@@ -252,7 +252,7 @@ public:
         internal->sort();
     }
 
-    String description(const DescriberState& state) const
+    String description(const DescriberState& state = DescriberState()) const
     {
         return internal->description(state);
     }

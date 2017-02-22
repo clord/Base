@@ -207,7 +207,7 @@ public:
         return internal->find(object);
     }
 
-    String description(const DescriberState& state) const
+    String description(const DescriberState& state = DescriberState()) const
     {
         return internal->description(state);
     }

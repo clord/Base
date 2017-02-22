@@ -35,10 +35,14 @@ namespace NxA {
 
 // -- Class
 
-template<typename T> class Set;
-template<typename T> class Array;
+template <typename T>
+class Set;
+template <typename T, template <typename> class>
+class Array;
 
-template <class T> class MutableSet {
+template <class T>
+class MutableSet
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableSetInternal<T>);
 
     std::shared_ptr<Internal> internal = std::make_shared<Internal>();
@@ -48,12 +52,20 @@ template <class T> class MutableSet {
 public:
     // -- Constructors/Destructors
     MutableSet() = default;
-    MutableSet(const MutableSet& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-    MutableSet(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
+    MutableSet(const MutableSet& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+    MutableSet(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
+    {
+    }
     MutableSet(MutableSet&& other) = default;
     ~MutableSet() = default;
-    MutableSet(const Set<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableSet(Set<T>&& other) : internal{ std::move(other.internal) } { }
+    MutableSet(const Set<T>& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+    MutableSet(Set<T>&& other) : internal{std::move(other.internal)}
+    {
+    }
 
     // -- Class Methods
     static const character* staticClassName()
@@ -91,7 +103,11 @@ public:
 
     // -- Operators
     MutableSet& operator=(MutableSet&& other) = default;
-    MutableSet& operator=(const MutableSet& other) { internal = std::make_shared<Internal>(*other.internal); return *this; }
+    MutableSet& operator=(const MutableSet& other)
+    {
+        internal = std::make_shared<Internal>(*other.internal);
+        return *this;
+    }
     bool operator==(const MutableSet& other) const
     {
         if (internal == other.internal) {
@@ -170,8 +186,8 @@ public:
         return internal->append(object);
     }
 
-    template<class... ConstructorArguments>
-    void emplaceAppend(ConstructorArguments &&... arguments)
+    template <class... ConstructorArguments>
+    void emplaceAppend(ConstructorArguments&&... arguments)
     {
         internal->emplaceAppend(std::forward<ConstructorArguments>(arguments)...);
     }
@@ -229,5 +245,4 @@ public:
         return internal->description();
     }
 };
-
 }

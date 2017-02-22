@@ -31,47 +31,51 @@ using namespace NxA;
 
 Blob Blob::blobWithMemoryAndSize(const byte* other, count size)
 {
-    return { Internal::blobWithMemoryAndSize(other, size) };
+    return {Internal::blobWithMemoryAndSize(other, size)};
 }
 
 Blob Blob::blobWithBase64String(const String& string)
 {
-    return { Internal::blobWithBase64String(string) };
+    return {Internal::blobWithBase64String(string)};
 }
 
 Blob Blob::blobWithStringWithTerminator(const String& string)
 {
-    return { Internal::blobWithStringWithTerminator(string) };
+    return {Internal::blobWithStringWithTerminator(string)};
 }
 
 Blob Blob::blobWithStringWithoutTerminator(const String& string)
 {
-    return { Internal::blobWithStringWithoutTerminator(string) };
+    return {Internal::blobWithStringWithoutTerminator(string)};
 }
 
 // -- Class Methods
 
 Blob Blob::hashFor(const byte* memory, count size)
 {
-    return { Internal::hashFor(memory, size) };
+    return {Internal::hashFor(memory, size)};
 }
 
 String Blob::base64StringFor(const byte* memory, count size)
 {
-    return { Internal::base64StringFor(memory, size) } ;
+    return {Internal::base64StringFor(memory, size)};
 }
 
 // -- Constructors/Destructors
 
-Blob::Blob() : internal{ std::make_shared<Internal>() } { }
+Blob::Blob() : internal{std::make_shared<Internal>()}
+{
+}
 
-Blob::Blob(MutableBlob&& other) : internal{ std::move(other.internal) }
+Blob::Blob(MutableBlob&& other) : internal{std::move(other.internal)}
 {
     // -- If we're moving this other mutable, it can't be referred to by anyone else.
     NXA_ASSERT_TRUE(internal.use_count() == 1);
 }
 
-Blob::Blob(const MutableBlob& other) : internal{ std::make_shared<MutableBlobInternal>(*other.internal) } { }
+Blob::Blob(const MutableBlob& other) : internal{std::make_shared<MutableBlobInternal>(*other.internal)}
+{
+}
 
 Blob::Blob(const Blob&) = default;
 
@@ -79,7 +83,9 @@ Blob::Blob(Blob&&) = default;
 
 Blob::Blob(Blob&) = default;
 
-Blob::Blob(std::shared_ptr<Internal>&& other) : internal{ std::move(other) } { }
+Blob::Blob(std::shared_ptr<Internal>&& other) : internal{std::move(other)}
+{
+}
 
 Blob::~Blob() = default;
 
@@ -97,7 +103,7 @@ boolean Blob::operator==(const Blob& other) const
     return *internal == *(other.internal);
 }
 
-const byte& Blob::operator[] (integer index) const
+const byte& Blob::operator[](integer index) const
 {
     return internal->operator[](index);
 }
@@ -136,7 +142,7 @@ const byte* Blob::data() const
 
 Blob Blob::hash()
 {
-    return { internal->hash() };
+    return {internal->hash()};
 }
 
 String Blob::base64String() const

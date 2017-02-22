@@ -21,10 +21,11 @@
 
 #pragma once
 
-#include "Base/Assert.hpp"
-#include "Base/Blob.hpp"
-#include "Base/Platform.hpp"
-#include "Base/Internal/Object.hpp"
+#include <Base/Assert.hpp>
+#include <Base/Blob.hpp>
+#include <Base/Platform.hpp>
+#include <Base/Internal/Object.hpp>
+#include <Base/Array.hpp>
 
 #include <string>
 #include <cstdio>
@@ -46,18 +47,29 @@ namespace NxA {
 
 class String;
 class MutableString;
-template <class T> class Array;
 
 struct MutableStringInternal : public Object::Internal, public std::string
 {
+
     // -- Constructors/Destructors
-    MutableStringInternal() : std::string{ "", 0 } { }
-    MutableStringInternal(const std::string& other) : std::string{ other } { }
-    MutableStringInternal(std::string&& other) : std::string{ std::move(other) } { }
-    MutableStringInternal(const character* other, count count) : std::string{ other, count }
+
+    MutableStringInternal() : std::string{"", 0}
+    {
+    }
+
+    MutableStringInternal(const std::string& other) : std::string{other}
+    {
+    }
+
+    MutableStringInternal(std::string&& other) : std::string{std::move(other)}
+    {
+    }
+
+    MutableStringInternal(const character* other, count count) : std::string{other, count}
     {
         NXA_ASSERT_NOT_NULL(other);
     }
+
     virtual ~MutableStringInternal() = default;
 
     template <typename... Args>
@@ -87,10 +99,27 @@ struct MutableStringInternal : public Object::Internal, public std::string
     }
 
     static std::shared_ptr<MutableStringInternal> stringWithRepeatedCharacter(count number, character specificCharacter);
+
     static std::shared_ptr<MutableStringInternal> stringWithUTF16AtAndSize(const byte* data, count size);
+
     static std::shared_ptr<MutableStringInternal> stringWithUTF16(const Blob& other);
+
     static std::shared_ptr<MutableStringInternal> stringByFilteringNonPrintableCharactersIn(const String& other);
-    static std::shared_ptr<MutableStringInternal> stringByJoiningArrayWithString(const Array<String>&, String);
+
+    template <template <typename> class Implementation, typename S>
+    static std::shared_ptr<MutableStringInternal> stringByJoiningArrayWithString(const Array<S>& array, S join)
+    {
+        std::string result;
+        auto i = array.begin();
+        while (i != array.end()) {
+            result.append(i->asStdString());
+            ++i;
+            if (i != array.end()) {
+                result.append(join.asStdString());
+            }
+        }
+        return std::make_shared<MutableStringInternal>(std::move(result));
+    }
 
     // -- Operators
     bool operator==(const character* other) const;
@@ -99,9 +128,9 @@ struct MutableStringInternal : public Object::Internal, public std::string
     // -- Instance Methods
     count length() const;
 
-    integer32 compare(const char * other) const;
+    integer32 compare(const char* other) const;
 
-    integer32 compare(const MutableStringInternal & other) const;
+    integer32 compare(const MutableStringInternal& other) const;
 
     uinteger32 hash() const;
 
@@ -136,7 +165,7 @@ struct MutableStringInternal : public Object::Internal, public std::string
     boolean hasPrefix(const MutableStringInternal& prefix) const;
 
     boolean hasPrefix(const character* prefix) const;
-    
+
     boolean hasPostfix(const MutableStringInternal& postfix) const;
 
     boolean hasPostfix(const character* postfix) const;
@@ -150,16 +179,16 @@ struct MutableStringInternal : public Object::Internal, public std::string
     count indexOfFirstOccurenceOf(const String& other) const;
     count indexOfFirstOccurenceOf(const character* other) const;
     count indexOfLastOccurenceOf(const String& other) const;
-    count indexOfLastOccurenceOf(const character*  other) const;
-    
+    count indexOfLastOccurenceOf(const character* other) const;
+
     void replaceOccurenceOfStringWith(const character* occurence, const character* replacement);
 
     // -- Overriden Object::Internal Instance Methods
     uinteger32 classHash() const override;
     const character* className() const override;
 
-    template<typename T>
-    static T stringArgumentAsCharacter(T && t)
+    template <typename T>
+    static T stringArgumentAsCharacter(T&& t)
     {
         return t;
     }
@@ -172,5 +201,4 @@ struct MutableStringInternal : public Object::Internal, public std::string
     static const character* stringArgumentAsCharacter(MutableString& nxastring);
     static const character* stringArgumentAsCharacter(MutableStringInternal& nxastring);
 };
-
 }

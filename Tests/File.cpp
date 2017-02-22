@@ -21,6 +21,7 @@
 
 #include "Base/File.hpp"
 #include "Base/Test.hpp"
+#include "Base/String.hpp"
 
 using namespace testing;
 using namespace NxA;

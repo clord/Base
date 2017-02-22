@@ -27,7 +27,8 @@ namespace NxA {
 
 class String;
 
-class Date {
+class Date
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION();
     NXA_GENERATED_OBJECT_METHODS_DECLARATIONS_FOR(Date);
 
@@ -38,5 +39,4 @@ public:
     static timestamp currentDateInSecondsSinceJanuary1st1970();
     static timestamp currentGMTDateInSecondsSinceJanuary1st1970();
 };
-
 }

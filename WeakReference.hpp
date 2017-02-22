@@ -27,13 +27,19 @@
 
 namespace NxA {
 
-template <class T> class WeakReference : private std::weak_ptr<typename T::Internal> {
+template <class T>
+class WeakReference : private std::weak_ptr<typename T::Internal>
+{
 public:
     // -- Constructors & Destructors
     WeakReference() = default;
-    WeakReference(const WeakReference<T>& other) : std::weak_ptr<typename T::Internal>{ other } { }
+    WeakReference(const WeakReference<T>& other) : std::weak_ptr<typename T::Internal>{other}
+    {
+    }
     WeakReference(WeakReference<T>&&) = default;
-    WeakReference(const T& other) : std::weak_ptr<typename T::Internal>{ other.internal } { }
+    WeakReference(const T& other) : std::weak_ptr<typename T::Internal>{other.internal}
+    {
+    }
     ~WeakReference() = default;
 
     // -- Operators
@@ -63,7 +69,7 @@ public:
     T get() const
     {
         NXA_ASSERT_TRUE(this->isValid());
-        return { this->std::weak_ptr<typename T::Internal>::lock() };
+        return {this->std::weak_ptr<typename T::Internal>::lock()};
     }
 
     void release()
@@ -72,5 +78,4 @@ public:
         this->std::weak_ptr<typename T::Internal>::reset();
     }
 };
-
 }

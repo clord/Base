@@ -39,205 +39,213 @@ namespace NxA {
 
 struct BadVariantAccess : public FatalException
 {
-    explicit BadVariantAccess(const character* what_arg) : FatalException{what_arg} {}
+    explicit BadVariantAccess(const character* what_arg) : FatalException{what_arg}
+    {
+    }
 };
-
 
 namespace VariantDetail {
 
-    static constexpr count invalidValue = count(-1);
+static constexpr count invalidValue = count(-1);
 
-    template <typename T, typename... Types>
-    struct DirectTypeIndex;
+template <typename T, typename... Types>
+struct DirectTypeIndex;
 
-    template <typename T, typename First, typename... Types>
-    struct DirectTypeIndex<T, First, Types...>
-    {
-        static constexpr count index = std::is_same<T, First>::value
-            ? sizeof...(Types)
-            : DirectTypeIndex<T, Types...>::index;
-    };
+template <typename T, typename First, typename... Types>
+struct DirectTypeIndex<T, First, Types...>
+{
+    static constexpr count index = std::is_same<T, First>::value ? sizeof...(Types) : DirectTypeIndex<T, Types...>::index;
+};
 
-    template <typename T>
-    struct DirectTypeIndex<T>
-    {
-        static constexpr count index = invalidValue;
-    };
+template <typename T>
+struct DirectTypeIndex<T>
+{
+    static constexpr count index = invalidValue;
+};
 
 #if __cpp_lib_logical_traits >= 201510L
-    using std::disjunction;
+using std::disjunction;
 #else
 
-    template <typename...>
-    struct disjunction : std::false_type {};
+template <typename...>
+struct disjunction : std::false_type
+{
+};
 
-    template <typename B1>
-    struct disjunction<B1> : B1 {};
+template <typename B1>
+struct disjunction<B1> : B1
+{
+};
 
-    template<class B1, class... Bn>
-    struct disjunction<B1, Bn...> : std::conditional_t<B1::value != false, B1, disjunction<Bn...>>  { };
+template <class B1, class... Bn>
+struct disjunction<B1, Bn...> : std::conditional_t<B1::value != false, B1, disjunction<Bn...>>
+{
+};
 
 #endif
 
-    template <typename T, typename... Types>
-    struct ConvertibleTypeIndex;
+template <typename T, typename... Types>
+struct ConvertibleTypeIndex;
 
-    template <typename T, typename First, typename... Types>
-    struct ConvertibleTypeIndex<T, First, Types...>
+template <typename T, typename First, typename... Types>
+struct ConvertibleTypeIndex<T, First, Types...>
+{
+    static constexpr count index = std::is_convertible<T, First>::value
+                                       ? disjunction<std::is_convertible<T, Types>...>::value ? invalidValue : sizeof...(Types)
+                                       : ConvertibleTypeIndex<T, Types...>::index;
+};
+
+template <typename T>
+struct ConvertibleTypeIndex<T>
+{
+    static constexpr count index = invalidValue;
+};
+
+template <typename T, typename... Types>
+struct ValueTraits
+{
+    using ValueType = typename std::remove_const<typename std::remove_reference<T>::type>::type;
+    static constexpr count directIndex = DirectTypeIndex<ValueType, Types...>::index;
+    static constexpr boolean isDirect = directIndex != invalidValue;
+    static constexpr count index = isDirect ? directIndex : ConvertibleTypeIndex<ValueType, Types...>::index;
+    static constexpr boolean isValid = index != invalidValue;
+    static constexpr count typeIndex = isValid ? sizeof...(Types) - index : 0;
+    using TargetType = typename std::tuple_element<typeIndex, std::tuple<void, Types...>>::type;
+};
+
+template <typename... Types>
+struct VariantHelper;
+
+template <typename T, typename... Types>
+struct VariantHelper<T, Types...>
+{
+    inline static void move(const count oldTypeIndex, void* oldValue, void* newValue)
     {
-        static constexpr count index = std::is_convertible<T, First>::value
-            ? disjunction<std::is_convertible<T, Types>...>::value ? invalidValue : sizeof...(Types)
-            : ConvertibleTypeIndex<T, Types...>::index;
-    };
-
-    template <typename T>
-    struct ConvertibleTypeIndex<T>
-    {
-        static constexpr count index = invalidValue;
-    };
-
-    template <typename T, typename... Types>
-    struct ValueTraits
-    {
-        using ValueType = typename std::remove_const<typename std::remove_reference<T>::type>::type;
-        static constexpr count directIndex = DirectTypeIndex<ValueType, Types...>::index;
-        static constexpr boolean isDirect = directIndex != invalidValue;
-        static constexpr count index = isDirect ? directIndex : ConvertibleTypeIndex<ValueType, Types...>::index;
-        static constexpr boolean isValid = index != invalidValue;
-        static constexpr count typeIndex = isValid ? sizeof...(Types) - index : 0;
-        using TargetType = typename std::tuple_element<typeIndex, std::tuple<void, Types...>>::type;
-    };
-
-    template <typename... Types>
-    struct VariantHelper;
-
-    template <typename T, typename... Types>
-    struct VariantHelper<T, Types...>
-    {
-        inline static void move(const count oldTypeIndex, void *oldValue, void *newValue)
-        {
-            if (oldTypeIndex == sizeof...(Types)) {
-                new(newValue) T(std::move(*reinterpret_cast<T*>(oldValue)));
-            }
-            else  {
-                VariantHelper<Types...>::move(oldTypeIndex, oldValue, newValue);
-            }
+        if (oldTypeIndex == sizeof...(Types)) {
+            new (newValue) T(std::move(*reinterpret_cast<T*>(oldValue)));
         }
-
-        inline static void copy(const count oldTypeIndex, const void *oldValue, void *newValue)
-        {
-            if (oldTypeIndex == sizeof...(Types)) {
-                new(newValue) T(*reinterpret_cast<const T*>(oldValue));
-            }
-            else {
-                VariantHelper<Types...>::copy(oldTypeIndex, oldValue, newValue);
-            }
+        else {
+            VariantHelper<Types...>::move(oldTypeIndex, oldValue, newValue);
         }
+    }
 
-        inline static void destroy(const count typeIndex, void *data)
-        {
-            if (typeIndex == sizeof...(Types)) {
-                reinterpret_cast<T*>(data)->~T();
-            }
-            else {
-                VariantHelper<Types...>::destroy(typeIndex, data);
-            }
+    inline static void copy(const count oldTypeIndex, const void* oldValue, void* newValue)
+    {
+        if (oldTypeIndex == sizeof...(Types)) {
+            new (newValue) T(*reinterpret_cast<const T*>(oldValue));
         }
-    };
-
-    template <>
-    struct VariantHelper<>
-    {
-        inline static void move(const count, void*, void*) {}
-        inline static void copy(const count, const void*, void*) {}
-        inline static void destroy(const count, void*) {}
-    };
-
-    template <typename Function, typename Variant, typename... Types>
-    struct Apply;
-
-    template <typename Function, typename Variant, typename T, typename... Types>
-    struct Apply<Function, Variant, T, Types...>
-    {
-        inline static decltype(auto) apply(Variant&& variant, Function&& function)
-        {
-            if (variant.template isType<T>()) {
-                return function(variant.template getUnchecked<T>());
-            }
-            else {
-                return Apply<Function, Variant, Types...>::apply(std::forward<Variant>(variant), std::forward<Function>(function));
-            }
+        else {
+            VariantHelper<Types...>::copy(oldTypeIndex, oldValue, newValue);
         }
-    };
+    }
 
-    template <typename Function, typename Variant, typename T>
-    struct Apply<Function, Variant, T>
+    inline static void destroy(const count typeIndex, void* data)
     {
-        inline static decltype(auto) apply(Variant&& variant, Function&& function)
-        {
+        if (typeIndex == sizeof...(Types)) {
+            reinterpret_cast<T*>(data)->~T();
+        }
+        else {
+            VariantHelper<Types...>::destroy(typeIndex, data);
+        }
+    }
+};
+
+template <>
+struct VariantHelper<>
+{
+    inline static void move(const count, void*, void*)
+    {
+    }
+    inline static void copy(const count, const void*, void*)
+    {
+    }
+    inline static void destroy(const count, void*)
+    {
+    }
+};
+
+template <typename Function, typename Variant, typename... Types>
+struct Apply;
+
+template <typename Function, typename Variant, typename T, typename... Types>
+struct Apply<Function, Variant, T, Types...>
+{
+    inline static decltype(auto) apply(Variant&& variant, Function&& function)
+    {
+        if (variant.template isType<T>()) {
             return function(variant.template getUnchecked<T>());
         }
-    };
-
-
-    struct EqualCompare
-    {
-        template <typename T>
-        boolean operator()(T const& lhs, T const& rhs) const
-        {
-            return lhs == rhs;
+        else {
+            return Apply<Function, Variant, Types...>::apply(std::forward<Variant>(variant), std::forward<Function>(function));
         }
-    };
+    }
+};
 
-    struct LessCompare
+template <typename Function, typename Variant, typename T>
+struct Apply<Function, Variant, T>
+{
+    inline static decltype(auto) apply(Variant&& variant, Function&& function)
     {
-        template <typename T>
-        boolean operator()(T const& lhs, T const& rhs) const
-        {
-            return lhs < rhs;
-        }
-    };
+        return function(variant.template getUnchecked<T>());
+    }
+};
 
-    template <typename Value, typename Comparator>
-    struct CompareVariant
+struct EqualCompare
+{
+    template <typename T>
+    boolean operator()(T const& lhs, T const& rhs) const
     {
-        explicit CompareVariant(Value const& lhs) noexcept : lhs_{lhs} {}
-        CompareVariant& operator=(CompareVariant const&) = delete;
+        return lhs == rhs;
+    }
+};
 
-        template <typename T>
-        boolean operator()(T const& rhsContent) const
-        {
-            T const& lhsContent = lhs_.template getUnchecked<T>();
-            return Comparator()(lhsContent, rhsContent);
-        }
-
-    private:
-        Value const& lhs_;
-    };
-
-
-    template <count argument1, count... others>
-    struct Max;
-
-    template <count argument>
-    struct Max<argument>
+struct LessCompare
+{
+    template <typename T>
+    boolean operator()(T const& lhs, T const& rhs) const
     {
-        static constexpr count value = argument;
-    };
+        return lhs < rhs;
+    }
+};
 
-    template <count argument1, count argument2, count... others>
-    struct Max<argument1, argument2, others...>
+template <typename Value, typename Comparator>
+struct CompareVariant
+{
+    explicit CompareVariant(Value const& lhs) noexcept : lhs_{lhs}
     {
-        static constexpr count value = argument1 >= argument2 ? Max<argument1, others...>::value : Max<argument2, others...>::value;
-    };
+    }
+    CompareVariant& operator=(CompareVariant const&) = delete;
 
+    template <typename T>
+    boolean operator()(T const& rhsContent) const
+    {
+        T const& lhsContent = lhs_.template getUnchecked<T>();
+        return Comparator()(lhsContent, rhsContent);
+    }
+
+private:
+    Value const& lhs_;
+};
+
+template <count argument1, count... others>
+struct Max;
+
+template <count argument>
+struct Max<argument>
+{
+    static constexpr count value = argument;
+};
+
+template <count argument1, count argument2, count... others>
+struct Max<argument1, argument2, others...>
+{
+    static constexpr count value = argument1 >= argument2 ? Max<argument1, others...>::value : Max<argument2, others...>::value;
+};
 }
 
 struct NoInit
 {
 };
-
-
 
 template <typename... Types>
 class Variant final
@@ -247,6 +255,7 @@ class Variant final
 
 public:
     using TypesTuple = std::tuple<Types...>;
+
 private:
     static constexpr count dataSize = VariantDetail::Max<sizeof(Types)...>::value;
     static constexpr count dataAlign = VariantDetail::Max<alignof(Types)...>::value;
@@ -258,18 +267,21 @@ private:
     DataType data;
 
 public:
-    inline Variant() noexcept(std::is_nothrow_default_constructible<FirstType>::value) : typeIndex{sizeof...(Types)-1}
+    inline Variant() noexcept(std::is_nothrow_default_constructible<FirstType>::value) : typeIndex{sizeof...(Types) - 1}
     {
         static_assert(std::is_default_constructible<FirstType>::value, "First type of Variant must be default constructible");
-        new(&data) FirstType();
+        new (&data) FirstType();
     }
 
-    inline Variant(NoInit) noexcept : typeIndex{VariantDetail::invalidValue} {}
+    inline Variant(NoInit) noexcept : typeIndex{VariantDetail::invalidValue}
+    {
+    }
 
-    template <typename T,  typename Traits = VariantDetail::ValueTraits<T, Types...>, typename Enable = typename std::enable_if<Traits::isValid && !std::is_same<Variant<Types...>, typename Traits::ValueType>::value>::type>
+    template <typename T, typename Traits = VariantDetail::ValueTraits<T, Types...>,
+              typename Enable = typename std::enable_if<Traits::isValid && !std::is_same<Variant<Types...>, typename Traits::ValueType>::value>::type>
     inline Variant(T&& val) noexcept(std::is_nothrow_constructible<typename Traits::TargetType, T&&>::value) : typeIndex{Traits::index}
     {
-        new(&data) typename Traits::TargetType(std::forward<T>(val));
+        new (&data) typename Traits::TargetType(std::forward<T>(val));
     }
 
     inline Variant(Variant<Types...> const& old) : typeIndex{old.typeIndex}
@@ -299,13 +311,15 @@ private:
         typeIndex = rhs.typeIndex;
     }
 
-    template <typename T, typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
+    template <typename T,
+              typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
     inline T& getUnchecked()
     {
         return *reinterpret_cast<T*>(&data);
     }
 
-    template <typename T, typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
+    template <typename T,
+              typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
     inline T const& getUnchecked() const
     {
         return *reinterpret_cast<T const*>(&data);
@@ -340,8 +354,8 @@ public:
         return *this;
     }
 
-    template <typename T, typename std::enable_if<
-    (VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
+    template <typename T,
+              typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
     inline boolean isType() const
     {
         return typeIndex == VariantDetail::DirectTypeIndex<T, Types...>::index;
@@ -357,11 +371,12 @@ public:
     {
         HelperType::destroy(typeIndex, &data);
         typeIndex = VariantDetail::invalidValue;
-        new(&data) T(std::forward<Args>(arguments)...);
+        new (&data) T(std::forward<Args>(arguments)...);
         typeIndex = VariantDetail::DirectTypeIndex<T, Types...>::index;
     }
 
-    template <typename T, typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
+    template <typename T,
+              typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
     inline T& get()
     {
         if (typeIndex == VariantDetail::DirectTypeIndex<T, Types...>::index) {
@@ -372,7 +387,8 @@ public:
         }
     }
 
-    template <typename T, typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
+    template <typename T,
+              typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
     inline T const& get() const
     {
         if (typeIndex == VariantDetail::DirectTypeIndex<T, Types...>::index) {
@@ -385,17 +401,18 @@ public:
 
     inline integer whichType() const noexcept
     {
-        return static_cast<integer>(sizeof...(Types)-typeIndex - 1);
+        return static_cast<integer>(sizeof...(Types) - typeIndex - 1);
     }
 
-    template <typename T, typename std::enable_if<
-    (VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
+    template <typename T,
+              typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
     inline static constexpr integer whichType() noexcept
     {
-        return static_cast<integer>(sizeof...(Types)-VariantDetail::DirectTypeIndex<T, Types...>::index - 1);
+        return static_cast<integer>(sizeof...(Types) - VariantDetail::DirectTypeIndex<T, Types...>::index - 1);
     }
 
-    template <typename F, typename V, typename... Ts> friend struct VariantDetail::Apply;
+    template <typename F, typename V, typename... Ts>
+    friend struct VariantDetail::Apply;
 
     template <typename Function, typename V>
     decltype(auto) inline static visit(V&& variant, Function&& function)
@@ -417,12 +434,12 @@ public:
         VariantDetail::CompareVariant<Variant, VariantDetail::EqualCompare> visitor(*this);
         return visit(rhs, visitor);
     }
-    
+
     inline boolean operator!=(Variant const& rhs) const
     {
         return !(*this == rhs);
     }
-    
+
     inline boolean operator<(Variant const& rhs) const
     {
         NXA_ASSERT_TRUE(isValid() && rhs.isValid());
@@ -432,17 +449,17 @@ public:
         VariantDetail::CompareVariant<Variant, VariantDetail::LessCompare> visitor(*this);
         return visit(rhs, visitor);
     }
-    
+
     inline boolean operator>(Variant const& rhs) const
     {
         return rhs < *this;
     }
-    
+
     inline boolean operator<=(Variant const& rhs) const
     {
         return !(*this > rhs);
     }
-    
+
     inline boolean operator>=(Variant const& rhs) const
     {
         return !(*this < rhs);
@@ -466,6 +483,4 @@ decltype(auto) get(T&& someVariant)
 {
     return someVariant.template get<ResultType>();
 }
-
-
 }

@@ -20,6 +20,8 @@
 //
 
 #include "Base/Array.hpp"
+#include "Base/MutableArray.hpp"
+#include "Base/String.hpp"
 #include "Base/Test.hpp"
 
 using namespace testing;

@@ -32,27 +32,21 @@ using namespace NxA;
 float Platform::bigEndianFloatValueAt(const byte* pointer)
 {
     const character* charsPtr = reinterpret_cast<const character*>(pointer);
-    uint32_t bigEndianVersion = ((charsPtr[0] << 24) & 0xff000000) |
-                                ((charsPtr[1] << 16) & 0xff0000) |
-                                ((charsPtr[2] << 8) & 0xff00) |
-                                 (charsPtr[3] & 0xff);
+    uint32_t bigEndianVersion =
+        ((charsPtr[0] << 24) & 0xff000000) | ((charsPtr[1] << 16) & 0xff0000) | ((charsPtr[2] << 8) & 0xff00) | (charsPtr[3] & 0xff);
     return *reinterpret_cast<float*>(&bigEndianVersion);
 }
 
 uinteger32 Platform::bigEndianUInteger32ValueAt(const byte* pointer)
 {
     const character* charsPtr = reinterpret_cast<const character*>(pointer);
-    return ((charsPtr[0] << 24) & 0xff000000) |
-           ((charsPtr[1] << 16) & 0xff0000) |
-           ((charsPtr[2] << 8) & 0xff00) |
-            (charsPtr[3] & 0xff);
+    return ((charsPtr[0] << 24) & 0xff000000) | ((charsPtr[1] << 16) & 0xff0000) | ((charsPtr[2] << 8) & 0xff00) | (charsPtr[3] & 0xff);
 }
 
 uinteger16 Platform::bigEndianUInteger16ValueAt(const byte* pointer)
 {
     const character* charsPtr = reinterpret_cast<const character*>(pointer);
-    return ((charsPtr[0] << 8) & 0xff00) |
-            (charsPtr[1] & 0xff);
+    return ((charsPtr[0] << 8) & 0xff00) | (charsPtr[1] & 0xff);
 }
 
 void Platform::writeBigEndianFloatValueAt(float value, byte* pointer)
@@ -85,16 +79,16 @@ Blob Platform::convertEndiannessOfUInteger16From(const Blob& other)
 {
     MutableBlob copy(other);
     if (!copy.size()) {
-        return { std::move(copy) };
+        return {std::move(copy)};
     }
 
     auto numberOfSwaps = copy.size() / 2;
 
     integer index = 0;
-    byte *data = copy.data();
+    byte* data = copy.data();
     for (integer count = 0; count < numberOfSwaps; ++count, index += 2) {
         std::swap(data[index], data[index + 1]);
     }
 
-    return { std::move(copy) };
+    return {std::move(copy)};
 }

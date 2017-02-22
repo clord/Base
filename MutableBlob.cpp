@@ -29,17 +29,25 @@ using namespace NxA;
 
 // -- Constructors/Destructors
 
-MutableBlob::MutableBlob() : internal{ std::make_shared<Internal>() } { }
+MutableBlob::MutableBlob() : internal{std::make_shared<Internal>()}
+{
+}
 
-MutableBlob::MutableBlob(const Blob &other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+MutableBlob::MutableBlob(const Blob& other) : internal{std::make_shared<Internal>(*other.internal)}
+{
+}
 
-MutableBlob::MutableBlob(const MutableBlob& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+MutableBlob::MutableBlob(const MutableBlob& other) : internal{std::make_shared<Internal>(*other.internal)}
+{
+}
 
 MutableBlob::MutableBlob(MutableBlob&&) = default;
 
 MutableBlob::MutableBlob(MutableBlob&) = default;
 
-MutableBlob::MutableBlob(std::shared_ptr<Internal>&& other) : internal{ std::move(other) } { }
+MutableBlob::MutableBlob(std::shared_ptr<Internal>&& other) : internal{std::move(other)}
+{
+}
 
 MutableBlob::~MutableBlob() = default;
 
@@ -47,27 +55,27 @@ MutableBlob::~MutableBlob() = default;
 
 MutableBlob MutableBlob::blobWithCapacity(count size)
 {
-    return { Internal::blobWithCapacity(size) };
+    return {Internal::blobWithCapacity(size)};
 }
 
 MutableBlob MutableBlob::blobWithMemoryAndSize(const byte* other, count size)
 {
-    return { Internal::blobWithMemoryAndSize(other, size) };
+    return {Internal::blobWithMemoryAndSize(other, size)};
 }
 
 MutableBlob MutableBlob::blobWithBase64String(const String& string)
 {
-    return { Internal::blobWithBase64String(string) };
+    return {Internal::blobWithBase64String(string)};
 }
 
 MutableBlob MutableBlob::blobWithStringWithTerminator(const String& string)
 {
-    return { Internal::blobWithStringWithTerminator(string) };
+    return {Internal::blobWithStringWithTerminator(string)};
 }
 
 MutableBlob MutableBlob::blobWithStringWithoutTerminator(const String& string)
 {
-    return { Internal::blobWithStringWithoutTerminator(string) };
+    return {Internal::blobWithStringWithoutTerminator(string)};
 }
 
 // -- Operators
@@ -84,11 +92,11 @@ boolean MutableBlob::operator==(const MutableBlob& other) const
     return *internal == *(other.internal);
 }
 
-byte& MutableBlob::operator[] (integer index)
+byte& MutableBlob::operator[](integer index)
 {
     return internal->operator[](index);
 }
-const byte& MutableBlob::operator[] (integer index) const
+const byte& MutableBlob::operator[](integer index) const
 {
     return internal->operator[](index);
 }
@@ -131,7 +139,7 @@ const byte* MutableBlob::data() const
 
 Blob MutableBlob::hash()
 {
-    return { internal->hash() };
+    return {internal->hash()};
 }
 
 String MutableBlob::base64String() const

@@ -30,7 +30,8 @@ struct MutableBlobInternal;
 class MutableBlob;
 class String;
 
-class Blob {
+class Blob
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableBlobInternal);
     NXA_GENERATED_OBJECT_METHODS_DECLARATIONS_FOR(Blob);
 
@@ -53,7 +54,7 @@ public:
     static String base64StringFor(const byte*, count);
 
     // -- Operators
-    const byte& operator[] (integer) const;
+    const byte& operator[](integer) const;
 
     // -- Instance Methods
     boolean isEmpty() const
@@ -68,5 +69,4 @@ public:
     Blob hash();
     String base64String() const;
 };
-
 }

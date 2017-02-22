@@ -34,7 +34,9 @@ namespace NxA {
 
 // -- Class
 
-template <typename Tkey, typename Tvalue> class Map {
+template <typename Tkey, typename Tvalue>
+class Map
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableMapInternal<const Tkey, Tvalue>);
 
     std::shared_ptr<MutableMapInternal<const Tkey, Tvalue>> internal;
@@ -43,10 +45,14 @@ template <typename Tkey, typename Tvalue> class Map {
 
 public:
     // -- Constructors/Destructors
-    Map() : internal{ std::make_shared<MutableMapInternal<const Tkey, Tvalue>>() } { }
+    Map() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()}
+    {
+    }
     Map(const Map&) = default;
     Map(Map&&) = default;
-    Map(MutableMap<Tkey, Tvalue>&& other) : internal{ std::move(other.internal) } { }
+    Map(MutableMap<Tkey, Tvalue>&& other) : internal{std::move(other.internal)}
+    {
+    }
     ~Map() = default;
 
     // -- Class Methods
@@ -165,5 +171,4 @@ public:
         return internal->containsValueForKey(key);
     }
 };
-
 }

@@ -21,7 +21,9 @@
 
 #pragma once
 
-#include "Base/String.hpp"
+#include <Base/String.hpp>
+#include <Base/MutableString.hpp>
+#include <Base/Array.hpp>
 
 namespace NxA {
 
@@ -29,11 +31,14 @@ class DescriberState
 {
     int indent_ = -1;
 
-    DescriberState(int indent) : indent_{indent} {}
+    DescriberState(int indent) : indent_{indent}
+    {
+    }
 
 public:
-
-    DescriberState() : indent_{0} {}
+    DescriberState() : indent_{0}
+    {
+    }
 
     DescriberState increaseIndent() const
     {
@@ -46,45 +51,46 @@ public:
     }
 };
 
-template<typename T>
+template <typename T>
 class HasDescriptionMember
 {
     static const DescriberState& state;
-    template<typename U> static constexpr auto test(int) -> decltype(std::declval<U>().description(state), std::true_type{});
-    template<typename> static constexpr std::false_type test(...);
+    template <typename U>
+    static constexpr auto test(int) -> decltype(std::declval<U>().description(state), std::true_type{});
+    template <typename>
+    static constexpr std::false_type test(...);
 
 public:
     using type = decltype(test<T>(0));
     static constexpr bool value = type::value;
 };
 
-
 // -- Template used to find the description for a type
-template<typename T, typename Enable = void>
-struct Describer; // -- trying to use this template means T isn't supported 
+template <typename T, typename Enable = void>
+struct Describer; // -- trying to use this template means T isn't supported
 
-template<typename T>
+template <typename T>
 struct Describer<T, std::enable_if_t<HasDescriptionMember<T>::value>>
 {
-    static String describeWithState(const T & item, const DescriberState& state)
+    static String describeWithState(const T& item, const DescriberState& state)
     {
         return item.description(state);
     }
 };
 
-template<typename T>
+template <typename T>
 struct Describer<T, std::enable_if_t<std::is_integral<typename std::decay_t<T>>::value | std::is_floating_point<typename std::decay_t<T>>::value>>
 {
-    static String describeWithState(const T & item, const DescriberState& state)
+    static String describeWithState(const T& item, const DescriberState& state)
     {
         return String{std::to_string(item)};
     }
 };
 
-template<typename T>
+template <typename T>
 struct Describer<T, std::enable_if_t<std::is_pointer<T>::value>>
 {
-    static String describeWithState(const T & item, const DescriberState& state)
+    static String describeWithState(const T& item, const DescriberState& state)
     {
         return String{std::to_string(static_cast<uinteger64>(item))};
     }
@@ -125,6 +131,48 @@ struct Describer<Optional<T>>
     }
 };
 
+template <typename T, template <typename> class I>
+struct Describer<Array<T, I>>
+{
+    static String describeWithState(Array<T, I> items, const DescriberState& state)
+    {
+        auto indented = state.increaseIndent();
+
+        if (items.length() == 0) {
+            return indented.indentedLine("<Array length=\"0\" />");
+        }
+
+        auto result = MutableString::stringWithFormat(indented.indentedLine("<Array length=\"%ld\">"), items.length());
+
+        for (auto&& item : items) {
+            result.append(Describer<T>::describeWithState(item, indented));
+        }
+
+        result.append(indented.indentedLine("</Array>"));
+
+        return {std::move(result)};
+    }
+};
+
+template <typename T, template <typename> class I>
+struct Describer<MutableArray<T, I>>
+{
+    static String describeWithState(MutableArray<T, I> items, const DescriberState& state)
+    {
+        auto indented = state.increaseIndent();
+        if (items.length() == 0) {
+            return indented.indentedLine("<MutableArray length=\"0\" />");
+        }
+        auto result = MutableString::stringWithFormat(indented.indentedLine("<MutableArray length=\"%ld\">"), items.length());
+        for (auto&& item : items) {
+            result.append(Describer<T>::describeWithState(item, indented));
+        }
+        result.append(indented.indentedLine("</MutableArray>"));
+
+        return {std::move(result)};
+    }
+};
+
 template <typename T>
 String describe(T item, const DescriberState& state)
 {
@@ -137,5 +185,4 @@ String describe(T item)
     const DescriberState& state{};
     return Describer<T>::describeWithState(item, state);
 }
-
 }

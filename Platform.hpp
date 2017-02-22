@@ -28,17 +28,17 @@ namespace NxA {
 
 class Blob;
 
-class Platform : private Uncopyable {
+class Platform : private Uncopyable
+{
 public:
     // -- Constructors & Desctructors
     Platform() = delete;
 
     // -- Constants
-    enum class Kind : uinteger32
-    {
-        OSX                 = 1,
-        Windows             = 2,
-        Unknown             = 23,
+    enum class Kind : uinteger32 {
+        OSX = 1,
+        Windows = 2,
+        Unknown = 23,
     };
 
     static constexpr Kind CurrentPlatform =
@@ -53,7 +53,7 @@ public:
 #endif
 #endif
 #else
-#if defined(__Win32__) || defined (_WIN32)
+#if defined(__Win32__) || defined(_WIN32)
         Kind::Windows
 #else
 #if defined(__APPLE__) && defined(__MACH__)
@@ -63,18 +63,18 @@ public:
 #endif
 #endif
 #endif
-    ;
+        ;
 
-    static constexpr uinteger32 LitleEndian   = 1;
-    static constexpr uinteger32 BigEndian     = 2;
-    static constexpr uinteger32 PdpEndian     = 3;
+    static constexpr uinteger32 LitleEndian = 1;
+    static constexpr uinteger32 BigEndian = 2;
+    static constexpr uinteger32 PdpEndian = 3;
     static constexpr uinteger32 UnknownEndian = 23;
 
-    static constexpr uinteger32 endianOrder =
-          ((1 & 0xFFFFFFFF) == Platform::LitleEndian) ? Platform::LitleEndian
-        : ((1 & 0xFFFFFFFF) == Platform::BigEndian) ? Platform::BigEndian
-        : ((1 & 0xFFFFFFFF) == Platform::PdpEndian) ? Platform::PdpEndian
-        : Platform::UnknownEndian;
+    static constexpr uinteger32 endianOrder = ((1 & 0xFFFFFFFF) == Platform::LitleEndian)
+                                                  ? Platform::LitleEndian
+                                                  : ((1 & 0xFFFFFFFF) == Platform::BigEndian)
+                                                        ? Platform::BigEndian
+                                                        : ((1 & 0xFFFFFFFF) == Platform::PdpEndian) ? Platform::PdpEndian : Platform::UnknownEndian;
 
     // -- Class Methods
     static float bigEndianFloatValueAt(const byte*);
@@ -86,5 +86,4 @@ public:
 
     static Blob convertEndiannessOfUInteger16From(const Blob&);
 };
-
 }

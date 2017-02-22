@@ -28,53 +28,62 @@
 
 // -- Macros
 
-#define NXA_EXCEPTION_NAMED_WITH_PARENT(exception_name, parent_class_name) \
-        class exception_name : public parent_class_name { \
-        public: \
-            explicit exception_name(const character* reason) : parent_class_name(reason) { } \
-            explicit exception_name(const Exception& other) : parent_class_name(other.what()) { } \
-            virtual ~exception_name() { }; \
-            static exception_name exceptionWith(const character* format, ...) \
-            { \
-                constexpr size_t formatStringBufferSize = 256; \
-                character buffer[formatStringBufferSize]; \
-                va_list args; \
-                va_start(args, format); \
-                vsnprintf(buffer, formatStringBufferSize, format, args); \
-                va_end(args); \
-                return exception_name(buffer); \
-            } \
-        };
+#define NXA_EXCEPTION_NAMED_WITH_PARENT(exception_name, parent_class_name)                                                                           \
+    class exception_name : public parent_class_name                                                                                                  \
+    {                                                                                                                                                \
+    public:                                                                                                                                          \
+        explicit exception_name(const character* reason) : parent_class_name(reason)                                                                 \
+        {                                                                                                                                            \
+        }                                                                                                                                            \
+        explicit exception_name(const Exception& other) : parent_class_name(other.what())                                                            \
+        {                                                                                                                                            \
+        }                                                                                                                                            \
+        virtual ~exception_name(){};                                                                                                                 \
+        static exception_name exceptionWith(const character* format, ...)                                                                            \
+        {                                                                                                                                            \
+            constexpr size_t formatStringBufferSize = 256;                                                                                           \
+            character buffer[formatStringBufferSize];                                                                                                \
+            va_list args;                                                                                                                            \
+            va_start(args, format);                                                                                                                  \
+            vsnprintf(buffer, formatStringBufferSize, format, args);                                                                                 \
+            va_end(args);                                                                                                                            \
+            return exception_name(buffer);                                                                                                           \
+        }                                                                                                                                            \
+    };
 
-#define NXA_SCOPE_EXIT \
-        _Pragma("clang diagnostic push") \
-        _Pragma("clang diagnostic ignored \"-Wshadow\"") \
-        BOOST_SCOPE_EXIT
+#define NXA_SCOPE_EXIT _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wshadow\"") BOOST_SCOPE_EXIT
 
-#define NXA_SCOPE_EXIT_END \
-        BOOST_SCOPE_EXIT_END \
-        _Pragma("clang diagnostic pop") \
+#define NXA_SCOPE_EXIT_END                                                                                                                           \
+    BOOST_SCOPE_EXIT_END                                                                                                                             \
+    _Pragma("clang diagnostic pop")
 
 // -- Public Interface
 
 namespace NxA {
 
-class String;
-
-class Exception : public std::runtime_error {
+class Exception : public std::runtime_error
+{
 public:
     // -- Constructors & Destructors
     Exception() = delete;
-    explicit Exception(const character* reason) : std::runtime_error(reason) { }
-    virtual ~Exception() { }
+    explicit Exception(const character* reason) : std::runtime_error(reason)
+    {
+    }
+    virtual ~Exception()
+    {
+    }
 };
 
-class FatalException : public std::logic_error {
+class FatalException : public std::logic_error
+{
 public:
     // -- Constructors & Destructors
     FatalException() = delete;
-    explicit FatalException(const character* reason) : std::logic_error(reason) { }
-    virtual ~FatalException() { }
+    explicit FatalException(const character* reason) : std::logic_error(reason)
+    {
+    }
+    virtual ~FatalException()
+    {
+    }
 };
-
 }

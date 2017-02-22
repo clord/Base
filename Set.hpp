@@ -36,7 +36,9 @@ namespace NxA {
 
 // -- Class
 
-template <class T> class Set {
+template <class T>
+class Set
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableSetInternal<T>);
 
     std::shared_ptr<Internal> internal = std::make_shared<Internal>();
@@ -46,12 +48,20 @@ template <class T> class Set {
 public:
     // -- Constructors/Destructors
     Set() = default;
-    Set(const Set<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    Set(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
+    Set(const Set<T>& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+    Set(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
+    {
+    }
     Set(Set&& other) = default;
     ~Set() = default;
-    Set(const MutableSet<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    Set(MutableSet<T>&& other) : internal{ std::move(other.internal) } { }
+    Set(const MutableSet<T>& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+    Set(MutableSet<T>&& other) : internal{std::move(other.internal)}
+    {
+    }
 
     // -- Class Methods
     static const character* staticClassName()
@@ -88,8 +98,16 @@ public:
     using iterator = const_iterator;
 
     // -- Operators
-    Set& operator=(const Set& other) { internal = std::make_shared<Internal>(*other.internal); return *this; }
-    Set& operator=(const MutableSet<T>& other) { internal = std::make_shared<Internal>(*other.internal); return *this; }
+    Set& operator=(const Set& other)
+    {
+        internal = std::make_shared<Internal>(*other.internal);
+        return *this;
+    }
+    Set& operator=(const MutableSet<T>& other)
+    {
+        internal = std::make_shared<Internal>(*other.internal);
+        return *this;
+    }
     bool operator==(const Set& other) const
     {
         if (internal == other.internal) {
@@ -167,5 +185,4 @@ public:
         return internal->description(state);
     }
 };
-
 }

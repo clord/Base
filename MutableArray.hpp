@@ -32,16 +32,16 @@
 
 namespace NxA {
 
-template <class T> class Array;
-
 // -- Class
 
-template <class T> class MutableArray {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableArrayInternal<T>);
+template <class T, template <typename> class Implementation>
+class MutableArray
+{
+    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(Implementation<T>);
 
     std::shared_ptr<Internal> internal;
 
-    friend Array<T>;
+    friend Array<T, Implementation>;
 
 public:
     // -- Class Methods
@@ -64,20 +64,34 @@ public:
 
         return buffer.get();
     }
-    
-    static uinteger32 staticClassHash()
-    {
-        static uinteger32 result = String::hashFor(MutableArray::staticClassName());
-        return result;
-    }
+
+    static uinteger32 staticClassHash();
 
     // -- Constructors/Destructors
-    MutableArray() : internal{ std::make_shared<Internal>() } { }
-    MutableArray(const MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableArray(MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableArray(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
+
+    MutableArray() : internal{std::make_shared<Internal>()}
+    {
+    }
+
+    MutableArray(const MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+
+    MutableArray(MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+
+    MutableArray(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
+    {
+    }
+
     MutableArray(MutableArray&&) = default;
-    MutableArray(const Array<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+
+    template <template <typename> class I>
+    MutableArray(const Array<T, I>& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+
     ~MutableArray() = default;
 
     // -- Iterators
@@ -85,8 +99,15 @@ public:
     using const_iterator = typename Internal::const_iterator;
 
     // -- Operators
+
     MutableArray& operator=(MutableArray&&) = default;
-    MutableArray& operator=(const MutableArray& other) { internal = std::make_shared<Internal>(*other.internal); return *this; }
+
+    MutableArray& operator=(const MutableArray& other)
+    {
+        internal = std::make_shared<Internal>(*other.internal);
+        return *this;
+    }
+
     bool operator==(const MutableArray& other) const
     {
         if (internal == other.internal) {
@@ -95,11 +116,14 @@ public:
 
         return *internal == *(other.internal);
     }
+
     bool operator!=(const MutableArray& other) const
     {
         return !this->operator==(other);
     }
-    bool operator==(const Array<T>& other) const
+
+    template <template <typename> class I>
+    bool operator==(const Array<T, I>& other) const
     {
         if (internal == other.internal) {
             return true;
@@ -107,52 +131,65 @@ public:
 
         return *internal == *(other.internal);
     }
-    bool operator!=(const Array<T>& other) const
+
+    template <template <typename> class I>
+    bool operator!=(const Array<T, I>& other) const
     {
         return !this->operator==(other);
     }
+
     const T& operator[](count index) const
     {
         return internal->operator[](index);
     }
+
     T& operator[](count index)
     {
         return internal->operator[](index);
     }
 
     // -- Instance Methods
+
     uinteger32 classHash() const
     {
         return MutableArray::staticClassHash();
     }
+
     const character* className() const
     {
         return MutableArray::staticClassName();
     }
+
     boolean classNameIs(const character* className) const
     {
         return !::strcmp(MutableArray::staticClassName(), className);
     }
+
     iterator begin() noexcept
     {
         return internal->begin();
     }
+
     const_iterator begin() const noexcept
     {
         return internal->begin();
     }
+
     iterator end() noexcept
     {
         return internal->end();
     }
+
     const_iterator end() const noexcept
     {
         return internal->end();
     }
+
     const_iterator cbegin() const noexcept
     {
         return internal->cbegin();
     }
+
     const_iterator cend() const noexcept
     {
         return internal->cend();
@@ -168,8 +205,8 @@ public:
         return internal->append(object);
     }
 
-    template<class... ConstructorArguments>
-    void emplaceAppend(ConstructorArguments &&... arguments)
+    template <class... ConstructorArguments>
+    void emplaceAppend(ConstructorArguments&&... arguments)
     {
         internal->emplaceAppend(std::forward<ConstructorArguments>(arguments)...);
     }
@@ -180,36 +217,45 @@ public:
             internal->append(object);
         }
     }
+
     void append(const MutableArray<T>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
-    void append(const Array<T>& objects)
+
+    template <template <typename> class I>
+    void append(const Array<T, I>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
-    void append(Array<T>& objects)
+
+    template <template <typename> class I>
+    void append(Array<T, I>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
+
     void insertAt(T object, const_iterator position)
     {
         internal->insertAt(object, position);
     }
+
     void remove(const T& object)
     {
         internal->remove(object);
     }
+
     void removeAll()
     {
         internal->removeAll();
     }
+
     count length() const
     {
         return internal->length();
@@ -219,43 +265,45 @@ public:
     {
         return internal->firstObject();
     }
+
     T& firstObject()
     {
         return internal->firstObject();
     }
+
     const T& lastObject() const
     {
         return internal->lastObject();
     }
+
     T& lastObject()
     {
         return internal->lastObject();
     }
+
     boolean contains(const T& object) const
     {
         return internal->contains(object);
     }
+
     iterator find(const T& object)
     {
         return internal->find(object);
     }
+
     const_iterator find(const T& object) const
     {
         return internal->find(object);
     }
+
     void removeObjectAt(const_iterator objectPosition)
     {
         internal->removeObjectAt(objectPosition);
     }
+
     void sort()
     {
         internal->sort();
     }
-
-    String description(const DescriberState& state) const
-    {
-        return internal->description(state);
-    }
 };
-
 }

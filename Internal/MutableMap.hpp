@@ -31,13 +31,22 @@ namespace NxA {
 
 // -- Class
 
-template <typename Tkey, typename Tvalue> struct MutableMapInternal : public Object::Internal, public std::map<const Tkey, Tvalue>
+template <typename Tkey, typename Tvalue>
+struct MutableMapInternal : public Object::Internal, public std::map<const Tkey, Tvalue>
 {
     // -- Constructors/Destructors
-    MutableMapInternal() : std::map<const Tkey, Tvalue>() { }
-    MutableMapInternal(const MutableMapInternal& other) : std::map<const Tkey, Tvalue>{ other } { }
-    MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{ other } { }
-    MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{ std::move(other) } { }
+    MutableMapInternal() : std::map<const Tkey, Tvalue>()
+    {
+    }
+    MutableMapInternal(const MutableMapInternal& other) : std::map<const Tkey, Tvalue>{other}
+    {
+    }
+    MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{other}
+    {
+    }
+    MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{std::move(other)}
+    {
+    }
     virtual ~MutableMapInternal() = default;
 
     // -- Iterators
@@ -86,7 +95,7 @@ template <typename Tkey, typename Tvalue> struct MutableMapInternal : public Obj
     const Optional<Tvalue> maybeValueForKey(const Tkey& key) const
     {
         const_iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
-        if(pos == this->cend()) {
+        if (pos == this->cend()) {
             return NxA::nothing;
         }
         return {pos->second};
@@ -146,5 +155,4 @@ template <typename Tkey, typename Tvalue> struct MutableMapInternal : public Obj
         return nullptr;
     }
 };
-
 }

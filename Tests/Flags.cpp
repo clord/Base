@@ -32,7 +32,7 @@ enum class TestFlag {
     SomeOthers,
     AndEvenMore,
 
-    LastFlag    // -- This is required for static assertions.
+    LastFlag // -- This is required for static assertions.
 };
 
 TEST(Base_Flags, BoolOperator_EmptyFlags_ReturnsFalse)

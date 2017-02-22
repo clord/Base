@@ -33,7 +33,8 @@ class Blob;
 
 NXA_EXCEPTION_NAMED_WITH_PARENT(FileError, Exception);
 
-class File : private Uncopyable {
+class File : private Uncopyable
+{
 public:
     // -- Constructors & Destructors
     File() = delete;
@@ -61,5 +62,4 @@ public:
     static timestamp modificationDateInSecondsSince1970ForFile(const String&);
     static void setModificationDateInSecondsSince1970ForFile(timestamp, const String&);
 };
-
 }

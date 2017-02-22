@@ -32,12 +32,17 @@ class Flags
     // -- Instance Variables
     uinteger64 flags;
 
-    static_assert(static_cast<integer>(FlagsEnum::LastFlag) < 64, "E must be an enum class smaller than 64 values with a LastFlag entry larger than any value in the enum");
+    static_assert(static_cast<integer>(FlagsEnum::LastFlag) < 64,
+                  "E must be an enum class smaller than 64 values with a LastFlag entry larger than any value in the enum");
 
 public:
     // -- Constructors/Destructors
-    Flags() : flags(0) { }
-    Flags(FlagsEnum value) : flags(1ULL << static_cast<integer>(value)) { }
+    Flags() : flags(0)
+    {
+    }
+    Flags(FlagsEnum value) : flags(1ULL << static_cast<integer>(value))
+    {
+    }
 
     // -- Instance Methods
     bool has(FlagsEnum value) const
@@ -81,5 +86,4 @@ public:
         return this->flags != 0;
     }
 };
-
 }

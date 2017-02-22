@@ -33,7 +33,7 @@ uinteger32 MutableStringInternal::hash() const
     return String::hashFor(this->asUTF8());
 }
 
-const character* MutableStringInternal::stringArgumentAsCharacter(std::string & cppstring)
+const character* MutableStringInternal::stringArgumentAsCharacter(std::string& cppstring)
 {
     return cppstring.c_str();
 }
@@ -108,7 +108,7 @@ count MutableStringInternal::indexOfLastOccurenceOf(const String& other) const
     return this->indexOfLastOccurenceOf(other.asUTF8());
 }
 
-count MutableStringInternal::indexOfLastOccurenceOf(const character*  other) const
+count MutableStringInternal::indexOfLastOccurenceOf(const character* other) const
 {
     NXA_ASSERT_NOT_NULL(other);
 
@@ -150,27 +150,14 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::stringWithUTF16AtA
     count length = size / 2;
     const integer16* characters = reinterpret_cast<const integer16*>(data);
 
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> convert;
-    return std::make_shared<MutableStringInternal>(convert.to_bytes(reinterpret_cast<const char16_t*>(characters), reinterpret_cast<const char16_t*>(characters + length)));
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+    return std::make_shared<MutableStringInternal>(
+        convert.to_bytes(reinterpret_cast<const char16_t*>(characters), reinterpret_cast<const char16_t*>(characters + length)));
 }
 
 std::shared_ptr<MutableStringInternal> MutableStringInternal::stringWithUTF16(const Blob& other)
 {
     return MutableStringInternal::stringWithUTF16AtAndSize(other.data(), other.size());
-}
-
-std::shared_ptr<MutableStringInternal> MutableStringInternal::stringByJoiningArrayWithString(const Array<String>& array, String join)
-{
-    std::string result;
-    auto i = array.begin();
-    while (i != array.end()) {
-        result.append(i->asStdString());
-        ++i;
-        if (i != array.end()) {
-            result.append(join.asStdString());
-        }
-    }
-    return std::make_shared<MutableStringInternal>(std::move(result));
 }
 
 uinteger32 MutableStringInternal::classHash() const
@@ -183,7 +170,6 @@ const character* MutableStringInternal::className() const
     NXA_ALOG("Illegal call.");
     return nullptr;
 }
-
 
 // -- Operators
 
@@ -202,12 +188,12 @@ count MutableStringInternal::length() const
     return this->size();
 }
 
-integer32 MutableStringInternal::compare(const char * other) const
+integer32 MutableStringInternal::compare(const char* other) const
 {
     return this->std::string::compare(other);
 }
 
-integer32 MutableStringInternal::compare(const MutableStringInternal & other) const
+integer32 MutableStringInternal::compare(const MutableStringInternal& other) const
 {
     return this->std::string::compare(static_cast<const std::string&>(other));
 }
@@ -234,11 +220,10 @@ const character* MutableStringInternal::asUTF8() const
 
 Blob MutableStringInternal::asUTF16() const
 {
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> convert;
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
     std::u16string u16 = convert.from_bytes(this->c_str());
 
-    auto newBlob = Blob::blobWithMemoryAndSize(reinterpret_cast<const byte*>(reinterpret_cast<const integer16*>(u16.c_str())),
-                                               u16.length() * 2);
+    auto newBlob = Blob::blobWithMemoryAndSize(reinterpret_cast<const byte*>(reinterpret_cast<const integer16*>(u16.c_str())), u16.length() * 2);
     if (Platform::endianOrder == Platform::LitleEndian) {
         newBlob = Platform::convertEndiannessOfUInteger16From(newBlob);
     }
@@ -263,7 +248,7 @@ void MutableStringInternal::append(const character other)
 
 std::shared_ptr<MutableStringInternal> MutableStringInternal::stringByAppending(const MutableStringInternal& other) const
 {
-    return { std::make_shared<MutableStringInternal>(*this + other) };
+    return {std::make_shared<MutableStringInternal>(*this + other)};
 }
 
 std::vector<String> MutableStringInternal::splitBySeparator(character separator) const
@@ -272,7 +257,7 @@ std::vector<String> MutableStringInternal::splitBySeparator(character separator)
     std::stringstream stream(this->asUTF8());
     std::string line;
 
-    while(getline(stream, line, separator)) {
+    while (getline(stream, line, separator)) {
         results.emplace_back(line);
     }
 
@@ -284,13 +269,13 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::utfSeek(count skip
     NXA_ASSERT_TRUE(skip >= 0);
 
     if (skip > this->length()) {
-        return { std::make_shared<MutableStringInternal>() };
+        return {std::make_shared<MutableStringInternal>()};
     }
 
     auto rawPointer = this->c_str();
     auto startPointer = utf8seek(rawPointer, this->length(), rawPointer, skip, SEEK_SET);
 
-    return { std::make_shared<MutableStringInternal>(startPointer) };
+    return {std::make_shared<MutableStringInternal>(startPointer)};
 }
 
 std::shared_ptr<MutableStringInternal> MutableStringInternal::subString(count start, count end) const
@@ -302,17 +287,17 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::subString(count st
     }
 
     if (start >= this->length()) {
-        return { std::make_shared<MutableStringInternal>() };
+        return {std::make_shared<MutableStringInternal>()};
     }
 
-    return { std::make_shared<MutableStringInternal>(this->substr(start, end - start)) };
+    return {std::make_shared<MutableStringInternal>(this->substr(start, end - start))};
 }
 
 std::shared_ptr<MutableStringInternal> MutableStringInternal::lowerCaseString() const
 {
     auto inputLength = this->length();
     if (!inputLength) {
-        return { std::make_shared<MutableStringInternal>() };
+        return {std::make_shared<MutableStringInternal>()};
     }
 
     auto input = this->c_str();
@@ -325,10 +310,10 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::lowerCaseString() 
     NXA_ASSERT_TRUE(errors == UTF8_ERR_NONE);
 
     if (convertedSize == 0) {
-        return { std::make_shared<MutableStringInternal>() };
+        return {std::make_shared<MutableStringInternal>()};
     }
 
-    return { std::make_shared<MutableStringInternal>(const_cast<const character*>(output), convertedSize) };
+    return {std::make_shared<MutableStringInternal>(const_cast<const character*>(output), convertedSize)};
 }
 
 std::shared_ptr<MutableStringInternal> MutableStringInternal::upperCaseString() const
@@ -344,10 +329,10 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::upperCaseString() 
     NXA_ASSERT_TRUE(errors == UTF8_ERR_NONE);
 
     if (convertedSize == 0) {
-        return { std::make_shared<MutableStringInternal>() };
+        return {std::make_shared<MutableStringInternal>()};
     }
 
-    return { std::make_shared<MutableStringInternal>(const_cast<const character*>(output), convertedSize) };
+    return {std::make_shared<MutableStringInternal>(const_cast<const character*>(output), convertedSize)};
 }
 
 boolean MutableStringInternal::hasPrefix(const MutableStringInternal& prefix) const
@@ -395,7 +380,6 @@ boolean MutableStringInternal::contains(const character* other) const
     return this->find(other) != std::string::npos;
 }
 
-
 std::shared_ptr<MutableStringInternal> MutableStringInternal::stringByFilteringNonPrintableCharactersIn(const String& other)
 {
     std::string filtered;
@@ -409,9 +393,8 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::stringByFilteringN
             continue;
         }
 
-
         filtered += value;
     }
 
-    return { std::make_shared<MutableStringInternal>(std::move(filtered)) };
+    return {std::make_shared<MutableStringInternal>(std::move(filtered))};
 }

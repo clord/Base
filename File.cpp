@@ -50,13 +50,15 @@ Blob File::readFileAt(const String& path)
 
     count fileSize = File::sizeOfFileAt(path);
     if (!fileSize) {
-        return { };
+        return {};
     }
 
     fileData = new byte[fileSize];
-    NXA_SCOPE_EXIT(fileData) {
+    NXA_SCOPE_EXIT(fileData)
+    {
         delete[] fileData;
-    } NXA_SCOPE_EXIT_END
+    }
+    NXA_SCOPE_EXIT_END
 
     if (!fileData) {
         throw FileError::exceptionWith("Error reading file at '%s'.", path.asUTF8());
@@ -64,9 +66,11 @@ Blob File::readFileAt(const String& path)
 
     std::fstream file(path.asUTF8(), std::ios::in | std::ios::binary);
     file.read(reinterpret_cast<character*>(fileData), fileSize);
-    NXA_SCOPE_EXIT(&file) {
+    NXA_SCOPE_EXIT(&file)
+    {
         file.close();
-    } NXA_SCOPE_EXIT_END
+    }
+    NXA_SCOPE_EXIT_END
 
     if (file.rdstate() & std::ifstream::failbit) {
         throw FileError::exceptionWith("Error reading file at '%s'.", path.asUTF8());
@@ -128,7 +132,7 @@ String File::joinPaths(const String& first, String second)
 
     result.append(second);
 
-    return { std::move(result) };
+    return {std::move(result)};
 }
 
 String File::removePrefixFromPath(const String& prefix, const String& path)
@@ -163,21 +167,22 @@ String File::extensionForFilePath(const String& path)
 
 boolean File::fileExistsAt(const String& path)
 {
-    if(!path.length()) {
+    if (!path.length()) {
         return false;
     }
 
     try {
         boost::filesystem::path boostPath(path.asUTF8());
         return (boost::filesystem::exists(boostPath) && boost::filesystem::is_regular_file(boostPath));
-    } catch (const boost::filesystem::filesystem_error &e) {
+    }
+    catch (const boost::filesystem::filesystem_error& e) {
         return false;
     }
 }
 
 boolean File::directoryExistsAt(const String& path)
 {
-    if(!path.length()) {
+    if (!path.length()) {
         return false;
     }
 
@@ -187,7 +192,7 @@ boolean File::directoryExistsAt(const String& path)
 
 count File::sizeOfFileAt(const String& path)
 {
-    if(!path.length()) {
+    if (!path.length()) {
         return 0;
     }
 
@@ -202,7 +207,8 @@ void File::createDirectoryAt(const String& path)
     try {
         boost::filesystem::path boostPath(path.asUTF8());
         boost::filesystem::create_directory(boostPath);
-    } catch (...) {
+    }
+    catch (...) {
         throw FileError::exceptionWith("Error creating directory at '%s'.", path.asUTF8());
     }
 }
@@ -226,7 +232,7 @@ Array<String> File::pathsForFilesInDirectory(const String& path)
         }
     }
 
-    return { std::move(pathsFound) };
+    return {std::move(pathsFound)};
 }
 
 String File::temporaryDirectoryPath()
@@ -261,7 +267,7 @@ String File::userHomeDirectoryPath()
         // -- Should return the path specified by the USERPROFILE environment variable.
         // -- or the path formed by concatenating the HOMEDRIVE and HOMEPATH environment variables.
         NXA_ALOG("Unsupported Platform.");
-        return { };
+        return {};
     }
 }
 
@@ -282,7 +288,8 @@ void File::setModificationDateInSecondsSince1970ForFile(timestamp modificationDa
         if (boost::filesystem::exists(boostPath)) {
             boost::filesystem::last_write_time(boostPath, modificationDateInSeconds);
         }
-    } catch (...) {
+    }
+    catch (...) {
         throw FileError::exceptionWith("Error setting modification date on '%s'.", path.asUTF8());
     }
 }

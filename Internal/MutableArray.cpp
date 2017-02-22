@@ -18,13 +18,3 @@
 //  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
-#pragma once
-
-#include <GoogleMock/GoogleMock.h>
-
-#define NXA_CONTAINS_TEST_SUITE_NAMED(name) void* name;
-
-#define NXA_USING_TEST_SUITE_NAMED(name) extern void* name;
-
-#define NXA_USE_TEST_SUITES_FOR_MODULE(name) void* UseCppTestFor##name[]

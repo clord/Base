@@ -30,12 +30,13 @@ struct MutableBlobInternal;
 class String;
 class Blob;
 
-class MutableBlob {
+class MutableBlob
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableBlobInternal);
     NXA_GENERATED_OBJECT_METHODS_DECLARATIONS_FOR(MutableBlob);
 
     friend Blob;
-    
+
 public:
     // -- Constructors/Destructors
     MutableBlob();
@@ -49,8 +50,8 @@ public:
     static MutableBlob blobWithStringWithoutTerminator(const String&);
 
     // -- Operators
-    const byte& operator[] (integer) const;
-    byte& operator[] (integer index);
+    const byte& operator[](integer) const;
+    byte& operator[](integer index);
 
     // -- Instance Methods
     count size() const;
@@ -72,5 +73,4 @@ public:
 
     void padToAlignment(integer32);
 };
-
 }

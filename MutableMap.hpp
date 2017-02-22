@@ -30,11 +30,14 @@
 
 namespace NxA {
 
-template <typename Tkey, typename Tvalue> class Map;
+template <typename Tkey, typename Tvalue>
+class Map;
 
 // -- Class
 
-template <typename Tkey, typename Tvalue> class MutableMap {
+template <typename Tkey, typename Tvalue>
+class MutableMap
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableMapInternal<const Tkey, Tvalue>);
 
     std::shared_ptr<MutableMapInternal<const Tkey, Tvalue>> internal;
@@ -43,13 +46,21 @@ template <typename Tkey, typename Tvalue> class MutableMap {
 
 public:
     // -- Constructors/Destructors
-    MutableMap() : internal{ std::make_shared<MutableMapInternal<const Tkey, Tvalue>>() } { }
-    MutableMap(const MutableMap& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableMap(MutableMap& other) : internal{ other.internal } { }
+    MutableMap() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()}
+    {
+    }
+    MutableMap(const MutableMap& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+    MutableMap(MutableMap& other) : internal{other.internal}
+    {
+    }
     MutableMap(MutableMap&&) = default;
-    MutableMap(const Map<Tkey, Tvalue>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    MutableMap(const Map<Tkey, Tvalue>& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
     ~MutableMap() = default;
-        
+
     // -- Class Methods
     static const character* staticClassName()
     {
@@ -191,5 +202,4 @@ public:
         return internal->removeAll();
     }
 };
-
 }

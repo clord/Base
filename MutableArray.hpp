@@ -55,31 +55,20 @@ class MutableArray
     friend Implementation<T>;
 
 public:
-
     // -- Constructors/Destructors
 
-    MutableArray() : internal{std::make_shared<Internal>()}
-    {
-    }
+    MutableArray() : internal{std::make_shared<Internal>()} { }
 
-    MutableArray(const MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
+    MutableArray(const MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)} { }
 
-    MutableArray(MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
+    MutableArray(MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)} { }
 
-    MutableArray(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
-    {
-    }
+    MutableArray(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
 
     MutableArray(MutableArray&&) = default;
 
     template <template <typename> class I>
-    MutableArray(const Array<T, I>& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
+    MutableArray(const Array<T, I>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
 
     ~MutableArray() = default;
 
@@ -113,7 +102,7 @@ public:
     }
 
     // -- Iterators
-    
+
     using iterator = typename Internal::iterator;
     using const_iterator = typename Internal::const_iterator;
 

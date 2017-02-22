@@ -28,10 +28,8 @@ struct Object
     struct Internal
     {
         // -- Constructors/Destructors
-        Internal()
-        {
-        }
-        
+        Internal() { }
+
         virtual ~Internal() = default;
 
         // -- Instance Methods

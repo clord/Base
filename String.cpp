@@ -72,9 +72,7 @@ inline NxA::uinteger32 SBox(const NxA::byte* key, NxA::count len, NxA::uinteger3
 
 // -- Constructors/Destructors
 
-String::String() : internal{std::make_shared<Internal>()}
-{
-}
+String::String() : internal{std::make_shared<Internal>()} { }
 
 String::String(const String& other) = default;
 
@@ -82,21 +80,13 @@ String::String(String&& other) = default;
 
 String::String(String&) = default;
 
-String::String(const std::string& other) : internal{std::make_shared<Internal>(other)}
-{
-}
+String::String(const std::string& other) : internal{std::make_shared<Internal>(other)} { }
 
-String::String(const std::string&& other) : internal{std::make_shared<Internal>(std::move(other))}
-{
-}
+String::String(const std::string&& other) : internal{std::make_shared<Internal>(std::move(other))} { }
 
-String::String(const character* other, size_t size) : internal{std::make_shared<Internal>(other, size)}
-{
-}
+String::String(const character* other, size_t size) : internal{std::make_shared<Internal>(other, size)} { }
 
-String::String(const MutableString& other) : internal{std::make_shared<Internal>(*std::static_pointer_cast<std::string>(other.internal))}
-{
-}
+String::String(const MutableString& other) : internal{std::make_shared<Internal>(*std::static_pointer_cast<std::string>(other.internal))} { }
 
 String::String(MutableString&& other) : internal{std::move(other.internal)}
 {
@@ -104,9 +94,7 @@ String::String(MutableString&& other) : internal{std::move(other.internal)}
     NXA_ASSERT_TRUE(internal.use_count() == 1);
 }
 
-String::String(std::shared_ptr<Internal>&& other) : internal{std::move(other)}
-{
-}
+String::String(std::shared_ptr<Internal>&& other) : internal{std::move(other)} { }
 
 String::~String() = default;
 

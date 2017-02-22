@@ -45,17 +45,13 @@ class Map
 
 public:
     // -- Constructors/Destructors
-    Map() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()}
-    {
-    }
+    Map() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()} { }
 
     Map(const Map&) = default;
     Map(Map&&) = default;
 
-    Map(MutableMap<Tkey, Tvalue>&& other) : internal{std::move(other.internal)}
-    {
-    }
-    
+    Map(MutableMap<Tkey, Tvalue>&& other) : internal{std::move(other.internal)} { }
+
     ~Map() = default;
 
     // -- Class Methods
@@ -187,7 +183,7 @@ public:
     {
         return internal->valueForKey(key);
     }
-    
+
     boolean containsValueForKey(const Tkey& key) const
     {
         return internal->containsValueForKey(key);

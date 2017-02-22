@@ -51,29 +51,20 @@ class MutableSet
     friend class Set<T>;
 
 public:
-
     // -- Constructors/Destructors
 
     MutableSet() = default;
 
-    MutableSet(const MutableSet& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
+    MutableSet(const MutableSet& other) : internal{std::make_shared<Internal>(*other.internal)} { }
 
-    MutableSet(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
-    {
-    }
+    MutableSet(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
 
     MutableSet(MutableSet&& other) = default;
     ~MutableSet() = default;
 
-    MutableSet(const Set<T>& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
+    MutableSet(const Set<T>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
 
-    MutableSet(Set<T>&& other) : internal{std::move(other.internal)}
-    {
-    }
+    MutableSet(Set<T>&& other) : internal{std::move(other.internal)} { }
 
     // -- Class Methods
     static const character* staticClassName()
@@ -262,7 +253,7 @@ public:
     {
         return internal->find(object);
     }
-    
+
     const_iterator find(const T& object) const
     {
         return internal->find(object);

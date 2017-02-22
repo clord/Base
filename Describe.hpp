@@ -31,14 +31,10 @@ class DescriberState
 {
     int indent_ = -1;
 
-    DescriberState(int indent) : indent_{indent}
-    {
-    }
+    DescriberState(int indent) : indent_{indent} { }
 
 public:
-    DescriberState() : indent_{0}
-    {
-    }
+    DescriberState() : indent_{0} { }
 
     DescriberState increaseIndent() const
     {
@@ -174,7 +170,7 @@ struct Describer<MutableArray<T, I>>
         for (auto&& item : items) {
             result.append(Describer<T>::describeWithState(item, indented));
         }
-        
+
         result.append(indented.indentedLine("</MutableArray>"));
 
         return {std::move(result)};

@@ -37,12 +37,9 @@ class Flags
 
 public:
     // -- Constructors/Destructors
-    Flags() : flags(0)
-    {
-    }
-    Flags(FlagsEnum value) : flags(1ULL << static_cast<integer>(value))
-    {
-    }
+    Flags() : flags(0) { }
+
+    Flags(FlagsEnum value) : flags(1ULL << static_cast<integer>(value)) { }
 
     // -- Instance Methods
     bool has(FlagsEnum value) const

@@ -43,29 +43,18 @@ String descriptionOfObjectsInArray(const MutableArrayInternal<T>&);
 template <class T>
 struct MutableArrayInternal : public Object::Internal, public std::vector<T>
 {
-
     // -- Constructors/Destructors
 
-    MutableArrayInternal() : std::vector<T>()
-    {
-    }
+    MutableArrayInternal() : std::vector<T>() { }
 
-    MutableArrayInternal(const MutableArrayInternal& other) : std::vector<T>{other}
-    {
-    }
+    MutableArrayInternal(const MutableArrayInternal& other) : std::vector<T>{other} { }
 
-    MutableArrayInternal(std::vector<T>&& other) : std::vector<T>{std::move(other)}
-    {
-    }
+    MutableArrayInternal(std::vector<T>&& other) : std::vector<T>{std::move(other)} { }
 
-    MutableArrayInternal(std::initializer_list<T> other) : std::vector<T>{other.begin(), other.end()}
-    {
-    }
+    MutableArrayInternal(std::initializer_list<T> other) : std::vector<T>{other.begin(), other.end()} { }
 
     template <typename V, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
-    MutableArrayInternal(const MutableArrayInternal<V>& other) : std::vector<T>{other.begin(), other.end()}
-    {
-    }
+    MutableArrayInternal(const MutableArrayInternal<V>& other) : std::vector<T>{other.begin(), other.end()} { }
 
     virtual ~MutableArrayInternal() = default;
 
@@ -224,7 +213,7 @@ struct MutableArrayInternal : public Object::Internal, public std::vector<T>
         NXA_ALOG("Illegal call.");
         return 0;
     }
-    
+
     const character* className() const override
     {
         NXA_ALOG("Illegal call.");

@@ -49,9 +49,7 @@ public:
 
     // -- Provide a statically-sized character constant, which saves the runtime from computing the length.
     template <count size>
-    String(const character (&chars)[size]) : String{chars, size - 1}
-    {
-    }
+    String(const character (&chars)[size]) : String{chars, size - 1} { }
 
     // -- Factory Methods
     template <typename... FormatArguments>

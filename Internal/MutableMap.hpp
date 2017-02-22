@@ -34,24 +34,15 @@ namespace NxA {
 template <typename Tkey, typename Tvalue>
 struct MutableMapInternal : public Object::Internal, public std::map<const Tkey, Tvalue>
 {
-
     // -- Constructors/Destructors
 
-    MutableMapInternal() : std::map<const Tkey, Tvalue>()
-    {
-    }
+    MutableMapInternal() : std::map<const Tkey, Tvalue>() { }
 
-    MutableMapInternal(const MutableMapInternal& other) : std::map<const Tkey, Tvalue>{other}
-    {
-    }
+    MutableMapInternal(const MutableMapInternal& other) : std::map<const Tkey, Tvalue>{other} { }
 
-    MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{other}
-    {
-    }
+    MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{other} { }
 
-    MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{std::move(other)}
-    {
-    }
+    MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{std::move(other)} { }
 
     virtual ~MutableMapInternal() = default;
 
@@ -170,7 +161,7 @@ struct MutableMapInternal : public Object::Internal, public std::map<const Tkey,
         NXA_ALOG("Illegal call.");
         return 0;
     }
-    
+
     const character* className() const override
     {
         NXA_ALOG("Illegal call.");

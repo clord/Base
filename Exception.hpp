@@ -66,12 +66,8 @@ class Exception : public std::runtime_error
 public:
     // -- Constructors & Destructors
     Exception() = delete;
-    explicit Exception(const character* reason) : std::runtime_error(reason)
-    {
-    }
-    virtual ~Exception()
-    {
-    }
+    explicit Exception(const character* reason) : std::runtime_error(reason) { }
+    virtual ~Exception() { }
 };
 
 class FatalException : public std::logic_error
@@ -79,11 +75,7 @@ class FatalException : public std::logic_error
 public:
     // -- Constructors & Destructors
     FatalException() = delete;
-    explicit FatalException(const character* reason) : std::logic_error(reason)
-    {
-    }
-    virtual ~FatalException()
-    {
-    }
+    explicit FatalException(const character* reason) : std::logic_error(reason) { }
+    virtual ~FatalException() { }
 };
 }

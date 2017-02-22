@@ -49,24 +49,16 @@ public:
     // -- Constructors/Destructors
     Set() = default;
 
-    Set(const Set<T>& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
+    Set(const Set<T>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
 
-    Set(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
-    {
-    }
+    Set(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
 
     Set(Set&& other) = default;
     ~Set() = default;
 
-    Set(const MutableSet<T>& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
+    Set(const MutableSet<T>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
 
-    Set(MutableSet<T>&& other) : internal{std::move(other.internal)}
-    {
-    }
+    Set(MutableSet<T>&& other) : internal{std::move(other.internal)} { }
 
     // -- Class Methods
     static const character* staticClassName()

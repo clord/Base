@@ -48,7 +48,6 @@ String descriptionOfObjectsInSet(const MutableSetInternal<T>&);
 template <class T>
 struct MutableSetInternal : public Object::Internal, public std::set<T>
 {
-
     // -- Constructors/Destructors
 
     MutableSetInternal() = default;
@@ -187,7 +186,7 @@ struct MutableSetInternal : public Object::Internal, public std::set<T>
         NXA_ALOG("Illegal call.");
         return 0;
     }
-    
+
     const character* className() const override
     {
         NXA_ALOG("Illegal call.");

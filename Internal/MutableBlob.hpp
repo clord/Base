@@ -38,20 +38,13 @@ void MurmurHash3_x64_128(const void*, const int, const uint32_t, void*);
 
 struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
 {
-
     // -- Constructors/Destructors
 
-    MutableBlobInternal() : std::vector<byte>()
-    {
-    }
+    MutableBlobInternal() : std::vector<byte>() { }
 
-    MutableBlobInternal(const std::vector<byte>& other) : std::vector<byte>{other}
-    {
-    }
+    MutableBlobInternal(const std::vector<byte>& other) : std::vector<byte>{other} { }
 
-    MutableBlobInternal(std::vector<byte>&& other) : std::vector<byte>{std::move(other)}
-    {
-    }
+    MutableBlobInternal(std::vector<byte>&& other) : std::vector<byte>{std::move(other)} { }
 
     virtual ~MutableBlobInternal() = default;
 
@@ -189,7 +182,7 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
         NXA_ALOG("Illegal call.");
         return 0;
     }
-    
+
     const character* className() const override
     {
         NXA_ALOG("Illegal call.");

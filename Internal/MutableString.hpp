@@ -50,20 +50,13 @@ class MutableString;
 
 struct MutableStringInternal : public Object::Internal, public std::string
 {
-
     // -- Constructors/Destructors
 
-    MutableStringInternal() : std::string{"", 0}
-    {
-    }
+    MutableStringInternal() : std::string{"", 0} { }
 
-    MutableStringInternal(const std::string& other) : std::string{other}
-    {
-    }
+    MutableStringInternal(const std::string& other) : std::string{other} { }
 
-    MutableStringInternal(std::string&& other) : std::string{std::move(other)}
-    {
-    }
+    MutableStringInternal(std::string&& other) : std::string{std::move(other)} { }
 
     MutableStringInternal(const character* other, count count) : std::string{other, count}
     {
@@ -124,7 +117,7 @@ struct MutableStringInternal : public Object::Internal, public std::string
     // -- Operators
 
     bool operator==(const character* other) const;
-    
+
     bool operator==(const MutableStringInternal& other) const;
 
     // -- Instance Methods

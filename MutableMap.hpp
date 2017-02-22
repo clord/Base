@@ -45,26 +45,17 @@ class MutableMap
     friend Map<const Tkey, Tvalue>;
 
 public:
-
     // -- Constructors/Destructors
 
-    MutableMap() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()}
-    {
-    }
+    MutableMap() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()} { }
 
-    MutableMap(const MutableMap& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
+    MutableMap(const MutableMap& other) : internal{std::make_shared<Internal>(*other.internal)} { }
 
-    MutableMap(MutableMap& other) : internal{other.internal}
-    {
-    }
+    MutableMap(MutableMap& other) : internal{other.internal} { }
 
     MutableMap(MutableMap&&) = default;
 
-    MutableMap(const Map<Tkey, Tvalue>& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
+    MutableMap(const Map<Tkey, Tvalue>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
 
     ~MutableMap() = default;
 
@@ -225,7 +216,7 @@ public:
     {
         return internal->removeValueForKey(key);
     }
-    
+
     void removeAll()
     {
         return internal->removeAll();

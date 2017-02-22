@@ -39,9 +39,7 @@ namespace NxA {
 
 struct BadVariantAccess : public FatalException
 {
-    explicit BadVariantAccess(const character* what_arg) : FatalException{what_arg}
-    {
-    }
+    explicit BadVariantAccess(const character* what_arg) : FatalException{what_arg} { }
 };
 
 namespace VariantDetail {

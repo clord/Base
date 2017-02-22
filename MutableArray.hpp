@@ -41,16 +41,23 @@ class MutableArray
 
     std::shared_ptr<Internal> internal;
 
+    friend Implementation<T>;
     friend Array<T, Implementation>;
 
 public:
+
     // -- Class Methods
+
     static const character* staticClassName()
     {
-        static std::mutex m;
         static std::unique_ptr<character[]> buffer;
+        if (buffer) {
+            // -- This is the fast lock-free path for the common case (unique_ptr engaged)
+            return buffer.get();
+        }
 
-        m.lock();
+        static std::mutex m;
+        std::lock_guard<std::mutex> guard(m);
 
         if (!buffer.get()) {
             const character* format = "MutableArray<%s>";
@@ -59,8 +66,6 @@ public:
             buffer = std::make_unique<character[]>(needed);
             snprintf(buffer.get(), needed, format, valueTypeName);
         }
-
-        m.unlock();
 
         return buffer.get();
     }
@@ -95,6 +100,7 @@ public:
     ~MutableArray() = default;
 
     // -- Iterators
+    
     using iterator = typename Internal::iterator;
     using const_iterator = typename Internal::const_iterator;
 

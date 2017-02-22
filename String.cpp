@@ -20,6 +20,15 @@
 //
 
 #include "Base/Types.hpp"
+#include "Base/String.hpp"
+#include "Base/Array.hpp"
+#include "Base/Internal/MutableString.hpp"
+#include "Base/MutableString.hpp"
+#include "Base/Exception.hpp"
+#include "Base/Platform.hpp"
+#include "Base/Assert.hpp"
+
+using namespace NxA;
 
 // -- SBox Hash Implementation
 
@@ -60,16 +69,6 @@ inline NxA::uinteger32 SBox(const NxA::byte* key, NxA::count len, NxA::uinteger3
     h += (h >> 22) ^ (h << 4);
     return h;
 }
-
-#include "Base/String.hpp"
-#include "Base/Array.hpp"
-#include "Base/Internal/MutableString.hpp"
-#include "Base/MutableString.hpp"
-#include "Base/Exception.hpp"
-#include "Base/Platform.hpp"
-#include "Base/Assert.hpp"
-
-using namespace NxA;
 
 // -- Constructors/Destructors
 

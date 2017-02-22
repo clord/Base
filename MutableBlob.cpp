@@ -96,6 +96,7 @@ byte& MutableBlob::operator[](integer index)
 {
     return internal->operator[](index);
 }
+
 const byte& MutableBlob::operator[](integer index) const
 {
     return internal->operator[](index);
@@ -107,11 +108,13 @@ uinteger32 MutableBlob::classHash() const
 {
     return MutableBlob::staticClassHash();
 }
+
 uinteger32 MutableBlob::staticClassHash()
 {
     static uinteger32 result = String::hashFor(MutableBlob::staticClassName());
     return result;
 }
+
 const character* MutableBlob::className() const
 {
     return MutableBlob::staticClassName();

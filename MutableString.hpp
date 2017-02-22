@@ -56,6 +56,7 @@ public:
     explicit MutableString(std::string&&);
 
     // -- Provide a statically-sized character constant, which saves the runtime from computing the length.
+
     template <count size>
     MutableString(const character (&chars)[size]) : MutableString{chars, size - 1}
     {
@@ -82,29 +83,40 @@ public:
     static MutableString stringByJoiningArrayWithString(const Array<String, Implementation>&, String);
 
     // -- Operators
+
     bool operator==(const String& other) const;
+
     bool operator!=(const String& other) const
     {
         return !this->operator==(other);
     }
+
     bool operator==(const character*) const;
+
     bool operator!=(const character* other) const
     {
         return !this->operator==(other);
     }
 
     // -- Instance Methods
+
     count length() const;
+
     boolean isEmpty() const
     {
         return this->length() == 0;
     }
+
     uinteger32 hash() const;
+
     integer integerValue() const;
+
     decimal3 decimalValue() const;
 
     const std::string& asStdString() const;
+
     const character* asUTF8() const;
+
     Blob asUTF16() const;
 
     void append(const String&);

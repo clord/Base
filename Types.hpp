@@ -58,15 +58,20 @@ using decimal3 = dec::decimal<3>;
 using decimal = decimal3;
 
 // -- Provide an optional type based on std::experimental::optional. TODO: change to std::optional in C++1y
+
 template <typename T>
 using Optional = std::experimental::optional<T>;
+
 using NullOptional = std::experimental::nullopt_t;
+
 constexpr NullOptional nothing{0};
+
 template <typename T>
 inline constexpr Optional<typename std::decay<T>::type> makeOptional(T&& v)
 {
     return Optional<typename std::decay<T>::type>(std::forward<T>(v));
 }
+
 template <typename T, typename Function>
 auto maybe(const NxA::Optional<T>& arg, Function&& f) -> NxA::Optional<typename std::result_of<Function(T)>::type>
 {

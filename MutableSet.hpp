@@ -37,6 +37,7 @@ namespace NxA {
 
 template <typename T>
 class Set;
+
 template <typename T, template <typename> class>
 class Array;
 
@@ -50,19 +51,26 @@ class MutableSet
     friend class Set<T>;
 
 public:
+
     // -- Constructors/Destructors
+
     MutableSet() = default;
+
     MutableSet(const MutableSet& other) : internal{std::make_shared<Internal>(*other.internal)}
     {
     }
+
     MutableSet(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
     {
     }
+
     MutableSet(MutableSet&& other) = default;
     ~MutableSet() = default;
+
     MutableSet(const Set<T>& other) : internal{std::make_shared<Internal>(*other.internal)}
     {
     }
+
     MutableSet(Set<T>&& other) : internal{std::move(other.internal)}
     {
     }
@@ -103,11 +111,13 @@ public:
 
     // -- Operators
     MutableSet& operator=(MutableSet&& other) = default;
+
     MutableSet& operator=(const MutableSet& other)
     {
         internal = std::make_shared<Internal>(*other.internal);
         return *this;
     }
+
     bool operator==(const MutableSet& other) const
     {
         if (internal == other.internal) {
@@ -116,6 +126,7 @@ public:
 
         return *internal == *(other.internal);
     }
+
     bool operator!=(const MutableSet& other) const
     {
         return !this->operator==(other);
@@ -128,44 +139,54 @@ public:
 
         return *internal == *(other.internal);
     }
+
     bool operator!=(const Set<T>& other) const
     {
         return !this->operator==(other);
     }
 
     // -- Instance Methods
+
     uinteger32 classHash() const
     {
         return MutableSet::staticClassHash();
     }
+
     const character* className() const
     {
         return MutableSet::staticClassName();
     }
+
     boolean classNameIs(const character* className) const
     {
         return !::strcmp(MutableSet::staticClassName(), className);
     }
+
     iterator begin() noexcept
     {
         return internal->begin();
     }
+
     const_iterator begin() const noexcept
     {
         return internal->begin();
     }
+
     iterator end() noexcept
     {
         return internal->end();
     }
+
     const_iterator end() const noexcept
     {
         return internal->end();
     }
+
     const_iterator cbegin() const noexcept
     {
         return internal->cbegin();
     }
+
     const_iterator cend() const noexcept
     {
         return internal->cend();
@@ -198,24 +219,28 @@ public:
             internal->append(object);
         }
     }
+
     void append(const MutableSet<T>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
+
     void append(const Set<T>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
+
     void append(Set<T>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
+
     void append(Array<T>& objects)
     {
         for (auto& object : objects) {
@@ -227,14 +252,17 @@ public:
     {
         return internal->anyObject();
     }
+
     boolean contains(const T& object) const
     {
         return internal->contains(object);
     }
+
     iterator find(const T& object)
     {
         return internal->find(object);
     }
+    
     const_iterator find(const T& object) const
     {
         return internal->find(object);

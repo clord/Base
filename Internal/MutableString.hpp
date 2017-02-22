@@ -122,10 +122,13 @@ struct MutableStringInternal : public Object::Internal, public std::string
     }
 
     // -- Operators
+
     bool operator==(const character* other) const;
+    
     bool operator==(const MutableStringInternal& other) const;
 
     // -- Instance Methods
+
     count length() const;
 
     integer32 compare(const char* other) const;

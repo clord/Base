@@ -43,10 +43,10 @@ class Array
 
     std::shared_ptr<Internal> internal;
 
-    template <typename V, template <typename> class VImplementation>
+    template <typename V, template <typename> class I>
     friend class MutableArray;
 
-    template <typename V, template <typename> class VImplementation>
+    template <typename V, template <typename> class I>
     friend class Array;
 
 public:
@@ -92,6 +92,7 @@ public:
     }
 
     // -- Class Methods
+
     static const character* staticClassName()
     {
         static std::unique_ptr<character[]> buffer;
@@ -270,8 +271,7 @@ public:
 
     static uinteger32 staticClassHash()
     {
-        static uinteger32 result = static_cast<uinteger32>(std::hash<std::string>{}(std::string{Array::staticClassName()}));
-        return result;
+        return static_cast<uinteger32>(std::hash<std::string>{}(std::string{Array::staticClassName()}));
     }
 };
 }

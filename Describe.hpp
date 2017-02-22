@@ -55,8 +55,10 @@ template <typename T>
 class HasDescriptionMember
 {
     static const DescriberState& state;
+
     template <typename U>
     static constexpr auto test(int) -> decltype(std::declval<U>().description(state), std::true_type{});
+
     template <typename>
     static constexpr std::false_type test(...);
 
@@ -105,6 +107,7 @@ struct Describer<std::shared_ptr<T>>
             auto innerState = state.increaseIndent();
             return innerState.indentedLine("<shared_ptr::nullptr />");
         }
+
         return Describer<T>::describeWithState(*item, state);
     }
 };
@@ -127,6 +130,7 @@ struct Describer<Optional<T>>
             auto innerState = state.increaseIndent();
             return innerState.indentedLine("<Optional::Empty />");
         }
+
         return Describer<T>::describeWithState(*item, state);
     }
 };
@@ -160,13 +164,17 @@ struct Describer<MutableArray<T, I>>
     static String describeWithState(MutableArray<T, I> items, const DescriberState& state)
     {
         auto indented = state.increaseIndent();
+        
         if (items.length() == 0) {
             return indented.indentedLine("<MutableArray length=\"0\" />");
         }
+
         auto result = MutableString::stringWithFormat(indented.indentedLine("<MutableArray length=\"%ld\">"), items.length());
+
         for (auto&& item : items) {
             result.append(Describer<T>::describeWithState(item, indented));
         }
+        
         result.append(indented.indentedLine("</MutableArray>"));
 
         return {std::move(result)};

@@ -45,29 +45,41 @@ class MutableMap
     friend Map<const Tkey, Tvalue>;
 
 public:
+
     // -- Constructors/Destructors
+
     MutableMap() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()}
     {
     }
+
     MutableMap(const MutableMap& other) : internal{std::make_shared<Internal>(*other.internal)}
     {
     }
+
     MutableMap(MutableMap& other) : internal{other.internal}
     {
     }
+
     MutableMap(MutableMap&&) = default;
+
     MutableMap(const Map<Tkey, Tvalue>& other) : internal{std::make_shared<Internal>(*other.internal)}
     {
     }
+
     ~MutableMap() = default;
 
     // -- Class Methods
+
     static const character* staticClassName()
     {
-        static std::mutex m;
         static std::unique_ptr<character[]> buffer;
+        if (buffer) {
+            // -- This is the fast lock-free path for the common case (unique_ptr engaged)
+            return buffer.get();
+        }
 
-        m.lock();
+        static std::mutex m;
+        std::lock_guard<std::mutex> guard(m);
 
         if (!buffer.get()) {
             const character* format = "MutableMap<%s, %s>";
@@ -78,10 +90,9 @@ public:
             snprintf(buffer.get(), needed, format, keyTypeName, valueTypeName);
         }
 
-        m.unlock();
-
         return buffer.get();
     }
+
     static uinteger32 staticClassHash()
     {
         static uinteger32 value = String::hashFor(MutableMap::staticClassName());
@@ -95,6 +106,7 @@ public:
     // -- Operators
     MutableMap& operator=(MutableMap&&) = default;
     MutableMap& operator=(const MutableMap& other) = default;
+
     bool operator==(const MutableMap& other) const
     {
         if (internal == other.internal) {
@@ -103,6 +115,7 @@ public:
 
         return *internal == *(other.internal);
     }
+
     bool operator==(const Map<Tkey, Tvalue>& other) const
     {
         if (internal == other.internal) {
@@ -116,24 +129,29 @@ public:
     {
         return internal->operator[](key);
     }
+
     Tvalue& operator[](const Tkey& key)
     {
         return internal->operator[](key);
     }
+
     Tvalue& operator[](Tkey&& key)
     {
         return internal->operator[](std::move(key));
     }
 
     // -- Instance Methods
+
     uinteger32 classHash() const
     {
         return MutableMap::staticClassHash();
     }
+
     const character* className() const
     {
         return MutableMap::staticClassName();
     }
+
     boolean classNameIs(const character* className) const
     {
         return !::strcmp(MutableMap::staticClassName(), className);
@@ -143,18 +161,22 @@ public:
     {
         return internal->begin();
     }
+
     const_iterator begin() const
     {
         return internal->begin();
     }
+
     const_iterator cbegin() const
     {
         return internal->cbegin();
     }
+
     iterator end()
     {
         return internal->end();
     }
+
     const_iterator end() const
     {
         return internal->end();
@@ -173,30 +195,37 @@ public:
     {
         internal->setValueForKey(value, key);
     }
+
     Tvalue& valueForKey(const Tkey& key)
     {
         return internal->valueForKey(key);
     }
+
     const Tvalue& valueForKey(const Tkey& key) const
     {
         return internal->valueForKey(key);
     }
+
     Optional<Tvalue> maybeValueForKey(const Tkey& key) const
     {
         return internal->maybeValueForKey(key);
     }
+
     boolean containsValueForKey(const Tkey& key) const
     {
         return internal->containsValueForKey(key);
     }
+
     void removeValueAt(const_iterator position)
     {
         return internal->removeValueAt(position);
     }
+
     void removeValueForKey(const Tkey& key)
     {
         return internal->removeValueForKey(key);
     }
+    
     void removeAll()
     {
         return internal->removeAll();

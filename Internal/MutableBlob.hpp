@@ -38,32 +38,43 @@ void MurmurHash3_x64_128(const void*, const int, const uint32_t, void*);
 
 struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
 {
+
     // -- Constructors/Destructors
+
     MutableBlobInternal() : std::vector<byte>()
     {
     }
+
     MutableBlobInternal(const std::vector<byte>& other) : std::vector<byte>{other}
     {
     }
+
     MutableBlobInternal(std::vector<byte>&& other) : std::vector<byte>{std::move(other)}
     {
     }
+
     virtual ~MutableBlobInternal() = default;
 
     // -- Factory Methods
+
     static std::shared_ptr<MutableBlobInternal> blobWithCapacity(count size)
     {
         return std::make_shared<MutableBlobInternal>(std::vector<byte>(size));
     }
+
     static std::shared_ptr<MutableBlobInternal> blobWithMemoryAndSize(const byte* other, count size)
     {
         return std::make_shared<MutableBlobInternal>(std::vector<byte>(other, other + size));
     }
+
     static std::shared_ptr<MutableBlobInternal> blobWithBase64String(const String&);
+
     static std::shared_ptr<MutableBlobInternal> blobWithStringWithTerminator(const String&);
+
     static std::shared_ptr<MutableBlobInternal> blobWithStringWithoutTerminator(const String&);
 
     // -- Class Methods
+
     static std::shared_ptr<MutableBlobInternal> hashFor(const byte* memory, count size)
     {
         auto result = std::vector<byte>(16);
@@ -72,9 +83,11 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
 
         return std::make_shared<MutableBlobInternal>(std::move(result));
     }
+
     static String base64StringFor(const byte* memory, count size);
 
     // -- Operators
+
     bool operator==(const MutableBlobInternal& other) const
     {
         if (this->size() != other.size()) {
@@ -89,11 +102,13 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
 
         return true;
     }
+
     const byte& operator[](integer index) const
     {
         NXA_ASSERT_TRUE(index >= 0 && index < this->size());
         return this->std::vector<byte>::operator[](index);
     }
+
     byte& operator[](integer index)
     {
         NXA_ASSERT_TRUE(index >= 0 && index < this->size());
@@ -101,6 +116,7 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
     }
 
     // -- Instance Methods
+
     count size() const
     {
         return this->std::vector<byte>::size();
@@ -111,6 +127,7 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
         NXA_ASSERT_TRUE(this->size() > 0);
         return this->std::vector<byte>::data();
     }
+
     byte* data()
     {
         NXA_ASSERT_TRUE(this->size() > 0);
@@ -166,11 +183,13 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
     String description() const;
 
     // -- Overriden Object::Internal Instance Methods
+
     uinteger32 classHash() const override
     {
         NXA_ALOG("Illegal call.");
         return 0;
     }
+    
     const character* className() const override
     {
         NXA_ALOG("Illegal call.");

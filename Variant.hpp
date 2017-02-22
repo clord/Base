@@ -64,7 +64,9 @@ struct DirectTypeIndex<T>
 };
 
 #if __cpp_lib_logical_traits >= 201510L
+
 using std::disjunction;
+
 #else
 
 template <typename...>

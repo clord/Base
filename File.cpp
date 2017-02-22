@@ -33,6 +33,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <string>
 #include <errno.h>
 #include <dirent.h>
@@ -46,37 +47,25 @@ Blob File::readFileAt(const String& path)
 {
     NXA_ASSERT_TRUE(path.length() > 0);
 
-    byte* fileData = nullptr;
-
     count fileSize = File::sizeOfFileAt(path);
     if (!fileSize) {
         return {};
     }
 
-    fileData = new byte[fileSize];
-    NXA_SCOPE_EXIT(fileData)
-    {
-        delete[] fileData;
-    }
-    NXA_SCOPE_EXIT_END
+    auto fileData = std::make_unique<byte[]>(fileSize);
 
     if (!fileData) {
         throw FileError::exceptionWith("Error reading file at '%s'.", path.asUTF8());
     }
 
     std::fstream file(path.asUTF8(), std::ios::in | std::ios::binary);
-    file.read(reinterpret_cast<character*>(fileData), fileSize);
-    NXA_SCOPE_EXIT(&file)
-    {
-        file.close();
-    }
-    NXA_SCOPE_EXIT_END
+    file.read(reinterpret_cast<character*>(fileData.get()), fileSize);
 
     if (file.rdstate() & std::ifstream::failbit) {
         throw FileError::exceptionWith("Error reading file at '%s'.", path.asUTF8());
     }
 
-    return Blob::blobWithMemoryAndSize(fileData, fileSize);
+    return Blob::blobWithMemoryAndSize(fileData.get(), fileSize);
 }
 
 void File::writeBlobToFileAt(const Blob& content, const String& path)
@@ -87,11 +76,8 @@ void File::writeBlobToFileAt(const Blob& content, const String& path)
     file.write(reinterpret_cast<const character*>(content.data()), content.size());
 
     if (file.rdstate() & std::ifstream::failbit) {
-        file.close();
         throw FileError::exceptionWith("Error writing to file at '%s'.", path.asUTF8());
     }
-
-    file.close();
 }
 
 void File::deleteFileAt(const String& path)

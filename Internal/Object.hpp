@@ -31,6 +31,7 @@ struct Object
         Internal()
         {
         }
+        
         virtual ~Internal() = default;
 
         // -- Instance Methods

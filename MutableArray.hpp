@@ -24,10 +24,15 @@
 #include <Base/Types.hpp>
 #include <Base/Assert.hpp>
 #include <Base/Internal/Object.hpp>
+#include <Base/GeneratedObjectCode.hpp>
 #include <Base/Internal/MutableArray.hpp>
 
+#include <initializer_list>
 #include <algorithm>
 #include <vector>
+#include <mutex>
+#include <memory>
+#include <type_traits>
 #include <utility>
 
 namespace NxA {
@@ -41,10 +46,42 @@ class MutableArray
 
     std::shared_ptr<Internal> internal;
 
+    template <typename V, template <typename> class I>
+    friend class MutableArray;
+
+    template <typename V, template <typename> class I>
+    friend class Array;
+
     friend Implementation<T>;
-    friend Array<T, Implementation>;
 
 public:
+
+    // -- Constructors/Destructors
+
+    MutableArray() : internal{std::make_shared<Internal>()}
+    {
+    }
+
+    MutableArray(const MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+
+    MutableArray(MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+
+    MutableArray(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
+    {
+    }
+
+    MutableArray(MutableArray&&) = default;
+
+    template <template <typename> class I>
+    MutableArray(const Array<T, I>& other) : internal{std::make_shared<Internal>(*other.internal)}
+    {
+    }
+
+    ~MutableArray() = default;
 
     // -- Class Methods
 
@@ -74,33 +111,6 @@ public:
     {
         return static_cast<uinteger32>(std::hash<std::string>{}(std::string{MutableArray::staticClassName()}));
     }
-
-    // -- Constructors/Destructors
-
-    MutableArray() : internal{std::make_shared<Internal>()}
-    {
-    }
-
-    MutableArray(const MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
-
-    MutableArray(MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
-
-    MutableArray(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
-    {
-    }
-
-    MutableArray(MutableArray&&) = default;
-
-    template <template <typename> class I>
-    MutableArray(const Array<T, I>& other) : internal{std::make_shared<Internal>(*other.internal)}
-    {
-    }
-
-    ~MutableArray() = default;
 
     // -- Iterators
     

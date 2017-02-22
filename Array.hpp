@@ -22,15 +22,18 @@
 #pragma once
 
 #include <Base/Types.hpp>
+#include <Base/Assert.hpp>
+#include <Base/Internal/Object.hpp>
 #include <Base/GeneratedObjectCode.hpp>
 #include <Base/Internal/MutableArray.hpp>
 
-#include <algorithm>
 #include <initializer_list>
+#include <algorithm>
 #include <vector>
 #include <mutex>
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 namespace NxA {
 
@@ -49,7 +52,10 @@ class Array
     template <typename V, template <typename> class I>
     friend class Array;
 
+    friend Implementation<T>;
+
 public:
+    
     // -- Constructors/Destructors
 
     Array() : internal{std::make_shared<Internal>()}
@@ -64,17 +70,16 @@ public:
     {
     }
 
+    Array(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
+    {
+    }
+
     template <template <typename> class I>
     Array(const MutableArray<T, I>& other) : internal{std::make_shared<Internal>(*other.internal)}
     {
     }
 
-    template <template <typename> class I>
-    Array(MutableArray<T, I>&& other) : internal{std::move(other.internal)}
-    {
-    }
-
-    Array(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)}
+    Array(MutableArray&& other) : internal{std::move(other.internal)}
     {
     }
 
@@ -82,8 +87,8 @@ public:
     {
     }
 
-    template <typename V, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
-    Array(const Array<V>& other) : internal{std::make_shared<Internal>(*other.internal)}
+    template <typename V, template <typename> class I, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
+    Array(const Array<V, I>& other) : internal{std::make_shared<Internal>(*other.internal)}
     {
     }
 

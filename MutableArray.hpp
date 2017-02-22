@@ -70,7 +70,10 @@ public:
         return buffer.get();
     }
 
-    static uinteger32 staticClassHash();
+    static uinteger32 staticClassHash()
+    {
+        return static_cast<uinteger32>(std::hash<std::string>{}(std::string{MutableArray::staticClassName()}));
+    }
 
     // -- Constructors/Destructors
 

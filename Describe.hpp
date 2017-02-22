@@ -164,7 +164,7 @@ struct Describer<MutableArray<T, I>>
     static String describeWithState(MutableArray<T, I> items, const DescriberState& state)
     {
         auto indented = state.increaseIndent();
-        
+
         if (items.length() == 0) {
             return indented.indentedLine("<MutableArray length=\"0\" />");
         }

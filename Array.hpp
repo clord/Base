@@ -104,6 +104,10 @@ public:
         return buffer.get();
     }
 
+    static uinteger32 staticClassHash() {
+        return static_cast<uinteger32>(std::hash<std::string> {}(std::string{Array::staticClassName()}));
+    }
+
     // -- Iterators
 
     using iterator = typename Internal::iterator;
@@ -233,10 +237,6 @@ public:
 
     const_iterator find(const T& object) const {
         return internal->find(object);
-    }
-
-    static uinteger32 staticClassHash() {
-        return static_cast<uinteger32>(std::hash<std::string> {}(std::string{Array::staticClassName()}));
     }
 
 };

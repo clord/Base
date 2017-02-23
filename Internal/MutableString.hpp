@@ -99,8 +99,8 @@ struct MutableStringInternal : public Object::Internal, public std::string
 
     static std::shared_ptr<MutableStringInternal> stringByFilteringNonPrintableCharactersIn(const String& other);
 
-    template <template <typename> class Implementation, typename S>
-    static std::shared_ptr<MutableStringInternal> stringByJoiningArrayWithString(const Array<S>& array, S join)
+    template <typename A>
+    static std::shared_ptr<MutableStringInternal> stringByJoiningArrayWithString(const A& array, std::shared_ptr<MutableStringInternal> join)
     {
         std::string result;
         auto i = array.begin();
@@ -108,7 +108,7 @@ struct MutableStringInternal : public Object::Internal, public std::string
             result.append(i->asStdString());
             ++i;
             if (i != array.end()) {
-                result.append(join.asStdString());
+                result.append(join->asStdString());
             }
         }
         return std::make_shared<MutableStringInternal>(std::move(result));

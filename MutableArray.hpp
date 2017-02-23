@@ -56,24 +56,16 @@ class MutableArray
 
 public:
     // -- Constructors/Destructors
-
-    MutableArray() : internal{std::make_shared<Internal>()} { }
-
-    MutableArray(const MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
-    MutableArray(MutableArray& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
-    MutableArray(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
-
-    MutableArray(MutableArray&&) = default;
-
+    MutableArray() : internal{ std::make_shared<Internal>() } { }
+    MutableArray(const MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    MutableArray(MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    MutableArray(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
+    MutableArray(MutableArray<T>&& other) : internal{ std::move(other.internal) } { }
     template <template <typename> class I>
-    MutableArray(const Array<T, I>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
+    MutableArray(const Array<T, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     ~MutableArray() = default;
 
     // -- Class Methods
-
     static const character* staticClassName()
     {
         static std::unique_ptr<character[]> buffer;
@@ -95,19 +87,17 @@ public:
 
         return buffer.get();
     }
-
+    
     static uinteger32 staticClassHash()
     {
         return static_cast<uinteger32>(std::hash<std::string>{}(std::string{MutableArray::staticClassName()}));
     }
 
     // -- Iterators
-
     using iterator = typename Internal::iterator;
     using const_iterator = typename Internal::const_iterator;
 
     // -- Operators
-
     MutableArray& operator=(MutableArray&&) = default;
 
     MutableArray& operator=(const MutableArray& other)
@@ -221,8 +211,8 @@ public:
         return internal->append(object);
     }
 
-    template <class... ConstructorArguments>
-    void emplaceAppend(ConstructorArguments&&... arguments)
+    template<class... ConstructorArguments>
+    void emplaceAppend(ConstructorArguments &&... arguments)
     {
         internal->emplaceAppend(std::forward<ConstructorArguments>(arguments)...);
     }
@@ -322,4 +312,5 @@ public:
         internal->sort();
     }
 };
+    
 }

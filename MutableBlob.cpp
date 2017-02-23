@@ -30,17 +30,11 @@ using namespace NxA;
 // -- Constructors/Destructors
 
 MutableBlob::MutableBlob() : internal{std::make_shared<Internal>()} { }
-
 MutableBlob::MutableBlob(const Blob& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
 MutableBlob::MutableBlob(const MutableBlob& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
 MutableBlob::MutableBlob(MutableBlob&&) = default;
-
 MutableBlob::MutableBlob(MutableBlob&) = default;
-
 MutableBlob::MutableBlob(std::shared_ptr<Internal>&& other) : internal{std::move(other)} { }
-
 MutableBlob::~MutableBlob() = default;
 
 // -- mark Factory Methods

@@ -62,4 +62,5 @@ public:
     static timestamp modificationDateInSecondsSince1970ForFile(const String&);
     static void setModificationDateInSecondsSince1970ForFile(timestamp, const String&);
 };
+    
 }

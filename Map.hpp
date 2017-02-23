@@ -46,12 +46,9 @@ class Map
 public:
     // -- Constructors/Destructors
     Map() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()} { }
-
     Map(const Map&) = default;
     Map(Map&&) = default;
-
     Map(MutableMap<Tkey, Tvalue>&& other) : internal{std::move(other.internal)} { }
-
     ~Map() = default;
 
     // -- Class Methods
@@ -86,14 +83,11 @@ public:
     }
 
     // -- Iterators
-
     using const_iterator = typename MutableMapInternal<const Tkey, Tvalue>::const_iterator;
 
     // -- Operators
-
     Map& operator=(Map&&) = default;
     Map& operator=(const Map& other) = default;
-
     bool operator==(const Map& other) const
     {
         if (internal == other.internal) {
@@ -102,12 +96,10 @@ public:
 
         return *internal == *(other.internal);
     }
-
     bool operator!=(const Map& other) const
     {
         return !this->operator==(other);
     }
-
     bool operator==(const MutableMap<Tkey, Tvalue>& other) const
     {
         if (internal == other.internal) {
@@ -116,24 +108,20 @@ public:
 
         return *internal == *(other.internal);
     }
-
     bool operator!=(const MutableMap<Tkey, Tvalue>& other) const
     {
         return !this->operator==(other);
     }
-
     const Tvalue& operator[](const Tkey& key) const
     {
         return internal->valueForKey(key);
     }
-
     Tvalue& operator[](const Tkey& key)
     {
         return internal->valueForKey(key);
     }
 
     // -- Instance Methods
-
     uinteger32 classHash() const
     {
         return Map::staticClassHash();
@@ -189,4 +177,5 @@ public:
         return internal->containsValueForKey(key);
     }
 };
+    
 }

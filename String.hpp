@@ -144,4 +144,5 @@ public:
 // -- Operators
 bool operator<(const String&, const String&);
 String operator"" _String(const character* str, count length);
+    
 }

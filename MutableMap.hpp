@@ -46,21 +46,14 @@ class MutableMap
 
 public:
     // -- Constructors/Destructors
-
-    MutableMap() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()} { }
-
-    MutableMap(const MutableMap& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
+    MutableMap() : internal{ std::make_shared<MutableMapInternal<const Tkey, Tvalue>>() } { }
+    MutableMap(const MutableMap& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     MutableMap(MutableMap& other) : internal{other.internal} { }
-
     MutableMap(MutableMap&&) = default;
-
-    MutableMap(const Map<Tkey, Tvalue>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
+    MutableMap(const Map<Tkey, Tvalue>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     ~MutableMap() = default;
 
     // -- Class Methods
-
     static const character* staticClassName()
     {
         static std::unique_ptr<character[]> buffer;
@@ -132,7 +125,6 @@ public:
     }
 
     // -- Instance Methods
-
     uinteger32 classHash() const
     {
         return MutableMap::staticClassHash();
@@ -222,4 +214,5 @@ public:
         return internal->removeAll();
     }
 };
+    
 }

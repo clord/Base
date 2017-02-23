@@ -35,24 +35,17 @@ template <typename Tkey, typename Tvalue>
 struct MutableMapInternal : public Object::Internal, public std::map<const Tkey, Tvalue>
 {
     // -- Constructors/Destructors
-
     MutableMapInternal() : std::map<const Tkey, Tvalue>() { }
-
-    MutableMapInternal(const MutableMapInternal& other) : std::map<const Tkey, Tvalue>{other} { }
-
-    MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{other} { }
-
-    MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{std::move(other)} { }
-
+    MutableMapInternal(const MutableMapInternal& other) : std::map<const Tkey, Tvalue>{ other } { }
+    MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{ other } { }
+    MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{ std::move(other) } { }
     virtual ~MutableMapInternal() = default;
 
     // -- Iterators
-
     using iterator = typename std::map<const Tkey, Tvalue>::iterator;
     using const_iterator = typename std::map<const Tkey, Tvalue>::const_iterator;
 
     // -- Instance Methods
-
     iterator begin()
     {
         return this->std::map<const Tkey, Tvalue>::begin();
@@ -168,4 +161,5 @@ struct MutableMapInternal : public Object::Internal, public std::map<const Tkey,
         return nullptr;
     }
 };
+
 }

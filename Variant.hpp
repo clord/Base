@@ -483,4 +483,5 @@ decltype(auto) get(T&& someVariant)
 {
     return someVariant.template get<ResultType>();
 }
+    
 }

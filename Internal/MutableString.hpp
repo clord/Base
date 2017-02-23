@@ -51,14 +51,10 @@ class MutableString;
 struct MutableStringInternal : public Object::Internal, public std::string
 {
     // -- Constructors/Destructors
-
     MutableStringInternal() : std::string{"", 0} { }
-
-    MutableStringInternal(const std::string& other) : std::string{other} { }
-
-    MutableStringInternal(std::string&& other) : std::string{std::move(other)} { }
-
-    MutableStringInternal(const character* other, count count) : std::string{other, count}
+    MutableStringInternal(const std::string& other) : std::string{ other } { }
+    MutableStringInternal(std::string&& other) : std::string{ std::move(other) } { }
+    MutableStringInternal(const character* other, count count) : std::string{ other, count }
     {
         NXA_ASSERT_NOT_NULL(other);
     }
@@ -115,13 +111,10 @@ struct MutableStringInternal : public Object::Internal, public std::string
     }
 
     // -- Operators
-
     bool operator==(const character* other) const;
-
     bool operator==(const MutableStringInternal& other) const;
 
     // -- Instance Methods
-
     count length() const;
 
     integer32 compare(const char* other) const;
@@ -197,4 +190,5 @@ struct MutableStringInternal : public Object::Internal, public std::string
     static const character* stringArgumentAsCharacter(MutableString& nxastring);
     static const character* stringArgumentAsCharacter(MutableStringInternal& nxastring);
 };
+    
 }

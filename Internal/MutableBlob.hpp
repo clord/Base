@@ -39,17 +39,13 @@ void MurmurHash3_x64_128(const void*, const int, const uint32_t, void*);
 struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
 {
     // -- Constructors/Destructors
-
     MutableBlobInternal() : std::vector<byte>() { }
-
-    MutableBlobInternal(const std::vector<byte>& other) : std::vector<byte>{other} { }
-
-    MutableBlobInternal(std::vector<byte>&& other) : std::vector<byte>{std::move(other)} { }
+    MutableBlobInternal(const std::vector<byte>& other) : std::vector<byte>{ other } { }
+    MutableBlobInternal(std::vector<byte>&& other) : std::vector<byte>{ std::move(other) } { }
 
     virtual ~MutableBlobInternal() = default;
 
     // -- Factory Methods
-
     static std::shared_ptr<MutableBlobInternal> blobWithCapacity(count size)
     {
         return std::make_shared<MutableBlobInternal>(std::vector<byte>(size));
@@ -61,13 +57,10 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
     }
 
     static std::shared_ptr<MutableBlobInternal> blobWithBase64String(const String&);
-
     static std::shared_ptr<MutableBlobInternal> blobWithStringWithTerminator(const String&);
-
     static std::shared_ptr<MutableBlobInternal> blobWithStringWithoutTerminator(const String&);
 
     // -- Class Methods
-
     static std::shared_ptr<MutableBlobInternal> hashFor(const byte* memory, count size)
     {
         auto result = std::vector<byte>(16);
@@ -80,7 +73,6 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
     static String base64StringFor(const byte* memory, count size);
 
     // -- Operators
-
     bool operator==(const MutableBlobInternal& other) const
     {
         if (this->size() != other.size()) {
@@ -109,7 +101,6 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
     }
 
     // -- Instance Methods
-
     count size() const
     {
         return this->std::vector<byte>::size();
@@ -176,7 +167,6 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
     String description() const;
 
     // -- Overriden Object::Internal Instance Methods
-
     uinteger32 classHash() const override
     {
         NXA_ALOG("Illegal call.");
@@ -189,4 +179,5 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
         return nullptr;
     }
 };
+
 }

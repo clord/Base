@@ -38,7 +38,6 @@ class Flags
 public:
     // -- Constructors/Destructors
     Flags() : flags(0) { }
-
     Flags(FlagsEnum value) : flags(1ULL << static_cast<integer>(value)) { }
 
     // -- Instance Methods
@@ -83,4 +82,5 @@ public:
         return this->flags != 0;
     }
 };
+    
 }

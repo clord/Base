@@ -44,27 +44,19 @@ template <class T>
 struct MutableArrayInternal : public Object::Internal, public std::vector<T>
 {
     // -- Constructors/Destructors
-
     MutableArrayInternal() : std::vector<T>() { }
-
-    MutableArrayInternal(const MutableArrayInternal& other) : std::vector<T>{other} { }
-
+    MutableArrayInternal(const MutableArrayInternal& other) : std::vector<T>{ other } { }
     MutableArrayInternal(std::vector<T>&& other) : std::vector<T>{std::move(other)} { }
-
-    MutableArrayInternal(std::initializer_list<T> other) : std::vector<T>{other.begin(), other.end()} { }
-
+    MutableArrayInternal(std::initializer_list<T> other) : std::vector<T>{ other.begin(), other.end() } { }
     template <typename V, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
-    MutableArrayInternal(const MutableArrayInternal<V>& other) : std::vector<T>{other.begin(), other.end()} { }
-
+    MutableArrayInternal(const MutableArrayInternal<V>& other) : std::vector<T>{ other.begin(), other.end() } { }
     virtual ~MutableArrayInternal() = default;
 
     // -- Iterators
-
     using iterator = typename std::vector<T>::iterator;
     using const_iterator = typename std::vector<T>::const_iterator;
 
     // -- Operators
-
     const T& operator[](count index) const
     {
         NXA_ASSERT_TRUE(index >= 0 && index < this->length());
@@ -78,7 +70,6 @@ struct MutableArrayInternal : public Object::Internal, public std::vector<T>
     }
 
     // -- Instance Methods
-
     iterator begin() noexcept
     {
         return this->std::vector<T>::begin();
@@ -207,7 +198,6 @@ struct MutableArrayInternal : public Object::Internal, public std::vector<T>
     }
 
     // -- Overriden Object::Internal Instance Methods
-
     uinteger32 classHash() const override
     {
         NXA_ALOG("Illegal call.");
@@ -220,4 +210,5 @@ struct MutableArrayInternal : public Object::Internal, public std::vector<T>
         return nullptr;
     }
 };
+
 }

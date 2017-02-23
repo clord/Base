@@ -49,24 +49,13 @@ template <class T>
 struct MutableSetInternal : public Object::Internal, public std::set<T>
 {
     // -- Constructors/Destructors
-
     MutableSetInternal() = default;
-
     MutableSetInternal(const MutableSetInternal& other) = default;
-
     MutableSetInternal(MutableSetInternal&& other) = default;
-
-    MutableSetInternal(std::initializer_list<T> other) : std::vector<T>{other.begin(), other.end()}
-    {
-    }
-
+    MutableSetInternal(std::initializer_list<T> other) : std::vector<T>{ other.begin(), other.end() } { }
     virtual ~MutableSetInternal() = default;
-
     MutableSetInternal& operator=(const MutableSetInternal& other) = default;
-
-    MutableSetInternal(std::set<T>&& other) : std::set<T>{std::move(other)}
-    {
-    }
+    MutableSetInternal(std::set<T>&& other) : std::set<T>{ std::move(other) } { }
 
     // -- Iterators
     using iterator = typename std::set<T>::iterator;
@@ -193,4 +182,5 @@ struct MutableSetInternal : public Object::Internal, public std::set<T>
         return nullptr;
     }
 };
+    
 }

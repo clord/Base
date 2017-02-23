@@ -75,10 +75,10 @@ public:
 
     static String stringByFilteringNonPrintableCharactersIn(const String&);
 
-    template <typename A, template <typename> class Implementation>
+    template <typename A>
     static String stringByJoiningArrayWithString(const A& array, String join)
     {
-        return {Internal::stringByJoiningArrayWithString(array, join)};
+        return {Internal::stringByJoiningArrayWithString(array, join.internal)};
     }
 
     // -- Class Methods

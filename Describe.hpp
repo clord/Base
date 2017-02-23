@@ -31,7 +31,7 @@ class DescriberState
 {
     int indent_ = -1;
 
-    DescriberState(int indent) : indent_{indent} { }
+    DescriberState(int indent) : indent_{ indent } { }
 
 public:
     DescriberState() : indent_{0} { }

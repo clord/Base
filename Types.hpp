@@ -112,15 +112,14 @@ struct TypeName<Optional<T>>
 // -- Specialization for each type we support.
 #define NXA_STR_VALUE_FOR_TYPE(arg...) #arg
 
-#define NXA_SPECIALIZE_TYPENAME_FOR_TYPE(name)                                                                                                       \
-    template <>                                                                                                                                      \
-    struct TypeName<name>                                                                                                                            \
-    {                                                                                                                                                \
-        static const character* get()                                                                                                                \
-        {                                                                                                                                            \
-            return NXA_STR_VALUE_FOR_TYPE(name);                                                                                                     \
-        }                                                                                                                                            \
-    };
+#define NXA_SPECIALIZE_TYPENAME_FOR_TYPE(name) \
+template <> struct TypeName<name> \
+{ \
+    static const character* get() \
+    { \
+        return NXA_STR_VALUE_FOR_TYPE(name); \
+    } \
+};
 
 template <class T>
 class MutableArrayInternal;
@@ -152,4 +151,5 @@ NXA_SPECIALIZE_TYPENAME_FOR_TYPE(count);
 NXA_SPECIALIZE_TYPENAME_FOR_TYPE(timestamp);
 
 NXA_SPECIALIZE_TYPENAME_FOR_TYPE(decimal);
+
 }

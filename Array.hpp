@@ -56,30 +56,21 @@ class Array
 
 public:
     // -- Constructors/Destructors
-
-    Array() : internal{std::make_shared<Internal>()} { }
-
-    Array(const Array& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
-    Array(Array&& other) : internal{std::move(other.internal)} { }
-
-    Array(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
-
+    Array() : internal{ std::make_shared<Internal>() } { }
+    Array(const Array& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    Array(Array&& other) : internal{ std::move(other.internal) } { }
+    Array(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
     template <template <typename> class I>
     Array(const MutableArray<T, I>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
     Array(MutableArray<T, Implementation>&& other) : internal{std::move(other.internal)} { }
-
     Array(std::vector<T>&& other) : internal{std::make_shared<Internal>(std::move(other))} { }
-
     template <typename V, template <typename> class I, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
-    Array(const Array<V, I>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
+    Array(const Array<V, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     ~Array() { }
 
     // -- Class Methods
-
-    static const character* staticClassName() {
+    static const character* staticClassName()
+    {
         static std::unique_ptr<character[]> buffer;
         if (buffer) {
             // -- This is the fast lock-free path for the common case (unique_ptr engaged)
@@ -101,34 +92,37 @@ public:
         return buffer.get();
     }
 
-    static uinteger32 staticClassHash() {
+    static uinteger32 staticClassHash()
+    {
         return static_cast<uinteger32>(std::hash<std::string> {}(std::string{Array::staticClassName()}));
     }
 
     // -- Iterators
-
     using iterator = typename Internal::iterator;
     using const_iterator = typename Internal::const_iterator;
 
     // -- Operators
-
-    Array& operator=(Array&& other) {
+    Array& operator=(Array&& other)
+    {
         internal = std::move(other.internal);
         return *this;
     }
 
-    Array& operator=(const Array& other) {
+    Array& operator=(const Array& other)
+    {
         internal = std::make_shared<Internal>(*other.internal);
         return *this;
     }
 
     template <template <typename> class I>
-    Array& operator=(const MutableArray<T, I>& other) {
+    Array& operator=(const MutableArray<T, I>& other)
+    {
         internal = std::make_shared<Internal>(*other.internal);
         return *this;
     }
 
-    bool operator==(const Array& other) const {
+    bool operator==(const Array& other) const
+    {
         if (internal == other.internal) {
             return true;
         }
@@ -136,12 +130,14 @@ public:
         return *internal == *(other.internal);
     }
 
-    bool operator!=(const Array& other) const {
+    bool operator!=(const Array& other) const
+    {
         return !this->operator==(other);
     }
 
     template <template <typename> class I>
-    bool operator==(const MutableArray<T, I>& other) const {
+    bool operator==(const MutableArray<T, I>& other) const
+    {
         if (internal == other.internal) {
             return true;
         }
@@ -150,87 +146,106 @@ public:
     }
 
     template <template <typename> class I>
-    bool operator!=(const MutableArray<T, I>& other) const {
+    bool operator!=(const MutableArray<T, I>& other) const
+    {
         return !this->operator==(other);
     }
 
-    const T& operator[](count index) const {
+    const T& operator[](count index) const
+    {
         return internal->operator[](index);
     }
 
-    T& operator[](count index) {
+    T& operator[](count index)
+    {
         return internal->operator[](index);
     }
 
     // -- Instance Methods
-
-    uinteger32 classHash() const {
+    uinteger32 classHash() const
+    {
         return Array::staticClassHash();
     }
 
-    const character* className() const {
+    const character* className() const
+    {
         return Array::staticClassName();
     }
 
-    boolean classNameIs(const character* className) const {
+    boolean classNameIs(const character* className) const
+    {
         return !::strcmp(Array::staticClassName(), className);
     }
 
-    iterator begin() noexcept {
+    iterator begin() noexcept
+    {
         return internal->begin();
     }
 
-    const_iterator begin() const noexcept {
+    const_iterator begin() const noexcept
+    {
         return internal->begin();
     }
 
-    iterator end() noexcept {
+    iterator end() noexcept
+    {
         return internal->end();
     }
 
-    const_iterator end() const noexcept {
+    const_iterator end() const noexcept
+    {
         return internal->end();
     }
 
-    const_iterator cbegin() const noexcept {
+    const_iterator cbegin() const noexcept
+    {
         return internal->cbegin();
     }
 
-    const_iterator cend() const noexcept {
+    const_iterator cend() const noexcept
+    {
         return internal->cend();
     }
 
-    count length() const {
+    count length() const
+    {
         return internal->length();
     }
 
-    const T& firstObject() const {
+    const T& firstObject() const
+    {
         return internal->firstObject();
     }
 
-    T& firstObject() {
+    T& firstObject()
+    {
         return internal->firstObject();
     }
 
-    const T& lastObject() const {
+    const T& lastObject() const
+    {
         return internal->lastObject();
     }
 
-    T& lastObject() {
+    T& lastObject()
+    {
         return internal->lastObject();
     }
 
-    boolean contains(const T& object) const {
+    boolean contains(const T& object) const
+    {
         return internal->contains(object);
     }
 
-    iterator find(const T& object) {
+    iterator find(const T& object)
+    {
         return internal->find(object);
     }
 
-    const_iterator find(const T& object) const {
+    const_iterator find(const T& object) const
+    {
         return internal->find(object);
     }
-
 };
+
 }

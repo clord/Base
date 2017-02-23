@@ -33,17 +33,11 @@ using namespace NxA;
 // -- Constructors/Destructors
 
 MutableString::MutableString() : internal{std::make_shared<Internal>()} { }
-
 MutableString::MutableString(const String& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
 MutableString::MutableString(const std::string& other) : internal{std::make_shared<Internal>(other)} { }
-
 MutableString::MutableString(std::string&& other) : internal{std::make_shared<Internal>(std::move(other))} { }
-
 MutableString::MutableString(const character* other, size_t size) : internal{std::make_shared<Internal>(other, size)} { }
-
 MutableString::MutableString(std::shared_ptr<Internal>&& other) : internal{std::move(other)} { }
-
 MutableString::~MutableString() = default;
 
 // -- Factory Methods

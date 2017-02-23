@@ -37,4 +37,5 @@ struct Object
         virtual const character* className() const = 0;
     };
 };
+    
 }

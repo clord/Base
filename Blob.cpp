@@ -27,7 +27,7 @@
 
 using namespace NxA;
 
-// -- mark Factory Methods
+// -- Factory Methods
 
 Blob Blob::blobWithMemoryAndSize(const byte* other, count size)
 {

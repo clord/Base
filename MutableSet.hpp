@@ -52,19 +52,13 @@ class MutableSet
 
 public:
     // -- Constructors/Destructors
-
     MutableSet() = default;
-
-    MutableSet(const MutableSet& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
-    MutableSet(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
-
+    MutableSet(const MutableSet& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    MutableSet(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
     MutableSet(MutableSet&& other) = default;
     ~MutableSet() = default;
-
-    MutableSet(const Set<T>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-
-    MutableSet(Set<T>&& other) : internal{std::move(other.internal)} { }
+    MutableSet(const Set<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    MutableSet(Set<T>&& other) : internal{ std::move(other.internal) } { }
 
     // -- Class Methods
     static const character* staticClassName()
@@ -102,13 +96,11 @@ public:
 
     // -- Operators
     MutableSet& operator=(MutableSet&& other) = default;
-
     MutableSet& operator=(const MutableSet& other)
     {
         internal = std::make_shared<Internal>(*other.internal);
         return *this;
     }
-
     bool operator==(const MutableSet& other) const
     {
         if (internal == other.internal) {
@@ -117,7 +109,6 @@ public:
 
         return *internal == *(other.internal);
     }
-
     bool operator!=(const MutableSet& other) const
     {
         return !this->operator==(other);
@@ -130,14 +121,12 @@ public:
 
         return *internal == *(other.internal);
     }
-
     bool operator!=(const Set<T>& other) const
     {
         return !this->operator==(other);
     }
 
     // -- Instance Methods
-
     uinteger32 classHash() const
     {
         return MutableSet::staticClassHash();
@@ -264,4 +253,5 @@ public:
         return internal->description();
     }
 };
+
 }

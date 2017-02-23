@@ -46,24 +46,18 @@ class MutableString
 public:
     // -- Constructors/Destructors
     MutableString();
-
     MutableString(const String&);
-
     MutableString(const character*, count);
-
     explicit MutableString(const std::string&);
-
     explicit MutableString(std::string&&);
 
     // -- Provide a statically-sized character constant, which saves the runtime from computing the length.
-
     template <count size>
     MutableString(const character (&chars)[size]) : MutableString{chars, size - 1}
     {
     }
 
     // -- Factory Methods
-
     template <typename... FormatArguments>
     static MutableString stringWithFormat(MutableString format, FormatArguments&&... formatArguments)
     {
@@ -83,7 +77,6 @@ public:
     static MutableString stringByJoiningArrayWithString(const Array<String, Implementation>&, String);
 
     // -- Operators
-
     bool operator==(const String& other) const;
 
     bool operator!=(const String& other) const
@@ -99,7 +92,6 @@ public:
     }
 
     // -- Instance Methods
-
     count length() const;
 
     boolean isEmpty() const
@@ -153,4 +145,5 @@ public:
 
     void replaceOccurenceOfStringWith(const character*, const character*);
 };
+    
 }

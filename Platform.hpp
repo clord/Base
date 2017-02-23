@@ -86,4 +86,5 @@ public:
 
     static Blob convertEndiannessOfUInteger16From(const Blob&);
 };
+    
 }

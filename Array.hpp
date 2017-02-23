@@ -68,7 +68,7 @@ public:
     template <template <typename> class I>
     Array(const MutableArray<T, I>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
 
-    Array(MutableArray&& other) : internal{std::move(other.internal)} { }
+    Array(MutableArray<T, Implementation>&& other) : internal{std::move(other.internal)} { }
 
     Array(std::vector<T>&& other) : internal{std::make_shared<Internal>(std::move(other))} { }
 
@@ -99,6 +99,10 @@ public:
         }
 
         return buffer.get();
+    }
+
+    static uinteger32 staticClassHash() {
+        return static_cast<uinteger32>(std::hash<std::string> {}(std::string{Array::staticClassName()}));
     }
 
     // -- Iterators
@@ -228,8 +232,5 @@ public:
         return internal->find(object);
     }
 
-    static uinteger32 staticClassHash() {
-        return static_cast<uinteger32>(std::hash<std::string> {}(std::string{Array::staticClassName()}));
-    }
 };
 }

@@ -34,7 +34,9 @@ namespace NxA {
 
 // -- Class
 
-template <typename Tkey, typename Tvalue> class Map {
+template <typename Tkey, typename Tvalue>
+class Map
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableMapInternal<const Tkey, Tvalue>);
 
     std::shared_ptr<MutableMapInternal<const Tkey, Tvalue>> internal;
@@ -43,19 +45,24 @@ template <typename Tkey, typename Tvalue> class Map {
 
 public:
     // -- Constructors/Destructors
-    Map() : internal{ std::make_shared<MutableMapInternal<const Tkey, Tvalue>>() } { }
+    Map() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()} { }
     Map(const Map&) = default;
     Map(Map&&) = default;
-    Map(MutableMap<Tkey, Tvalue>&& other) : internal{ std::move(other.internal) } { }
+    Map(MutableMap<Tkey, Tvalue>&& other) : internal{std::move(other.internal)} { }
     ~Map() = default;
 
     // -- Class Methods
     static const character* staticClassName()
     {
-        static std::mutex m;
         static std::unique_ptr<character[]> buffer;
 
-        m.lock();
+        if (buffer) {
+            // -- This is the fast lock-free path for the common case (unique_ptr engaged)
+            return buffer.get();
+        }
+
+        static std::mutex m;
+        std::lock_guard<std::mutex> guard(m);
 
         if (!buffer.get()) {
             const character* format = "Map<%s, %s>";
@@ -65,8 +72,6 @@ public:
             buffer = std::make_unique<character[]>(needed);
             snprintf(buffer.get(), needed, format, keyTypeName, valueTypeName);
         }
-
-        m.unlock();
 
         return buffer.get();
     }
@@ -121,10 +126,12 @@ public:
     {
         return Map::staticClassHash();
     }
+
     const character* className() const
     {
         return Map::staticClassName();
     }
+
     boolean classNameIs(const character* className) const
     {
         return !::strcmp(Map::staticClassName(), className);
@@ -134,14 +141,17 @@ public:
     {
         return internal->begin();
     }
+
     const_iterator cbegin() const
     {
         return internal->cbegin();
     }
+
     const_iterator end() const
     {
         return internal->end();
     }
+
     const_iterator cend() const
     {
         return internal->cend();
@@ -156,14 +166,16 @@ public:
     {
         return internal->valueForKey(key);
     }
+
     const Tvalue& valueForKey(const Tkey& key) const
     {
         return internal->valueForKey(key);
     }
+
     boolean containsValueForKey(const Tkey& key) const
     {
         return internal->containsValueForKey(key);
     }
 };
-
+    
 }

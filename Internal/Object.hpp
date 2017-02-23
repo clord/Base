@@ -23,11 +23,13 @@
 
 namespace NxA {
 
-struct Object {
+struct Object
+{
     struct Internal
     {
         // -- Constructors/Destructors
         Internal() { }
+
         virtual ~Internal() = default;
 
         // -- Instance Methods
@@ -35,5 +37,5 @@ struct Object {
         virtual const character* className() const = 0;
     };
 };
-
+    
 }

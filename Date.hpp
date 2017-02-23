@@ -27,7 +27,8 @@ namespace NxA {
 
 class String;
 
-class Date {
+class Date
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION();
     NXA_GENERATED_OBJECT_METHODS_DECLARATIONS_FOR(Date);
 

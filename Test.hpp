@@ -27,4 +27,4 @@
 
 #define NXA_USING_TEST_SUITE_NAMED(name) extern void* name;
 
-#define NXA_USE_TEST_SUITES_FOR_MODULE(name) void* UseCppTestFor ## name[]
+#define NXA_USE_TEST_SUITES_FOR_MODULE(name) void* UseCppTestFor##name[]

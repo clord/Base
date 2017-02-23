@@ -27,56 +27,65 @@
 #include <Base/String.hpp>
 
 // -- Forward Declarations
-
 namespace NxA {
 
 class Blob;
-template <class T> class Array;
+class MutableStringInternal;
+template <class T, template <typename> class I>
+class Array;
 
 // -- Public Interface
 
-class MutableString {
+class MutableString
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableStringInternal);
     NXA_GENERATED_OBJECT_METHODS_DECLARATIONS_FOR(MutableString);
 
     friend String;
-    
+
 public:
     // -- Constructors/Destructors
     MutableString();
     MutableString(const String&);
     MutableString(const character*, count);
-    explicit MutableString(const std::string &);
-    explicit MutableString(std::string &&);
+    explicit MutableString(const std::string&);
+    explicit MutableString(std::string&&);
 
     // -- Provide a statically-sized character constant, which saves the runtime from computing the length.
-    template<count size> MutableString(const character (&chars)[size]) : MutableString{ chars, size - 1 } { }
+    template <count size>
+    MutableString(const character (&chars)[size]) : MutableString{chars, size - 1}
+    {
+    }
 
     // -- Factory Methods
-
     template <typename... FormatArguments>
-    static MutableString stringWithFormat(String format, FormatArguments&&... formatArguments)
+    static MutableString stringWithFormat(MutableString format, FormatArguments&&... formatArguments)
     {
-        return MutableString{Internal::stringWithFormat(256, format.asUTF8(), MutableStringInternal::stringArgumentAsCharacter(formatArguments)...)};
+        return MutableString{Internal::stringWithFormat(256, format.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...)};
     }
 
     static MutableString stringWith(const character* other)
     {
-        return { other, strlen(other) };
+        return {other, strlen(other)};
     }
+
     static MutableString stringWithUTF16(const Blob&);
 
     static MutableString stringWithRepeatedCharacter(count, character);
 
-    static MutableString stringByJoiningArrayWithString(const Array<String>&, String);
+    template <template <typename> class Implementation>
+    static MutableString stringByJoiningArrayWithString(const Array<String, Implementation>&, String);
 
     // -- Operators
     bool operator==(const String& other) const;
+
     bool operator!=(const String& other) const
     {
         return !this->operator==(other);
     }
+
     bool operator==(const character*) const;
+
     bool operator!=(const character* other) const
     {
         return !this->operator==(other);
@@ -84,25 +93,34 @@ public:
 
     // -- Instance Methods
     count length() const;
+
     boolean isEmpty() const
     {
         return this->length() == 0;
     }
+
     uinteger32 hash() const;
+
     integer integerValue() const;
+
     decimal3 decimalValue() const;
 
     const std::string& asStdString() const;
+
     const character* asUTF8() const;
+
     Blob asUTF16() const;
 
     void append(const String&);
+
     void append(const character*);
+
     void append(const character);
+
     template <typename... FormatArguments>
-    void appendStringWithFormat(String formatString, FormatArguments&&... formatArguments)
+    void appendStringWithFormat(MutableString formatString, FormatArguments&&... formatArguments)
     {
-        auto formatted = MutableStringInternal::stringWithFormat(4096, formatString.asUTF8(), MutableStringInternal::stringArgumentAsCharacter(formatArguments)...);
+        auto formatted = Internal::stringWithFormat(4096, formatString.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...);
         this->append(String{formatted});
     }
 
@@ -127,5 +145,5 @@ public:
 
     void replaceOccurenceOfStringWith(const character*, const character*);
 };
-
+    
 }

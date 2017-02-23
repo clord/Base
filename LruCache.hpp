@@ -28,8 +28,9 @@
 
 namespace NxA {
 
-template<typename K, typename V>
-class LruCache : public std::list<std::pair<K, V>> {
+template <typename K, typename V>
+class LruCache : public std::list<std::pair<K, V>>
+{
     using List = std::list<std::pair<K, V>>;
     std::map<K, typename List::iterator> map = {};
     size_t limit = 0;
@@ -44,7 +45,7 @@ public:
 
     void resizeCache(size_t nth)
     {
-        List &list = *this;
+        List& list = *this;
         limit = nth;
         while (list.size() > limit) {
             map.erase(list.back().first);
@@ -52,7 +53,7 @@ public:
         }
     }
 
-    typename List::iterator find(const K &k)
+    typename List::iterator find(const K& k)
     {
         auto found = map.find(k);
         if (found == std::end(map)) {
@@ -69,9 +70,9 @@ public:
         return std::begin(*this);
     }
 
-    typename List::iterator insert(const K &k, const V &v)
+    typename List::iterator insert(const K& k, const V& v)
     {
-        List &list = *this;
+        List& list = *this;
         auto found = map.find(k);
         if (found == std::end(map)) {
             list.emplace_front(k, v);
@@ -97,9 +98,9 @@ public:
         return found->second;
     }
 
-    void erase(const K &k)
+    void erase(const K& k)
     {
-        List &list = *this;
+        List& list = *this;
         auto found = map.find(k);
         if (found != std::end(map)) {
             list.erase(found->second);
@@ -109,12 +110,12 @@ public:
 
     void clear()
     {
-        List &list = *this;
+        List& list = *this;
         list.clear();
         map.clear();
     }
 
-    V &operator[](const K &k)
+    V& operator[](const K& k)
     {
         auto found = find(k);
         if (found == this->end()) {
@@ -125,20 +126,20 @@ public:
         }
     }
 
-    const V &operator[]( const K &k ) const
+    const V& operator[](const K& k) const
     {
         return find(k)->second;
     }
 
-    template<typename ostream>
-    friend inline ostream &operator<<(ostream &os, const LruCache &self)
+    template <typename ostream>
+    friend inline ostream& operator<<(ostream& os, const LruCache& self)
     {
         os << "LRU ";
 #if LUR_TRACK_HITS
         os << "(hit-rate: " << double(self.hits) / double(self.hits + self.misses) << ") ";
 #endif
         os << "{";
-        for (auto const &in : self) {
+        for (auto const& in : self) {
             os << std::endl;
             os << "  " << in.first << ":";
             os << in.second << std::endl;
@@ -147,4 +148,5 @@ public:
         return os;
     }
 };
+    
 }

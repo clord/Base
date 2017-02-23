@@ -24,33 +24,58 @@
 #include <Base/Types.hpp>
 #include <Base/Assert.hpp>
 #include <Base/Internal/Object.hpp>
+#include <Base/GeneratedObjectCode.hpp>
 #include <Base/Internal/MutableArray.hpp>
 
+#include <initializer_list>
 #include <algorithm>
 #include <vector>
+#include <mutex>
+#include <memory>
+#include <type_traits>
 #include <utility>
 
 namespace NxA {
 
-template <class T> class Array;
-
 // -- Class
 
-template <class T> class MutableArray {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableArrayInternal<T>);
+template <class T, template <typename> class Implementation>
+class MutableArray
+{
+    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(Implementation<T>);
 
     std::shared_ptr<Internal> internal;
 
-    friend Array<T>;
+    template <typename V, template <typename> class I>
+    friend class MutableArray;
+
+    template <typename V, template <typename> class I>
+    friend class Array;
+
+    friend Implementation<T>;
 
 public:
+    // -- Constructors/Destructors
+    MutableArray() : internal{ std::make_shared<Internal>() } { }
+    MutableArray(const MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    MutableArray(MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    MutableArray(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
+    MutableArray(MutableArray<T>&&) = default;
+    template <template <typename> class I>
+    MutableArray(const Array<T, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    ~MutableArray() = default;
+
     // -- Class Methods
     static const character* staticClassName()
     {
-        static std::mutex m;
         static std::unique_ptr<character[]> buffer;
+        if (buffer) {
+            // -- This is the fast lock-free path for the common case (unique_ptr engaged)
+            return buffer.get();
+        }
 
-        m.lock();
+        static std::mutex m;
+        std::lock_guard<std::mutex> guard(m);
 
         if (!buffer.get()) {
             const character* format = "MutableArray<%s>";
@@ -60,25 +85,13 @@ public:
             snprintf(buffer.get(), needed, format, valueTypeName);
         }
 
-        m.unlock();
-
         return buffer.get();
     }
     
     static uinteger32 staticClassHash()
     {
-        static uinteger32 result = String::hashFor(MutableArray::staticClassName());
-        return result;
+        return static_cast<uinteger32>(std::hash<std::string>{}(std::string{MutableArray::staticClassName()}));
     }
-
-    // -- Constructors/Destructors
-    MutableArray() : internal{ std::make_shared<Internal>() } { }
-    MutableArray(const MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableArray(MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableArray(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
-    MutableArray(MutableArray&&) = default;
-    MutableArray(const Array<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    ~MutableArray() = default;
 
     // -- Iterators
     using iterator = typename Internal::iterator;
@@ -86,7 +99,13 @@ public:
 
     // -- Operators
     MutableArray& operator=(MutableArray&&) = default;
-    MutableArray& operator=(const MutableArray& other) { internal = std::make_shared<Internal>(*other.internal); return *this; }
+
+    MutableArray& operator=(const MutableArray& other)
+    {
+        internal = std::make_shared<Internal>(*other.internal);
+        return *this;
+    }
+
     bool operator==(const MutableArray& other) const
     {
         if (internal == other.internal) {
@@ -95,11 +114,14 @@ public:
 
         return *internal == *(other.internal);
     }
+
     bool operator!=(const MutableArray& other) const
     {
         return !this->operator==(other);
     }
-    bool operator==(const Array<T>& other) const
+
+    template <template <typename> class I>
+    bool operator==(const Array<T, I>& other) const
     {
         if (internal == other.internal) {
             return true;
@@ -107,52 +129,65 @@ public:
 
         return *internal == *(other.internal);
     }
-    bool operator!=(const Array<T>& other) const
+
+    template <template <typename> class I>
+    bool operator!=(const Array<T, I>& other) const
     {
         return !this->operator==(other);
     }
+
     const T& operator[](count index) const
     {
         return internal->operator[](index);
     }
+
     T& operator[](count index)
     {
         return internal->operator[](index);
     }
 
     // -- Instance Methods
+
     uinteger32 classHash() const
     {
         return MutableArray::staticClassHash();
     }
+
     const character* className() const
     {
         return MutableArray::staticClassName();
     }
+
     boolean classNameIs(const character* className) const
     {
         return !::strcmp(MutableArray::staticClassName(), className);
     }
+
     iterator begin() noexcept
     {
         return internal->begin();
     }
+
     const_iterator begin() const noexcept
     {
         return internal->begin();
     }
+
     iterator end() noexcept
     {
         return internal->end();
     }
+
     const_iterator end() const noexcept
     {
         return internal->end();
     }
+
     const_iterator cbegin() const noexcept
     {
         return internal->cbegin();
     }
+
     const_iterator cend() const noexcept
     {
         return internal->cend();
@@ -180,36 +215,45 @@ public:
             internal->append(object);
         }
     }
+
     void append(const MutableArray<T>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
-    void append(const Array<T>& objects)
+
+    template <template <typename> class I>
+    void append(const Array<T, I>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
-    void append(Array<T>& objects)
+
+    template <template <typename> class I>
+    void append(Array<T, I>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
+
     void insertAt(T object, const_iterator position)
     {
         internal->insertAt(object, position);
     }
+
     void remove(const T& object)
     {
         internal->remove(object);
     }
+
     void removeAll()
     {
         internal->removeAll();
     }
+
     count length() const
     {
         return internal->length();
@@ -219,43 +263,46 @@ public:
     {
         return internal->firstObject();
     }
+
     T& firstObject()
     {
         return internal->firstObject();
     }
+
     const T& lastObject() const
     {
         return internal->lastObject();
     }
+
     T& lastObject()
     {
         return internal->lastObject();
     }
+
     boolean contains(const T& object) const
     {
         return internal->contains(object);
     }
+
     iterator find(const T& object)
     {
         return internal->find(object);
     }
+
     const_iterator find(const T& object) const
     {
         return internal->find(object);
     }
+
     void removeObjectAt(const_iterator objectPosition)
     {
         internal->removeObjectAt(objectPosition);
     }
+
     void sort()
     {
         internal->sort();
     }
-
-    String description(const DescriberState& state = DescriberState()) const
-    {
-        return internal->description(state);
-    }
 };
-
+    
 }

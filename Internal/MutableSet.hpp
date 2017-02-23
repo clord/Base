@@ -21,11 +21,11 @@
 
 #pragma once
 
+#include "Base/Describe.hpp"
 #include "Base/Assert.hpp"
 #include "Base/Types.hpp"
 #include "Base/MutableString.hpp"
 #include "Base/Internal/Object.hpp"
-#include "Base/Describe.hpp"
 
 #include <set>
 
@@ -33,25 +33,28 @@ namespace NxA {
 
 // -- Forward Declarations
 
-template <class T> class MutableSetInternal;
+template <class T>
+class MutableSetInternal;
 
 // -- Utility Methods
 
 // -- This is a utility function to return the description of the content of an array.
-template <class T> String descriptionOfObjectsInSet(const MutableSetInternal<T>&);
+
+template <class T>
+String descriptionOfObjectsInSet(const MutableSetInternal<T>&);
 
 // -- Class
 
-template <class T> struct MutableSetInternal : public Object::Internal, public std::set<T>
+template <class T>
+struct MutableSetInternal : public Object::Internal, public std::set<T>
 {
     // -- Constructors/Destructors
     MutableSetInternal() = default;
     MutableSetInternal(const MutableSetInternal& other) = default;
     MutableSetInternal(MutableSetInternal&& other) = default;
-    MutableSetInternal(std::initializer_list<T> other) : std::vector<T>{other.begin(), other.end()} { }
+    MutableSetInternal(std::initializer_list<T> other) : std::vector<T>{ other.begin(), other.end() } { }
     virtual ~MutableSetInternal() = default;
     MutableSetInternal& operator=(const MutableSetInternal& other) = default;
-
     MutableSetInternal(std::set<T>&& other) : std::set<T>{ std::move(other) } { }
 
     // -- Iterators
@@ -63,22 +66,27 @@ template <class T> struct MutableSetInternal : public Object::Internal, public s
     {
         return this->std::set<T>::begin();
     }
+
     const_iterator begin() const noexcept
     {
         return this->std::set<T>::begin();
     }
+
     iterator end() noexcept
     {
         return this->std::set<T>::end();
     }
+
     const_iterator end() const noexcept
     {
         return this->std::set<T>::end();
     }
+
     const_iterator cbegin() const noexcept
     {
         return this->std::set<T>::cbegin();
     }
+
     const_iterator cend() const noexcept
     {
         return this->std::set<T>::cend();
@@ -88,6 +96,7 @@ template <class T> struct MutableSetInternal : public Object::Internal, public s
     {
         return this->size();
     }
+
     void remove(const T& object)
     {
         auto position = this->find(object);
@@ -95,6 +104,7 @@ template <class T> struct MutableSetInternal : public Object::Internal, public s
             this->erase(position);
         }
     }
+
     void removeAll()
     {
         return this->clear();
@@ -104,14 +114,16 @@ template <class T> struct MutableSetInternal : public Object::Internal, public s
     {
         this->insert(object);
     }
+
     void append(MutableSetInternal<T> other)
     {
         for (auto object : other) {
             this->append(object);
         }
     }
+
     template <class... ConstructorArguments>
-    void emplaceAppend(ConstructorArguments &&... arguments)
+    void emplaceAppend(ConstructorArguments&&... arguments)
     {
         this->emplace(std::forward<ConstructorArguments>(arguments)...);
     }
@@ -122,18 +134,22 @@ template <class T> struct MutableSetInternal : public Object::Internal, public s
         NXA_ASSERT_TRUE(anyPos != this->cend());
         return *anyPos;
     }
+
     boolean contains(const T& object) const
     {
         return this->std::set<T>::count(object) != 0;
     }
+
     const_iterator find(const T& object) const
     {
         return this->std::set<T>::find(object);
     }
+
     iterator find(const T& object)
     {
         return this->std::set<T>::find(object);
     }
+
     void removeObjectAt(const_iterator objectPosition)
     {
         this->erase(objectPosition);
@@ -143,13 +159,14 @@ template <class T> struct MutableSetInternal : public Object::Internal, public s
     {
         auto indented = state.increaseIndent();
         auto result = MutableString::stringWithFormat(indented.indentedLine("<Set length=\"%ld\">"), this->length());
-        for (auto && item : *this) {
+
+        for (auto&& item : *this) {
             result.append(NxA::describe(item, indented));
         }
 
         result.append(indented.indentedLine("</Set>"));
 
-        return { std::move(result) };
+        return {std::move(result)};
     }
 
     // -- Overriden Object::Internal Instance Methods
@@ -158,11 +175,12 @@ template <class T> struct MutableSetInternal : public Object::Internal, public s
         NXA_ALOG("Illegal call.");
         return 0;
     }
+
     const character* className() const override
     {
         NXA_ALOG("Illegal call.");
         return nullptr;
     }
 };
-
+    
 }

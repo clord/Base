@@ -59,9 +59,8 @@
 
 namespace NxA {
 
-class String;
-
-class Exception : public std::runtime_error {
+class Exception : public std::runtime_error
+{
 public:
     // -- Constructors & Destructors
     Exception() = delete;
@@ -69,12 +68,13 @@ public:
     virtual ~Exception() { }
 };
 
-class FatalException : public std::logic_error {
+class FatalException : public std::logic_error
+{
 public:
     // -- Constructors & Destructors
     FatalException() = delete;
     explicit FatalException(const character* reason) : std::logic_error(reason) { }
     virtual ~FatalException() { }
 };
-
+    
 }

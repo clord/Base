@@ -39,9 +39,9 @@ using namespace NxA;
 
 String Date::formattedStringWithTimestampAndFormat(timestamp time, const character* format)
 {
-    boost::posix_time::time_facet *facet = new boost::posix_time::time_facet(format);
+    boost::posix_time::time_facet* facet = new boost::posix_time::time_facet(format);
     if (!facet) {
-        return { };
+        return {};
     }
 
     std::locale loc(std::cout.getloc(), facet);

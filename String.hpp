@@ -22,21 +22,21 @@
 #pragma once
 
 #include <Base/Types.hpp>
-#include <Base/Internal/MutableString.hpp>
 #include <Base/GeneratedObjectCode.hpp>
+#include <Base/Internal/MutableString.hpp>
 
 namespace NxA {
 
 class MutableString;
 class Blob;
-template <class T> class Array;
 
-class String {
+class String
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableStringInternal);
     NXA_GENERATED_OBJECT_METHODS_DECLARATIONS_FOR(String);
 
     friend MutableString;
-    friend bool operator< (const String&, const String&);
+    friend bool operator<(const String&, const String&);
 
 public:
     // -- Constructors/Destructors
@@ -48,29 +48,38 @@ public:
     explicit String(const std::string&&);
 
     // -- Provide a statically-sized character constant, which saves the runtime from computing the length.
-    template<count size> String(const character (&chars)[size]) : String{ chars, size - 1 } { }
+    template <count size>
+    String(const character (&chars)[size]) : String{chars, size - 1} { }
 
     // -- Factory Methods
     template <typename... FormatArguments>
     static String stringWithFormat(String format, FormatArguments&&... formatArguments)
     {
-        return String{MutableStringInternal{Internal::stringWithFormat(256, format.asUTF8(), MutableStringInternal::stringArgumentAsCharacter(formatArguments)...)}};
+        return String{Internal::stringWithFormat(256, format.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...)};
     }
 
     static String stringWithUTF8(const character* other)
     {
-        return { other, strlen(other) };
+        return {other, strlen(other)};
     }
     static String stringWithMemoryAndLength(const character* other, count length)
     {
-        return { other, length };
+        return {other, length};
     }
 
     static String stringWithRepeatedCharacter(count, character);
+
     static String stringWithUTF16AtAndSize(const byte*, count);
+
     static String stringWithUTF16(const Blob&);
+
     static String stringByFilteringNonPrintableCharactersIn(const String&);
-    static String stringByJoiningArrayWithString(const Array<String>&, String);
+
+    template <typename A, template <typename> class Implementation = MutableArrayInternal>
+    static String stringByJoiningArrayWithString(const A& array, String join)
+    {
+        return { Internal::stringByJoiningArrayWithString(array, join) };
+    }
 
     // -- Class Methods
     static uinteger32 hashFor(const character*);
@@ -125,15 +134,15 @@ public:
     count indexOfFirstOccurenceOf(const character*) const;
     count indexOfLastOccurenceOf(const character*) const;
 
-    template<typename Char, typename CharTraits>
-    friend inline ::std::basic_ostream<Char, CharTraits> &operator<<(::std::basic_ostream<Char, CharTraits> &os, const String &self)
+    template <typename Char, typename CharTraits>
+    friend inline ::std::basic_ostream<Char, CharTraits>& operator<<(::std::basic_ostream<Char, CharTraits>& os, const String& self)
     {
         return (os << self.asStdString());
     }
 };
 
 // -- Operators
-bool operator< (const String&, const String&);
-String operator "" _String(const character* str, count length);
-
+bool operator<(const String&, const String&);
+String operator"" _String(const character* str, count length);
+    
 }

@@ -58,17 +58,22 @@ using decimal3 = dec::decimal<3>;
 using decimal = decimal3;
 
 // -- Provide an optional type based on std::experimental::optional. TODO: change to std::optional in C++1y
+
 template <typename T>
 using Optional = std::experimental::optional<T>;
+
 using NullOptional = std::experimental::nullopt_t;
+
 constexpr NullOptional nothing{0};
+
 template <typename T>
-inline constexpr Optional<typename std::decay<T>::type>
-makeOptional(T&& v) {
+inline constexpr Optional<typename std::decay<T>::type> makeOptional(T&& v)
+{
     return Optional<typename std::decay<T>::type>(std::forward<T>(v));
 }
-template<typename T, typename Function>
-auto maybe(const NxA::Optional<T>& arg, Function && f) -> NxA::Optional<typename std::result_of<Function(T)>::type>
+
+template <typename T, typename Function>
+auto maybe(const NxA::Optional<T>& arg, Function&& f) -> NxA::Optional<typename std::result_of<Function(T)>::type>
 {
     if (!arg) {
         return nothing;
@@ -78,22 +83,28 @@ auto maybe(const NxA::Optional<T>& arg, Function && f) -> NxA::Optional<typename
 
 // -- Template used by default to produce the name of unknown types.
 template <typename T>
-struct TypeName {
-    static const character* get() {
+struct TypeName
+{
+    static const character* get()
+    {
         return T::staticClassName();
     }
 };
 
 template <typename T>
-struct TypeName<std::shared_ptr<T>> {
-    static const character* get() {
+struct TypeName<std::shared_ptr<T>>
+{
+    static const character* get()
+    {
         return TypeName<T>::get();
     }
 };
 
 template <typename T>
-struct TypeName<Optional<T>> {
-    static const character* get() {
+struct TypeName<Optional<T>>
+{
+    static const character* get()
+    {
         return TypeName<T>::get();
     }
 };
@@ -109,6 +120,15 @@ template <> struct TypeName<name> \
         return NXA_STR_VALUE_FOR_TYPE(name); \
     } \
 };
+
+template <class T>
+class MutableArrayInternal;
+
+template <class T, template <typename> class Implementation = MutableArrayInternal>
+class Array;
+
+template <class T, template <typename> class Implementation = MutableArrayInternal>
+class MutableArray;
 
 NXA_SPECIALIZE_TYPENAME_FOR_TYPE(boolean);
 

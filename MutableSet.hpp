@@ -35,10 +35,15 @@ namespace NxA {
 
 // -- Class
 
-template<typename T> class Set;
-template<typename T> class Array;
+template <typename T>
+class Set;
 
-template <class T> class MutableSet {
+template <typename T, template <typename> class>
+class Array;
+
+template <class T>
+class MutableSet
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableSetInternal<T>);
 
     std::shared_ptr<Internal> internal = std::make_shared<Internal>();
@@ -48,8 +53,8 @@ template <class T> class MutableSet {
 public:
     // -- Constructors/Destructors
     MutableSet() = default;
-    MutableSet(const MutableSet& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-    MutableSet(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
+    MutableSet(const MutableSet& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    MutableSet(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
     MutableSet(MutableSet&& other) = default;
     ~MutableSet() = default;
     MutableSet(const Set<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
@@ -91,7 +96,11 @@ public:
 
     // -- Operators
     MutableSet& operator=(MutableSet&& other) = default;
-    MutableSet& operator=(const MutableSet& other) { internal = std::make_shared<Internal>(*other.internal); return *this; }
+    MutableSet& operator=(const MutableSet& other)
+    {
+        internal = std::make_shared<Internal>(*other.internal);
+        return *this;
+    }
     bool operator==(const MutableSet& other) const
     {
         if (internal == other.internal) {
@@ -122,34 +131,42 @@ public:
     {
         return MutableSet::staticClassHash();
     }
+
     const character* className() const
     {
         return MutableSet::staticClassName();
     }
+
     boolean classNameIs(const character* className) const
     {
         return !::strcmp(MutableSet::staticClassName(), className);
     }
+
     iterator begin() noexcept
     {
         return internal->begin();
     }
+
     const_iterator begin() const noexcept
     {
         return internal->begin();
     }
+
     iterator end() noexcept
     {
         return internal->end();
     }
+
     const_iterator end() const noexcept
     {
         return internal->end();
     }
+
     const_iterator cbegin() const noexcept
     {
         return internal->cbegin();
     }
+
     const_iterator cend() const noexcept
     {
         return internal->cend();
@@ -170,8 +187,8 @@ public:
         return internal->append(object);
     }
 
-    template<class... ConstructorArguments>
-    void emplaceAppend(ConstructorArguments &&... arguments)
+    template <class... ConstructorArguments>
+    void emplaceAppend(ConstructorArguments&&... arguments)
     {
         internal->emplaceAppend(std::forward<ConstructorArguments>(arguments)...);
     }
@@ -182,24 +199,28 @@ public:
             internal->append(object);
         }
     }
+
     void append(const MutableSet<T>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
+
     void append(const Set<T>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
+
     void append(Set<T>& objects)
     {
         for (auto& object : objects) {
             internal->append(object);
         }
     }
+
     void append(Array<T>& objects)
     {
         for (auto& object : objects) {
@@ -211,14 +232,17 @@ public:
     {
         return internal->anyObject();
     }
+
     boolean contains(const T& object) const
     {
         return internal->contains(object);
     }
+
     iterator find(const T& object)
     {
         return internal->find(object);
     }
+
     const_iterator find(const T& object) const
     {
         return internal->find(object);

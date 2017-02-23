@@ -21,12 +21,10 @@
 
 #pragma once
 
-#include "Base/Assert.hpp"
-#include "Base/Describe.hpp"
-#include "Base/Types.hpp"
-#include "Base/MutableString.hpp"
-#include "Base/Internal/Object.hpp"
-
+#include <Base/Assert.hpp>
+#include <Base/Types.hpp>
+#include <Base/Internal/MutableString.hpp>
+#include <Base/Internal/Object.hpp>
 #include <vector>
 #include <initializer_list>
 
@@ -34,25 +32,24 @@ namespace NxA {
 
 // -- Forward Declarations
 
-template <class T> class MutableArrayInternal;
-
 // -- Utility Methods
 
 // -- This is a utility function to return the description of the content of an array.
-template <class T> String descriptionOfObjectsInArray(const MutableArrayInternal<T>&);
+template <class T>
+String descriptionOfObjectsInArray(const MutableArrayInternal<T>&);
 
 // -- Class
 
-template <class T> struct MutableArrayInternal : public Object::Internal, public std::vector<T>
+template <class T>
+struct MutableArrayInternal : public Object::Internal, public std::vector<T>
 {
     // -- Constructors/Destructors
     MutableArrayInternal() : std::vector<T>() { }
     MutableArrayInternal(const MutableArrayInternal& other) : std::vector<T>{ other } { }
-    MutableArrayInternal(std::vector<T>&& other) : std::vector<T>{ std::move(other) } { }
-    MutableArrayInternal(std::initializer_list<T> other) : std::vector<T>{other.begin(), other.end()} { }
-    template<typename V, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
-    MutableArrayInternal(const MutableArrayInternal<V>& other) : std::vector<T>{other.begin(), other.end()} { }
-
+    MutableArrayInternal(std::vector<T>&& other) : std::vector<T>{std::move(other)} { }
+    MutableArrayInternal(std::initializer_list<T> other) : std::vector<T>{ other.begin(), other.end() } { }
+    template <typename V, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
+    MutableArrayInternal(const MutableArrayInternal<V>& other) : std::vector<T>{ other.begin(), other.end() } { }
     virtual ~MutableArrayInternal() = default;
 
     // -- Iterators
@@ -65,6 +62,7 @@ template <class T> struct MutableArrayInternal : public Object::Internal, public
         NXA_ASSERT_TRUE(index >= 0 && index < this->length());
         return this->std::vector<T>::operator[](index);
     }
+
     T& operator[](count index)
     {
         NXA_ASSERT_TRUE(index >= 0 && index < this->length());
@@ -76,22 +74,27 @@ template <class T> struct MutableArrayInternal : public Object::Internal, public
     {
         return this->std::vector<T>::begin();
     }
+
     const_iterator begin() const noexcept
     {
         return this->std::vector<T>::begin();
     }
+
     iterator end() noexcept
     {
         return this->std::vector<T>::end();
     }
+
     const_iterator end() const noexcept
     {
         return this->std::vector<T>::end();
     }
+
     const_iterator cbegin() const noexcept
     {
         return this->std::vector<T>::cbegin();
     }
+
     const_iterator cend() const noexcept
     {
         return this->std::vector<T>::cend();
@@ -101,10 +104,12 @@ template <class T> struct MutableArrayInternal : public Object::Internal, public
     {
         return this->size();
     }
+
     void reserve(count amount)
     {
         this->std::vector<T>::reserve(amount);
     }
+
     void remove(const T& object)
     {
         auto position = this->find(object);
@@ -112,6 +117,7 @@ template <class T> struct MutableArrayInternal : public Object::Internal, public
             this->erase(position);
         }
     }
+
     void removeAll()
     {
         return this->clear();
@@ -121,14 +127,16 @@ template <class T> struct MutableArrayInternal : public Object::Internal, public
     {
         this->emplace_back(object);
     }
+
     void append(MutableArrayInternal<T> other)
     {
         for (auto object : other) {
             this->emplace_back(object);
         }
     }
+
     template <class... ConstructorArguments>
-    void emplaceAppend(ConstructorArguments &&... arguments)
+    void emplaceAppend(ConstructorArguments&&... arguments)
     {
         this->emplace_back(std::forward<ConstructorArguments>(arguments)...);
     }
@@ -143,57 +151,50 @@ template <class T> struct MutableArrayInternal : public Object::Internal, public
         NXA_ASSERT_TRUE(this->size() != 0);
         return this->std::vector<T>::operator[](0);
     }
+
     T& firstObject()
     {
         NXA_ASSERT_TRUE(this->size() != 0);
         return this->std::vector<T>::operator[](0);
     }
-    const  T& lastObject() const
+
+    const T& lastObject() const
     {
         count length = this->size();
         NXA_ASSERT_TRUE(length != 0);
         return this->std::vector<T>::operator[](length - 1);
     }
+
     T& lastObject()
     {
         count length = this->size();
         NXA_ASSERT_TRUE(length != 0);
         return this->std::vector<T>::operator[](length - 1);
     }
+
     boolean contains(const T& object) const
     {
         return this->find(object) != this->end();
     }
+
     const_iterator find(const T& object) const
     {
         return std::find(this->begin(), this->end(), object);
     }
+
     iterator find(const T& object)
     {
         return std::find(this->begin(), this->end(), object);
     }
+
     void removeObjectAt(const_iterator objectPosition)
     {
         this->erase(objectPosition);
     }
+
     void sort()
     {
         std::sort(this->std::vector<T>::begin(), this->std::vector<T>::end());
-    }
-
-    String description(const DescriberState& state) const
-    {
-        auto indented = state.increaseIndent();
-        if (this->length() == 0) {
-            return indented.indentedLine("<Array length=\"0\" />");
-        }
-        auto result = MutableString::stringWithFormat(indented.indentedLine("<Array length=\"%ld\">"), this->length());
-        for (auto && item : *this) {
-            result.append(NxA::describe(item, indented));
-        }
-        result.append(indented.indentedLine("</Array>"));
-
-        return { std::move(result) };
     }
 
     // -- Overriden Object::Internal Instance Methods
@@ -202,6 +203,7 @@ template <class T> struct MutableArrayInternal : public Object::Internal, public
         NXA_ALOG("Illegal call.");
         return 0;
     }
+
     const character* className() const override
     {
         NXA_ALOG("Illegal call.");

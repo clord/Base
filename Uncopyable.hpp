@@ -23,7 +23,8 @@
 
 namespace NxA {
 
-class Uncopyable {
+class Uncopyable
+{
 public:
     // -- Constructors & Destructors
     Uncopyable(const Uncopyable&) = delete;
@@ -36,5 +37,5 @@ protected:
     // -- Constructors & Destructors
     Uncopyable() = default;
 };
-
+    
 }

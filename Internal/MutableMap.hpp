@@ -31,7 +31,8 @@ namespace NxA {
 
 // -- Class
 
-template <typename Tkey, typename Tvalue> struct MutableMapInternal : public Object::Internal, public std::map<const Tkey, Tvalue>
+template <typename Tkey, typename Tvalue>
+struct MutableMapInternal : public Object::Internal, public std::map<const Tkey, Tvalue>
 {
     // -- Constructors/Destructors
     MutableMapInternal() : std::map<const Tkey, Tvalue>() { }
@@ -49,22 +50,27 @@ template <typename Tkey, typename Tvalue> struct MutableMapInternal : public Obj
     {
         return this->std::map<const Tkey, Tvalue>::begin();
     }
+
     const_iterator begin() const
     {
         return this->std::map<const Tkey, Tvalue>::begin();
     }
+
     const_iterator cbegin() const
     {
         return this->std::map<const Tkey, Tvalue>::cbegin();
     }
+
     iterator end()
     {
         return this->std::map<const Tkey, Tvalue>::end();
     }
+
     const_iterator end() const
     {
         return this->std::map<const Tkey, Tvalue>::end();
     }
+
     const_iterator cend() const
     {
         return this->std::map<const Tkey, Tvalue>::cend();
@@ -83,14 +89,16 @@ template <typename Tkey, typename Tvalue> struct MutableMapInternal : public Obj
             result.first->second = value;
         }
     }
+
     const Optional<Tvalue> maybeValueForKey(const Tkey& key) const
     {
         const_iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
-        if(pos == this->cend()) {
+        if (pos == this->cend()) {
             return NxA::nothing;
         }
         return {pos->second};
     }
+
     const Tvalue& valueForKey(const Tkey& key) const
     {
         const_iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
@@ -98,6 +106,7 @@ template <typename Tkey, typename Tvalue> struct MutableMapInternal : public Obj
 
         return pos->second;
     }
+
     Tvalue& valueForKey(const Tkey& key)
     {
         iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
@@ -105,14 +114,17 @@ template <typename Tkey, typename Tvalue> struct MutableMapInternal : public Obj
 
         return pos->second;
     }
+
     Tvalue& operator[](const Tkey& key)
     {
         return std::map<const Tkey, Tvalue>::operator[](key);
     }
+
     Tvalue& operator[](Tkey&& key)
     {
         return std::map<const Tkey, Tvalue>::operator[](std::move(key));
     }
+
     const Tvalue& operator[](const Tkey& key) const
     {
         return valueForKey(key);
@@ -125,10 +137,12 @@ template <typename Tkey, typename Tvalue> struct MutableMapInternal : public Obj
     {
         this->clear();
     }
+
     void removeValueForKey(const Tkey& key)
     {
         this->erase(key);
     }
+
     void removeValueAt(const_iterator position)
     {
         this->erase(position);
@@ -140,6 +154,7 @@ template <typename Tkey, typename Tvalue> struct MutableMapInternal : public Obj
         NXA_ALOG("Illegal call.");
         return 0;
     }
+
     const character* className() const override
     {
         NXA_ALOG("Illegal call.");

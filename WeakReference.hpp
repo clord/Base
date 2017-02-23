@@ -27,7 +27,9 @@
 
 namespace NxA {
 
-template <class T> class WeakReference : private std::weak_ptr<typename T::Internal> {
+template <class T>
+class WeakReference : private std::weak_ptr<typename T::Internal>
+{
 public:
     // -- Constructors & Destructors
     WeakReference() = default;
@@ -63,7 +65,7 @@ public:
     T get() const
     {
         NXA_ASSERT_TRUE(this->isValid());
-        return { this->std::weak_ptr<typename T::Internal>::lock() };
+        return {this->std::weak_ptr<typename T::Internal>::lock()};
     }
 
     void release()

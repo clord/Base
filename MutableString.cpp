@@ -19,49 +19,43 @@
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "Base/Types.hpp"
-#include "Base/MutableString.hpp"
-#include "Base/String.hpp"
-#include "Base/Internal/MutableString.hpp"
-#include "Base/Exception.hpp"
-#include "Base/Platform.hpp"
-#include "Base/Assert.hpp"
-#include "Base/Array.hpp"
+#include <Base/Types.hpp>
+#include <Base/MutableString.hpp>
+#include <Base/String.hpp>
+#include <Base/Internal/MutableString.hpp>
+#include <Base/Exception.hpp>
+#include <Base/Platform.hpp>
+#include <Base/Assert.hpp>
+#include <Base/Array.hpp>
 
 using namespace NxA;
 
 // -- Constructors/Destructors
 
-MutableString::MutableString() : internal{ std::make_shared<Internal>() } { }
-
-MutableString::MutableString(const String& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-
-MutableString::MutableString(const std::string& other) : internal{ std::make_shared<Internal>(other) } { }
-
-MutableString::MutableString(std::string&& other) : internal{ std::make_shared<Internal>(std::move(other)) } { }
-
-MutableString::MutableString(const character* other, size_t size) : internal{ std::make_shared<Internal>(other, size) } { }
-
-MutableString::MutableString(std::shared_ptr<Internal>&& other) : internal{ std::move(other) } { }
-
+MutableString::MutableString() : internal{std::make_shared<Internal>()} { }
+MutableString::MutableString(const String& other) : internal{std::make_shared<Internal>(*other.internal)} { }
+MutableString::MutableString(const std::string& other) : internal{std::make_shared<Internal>(other)} { }
+MutableString::MutableString(std::string&& other) : internal{std::make_shared<Internal>(std::move(other))} { }
+MutableString::MutableString(const character* other, size_t size) : internal{std::make_shared<Internal>(other, size)} { }
+MutableString::MutableString(std::shared_ptr<Internal>&& other) : internal{std::move(other)} { }
 MutableString::~MutableString() = default;
 
 // -- Factory Methods
 
 MutableString MutableString::stringWithUTF16(const Blob& other)
 {
-    return { Internal::stringWithUTF16(other) };
+    return {Internal::stringWithUTF16(other)};
 }
-
 
 MutableString MutableString::stringWithRepeatedCharacter(count number, character specificChar)
 {
-    return { Internal::stringWithRepeatedCharacter(number, specificChar) };
+    return {Internal::stringWithRepeatedCharacter(number, specificChar)};
 }
 
-MutableString MutableString::stringByJoiningArrayWithString(const Array<String>& array, String join)
+template <template <typename> class I>
+MutableString MutableString::stringByJoiningArrayWithString(const Array<String, I>& array, String join)
 {
-    return { Internal::stringByJoiningArrayWithString(array, join) };
+    return {Internal::stringByJoiningArrayWithString(array, join)};
 }
 
 // -- Operators
@@ -169,22 +163,22 @@ Array<String> MutableString::splitBySeparator(character separator) const
 
 MutableString MutableString::utfSeek(count skip) const
 {
-    return { internal->utfSeek(skip) };
+    return {internal->utfSeek(skip)};
 }
 
 MutableString MutableString::subString(count start, count end) const
 {
-    return { internal->subString(start, end) };
+    return {internal->subString(start, end)};
 }
 
 MutableString MutableString::lowerCaseString() const
 {
-    return { internal->lowerCaseString() };
+    return {internal->lowerCaseString()};
 }
 
 MutableString MutableString::upperCaseString() const
 {
-    return { internal->upperCaseString() };
+    return {internal->upperCaseString()};
 }
 
 boolean MutableString::hasPrefix(const String& prefix) const
@@ -237,7 +231,7 @@ count MutableString::indexOfLastOccurenceOf(const String& other) const
     return internal->indexOfLastOccurenceOf(other);
 }
 
-count MutableString::indexOfLastOccurenceOf(const character*  other) const
+count MutableString::indexOfLastOccurenceOf(const character* other) const
 {
     return internal->indexOfLastOccurenceOf(other);
 }

@@ -36,7 +36,9 @@ namespace NxA {
 
 // -- Class
 
-template <class T> class Set {
+template <class T>
+class Set
+{
     NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableSetInternal<T>);
 
     std::shared_ptr<Internal> internal = std::make_shared<Internal>();
@@ -47,11 +49,11 @@ public:
     // -- Constructors/Destructors
     Set() = default;
     Set(const Set<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    Set(std::initializer_list<T> other) : internal{std::make_shared<Internal>(other)} { }
+    Set(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
     Set(Set&& other) = default;
-    ~Set() = default;
-    Set(const MutableSet<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    Set(const MutableSet<T>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
     Set(MutableSet<T>&& other) : internal{ std::move(other.internal) } { }
+    ~Set() = default;
 
     // -- Class Methods
     static const character* staticClassName()
@@ -88,8 +90,18 @@ public:
     using iterator = const_iterator;
 
     // -- Operators
-    Set& operator=(const Set& other) { internal = std::make_shared<Internal>(*other.internal); return *this; }
-    Set& operator=(const MutableSet<T>& other) { internal = std::make_shared<Internal>(*other.internal); return *this; }
+    Set& operator=(const Set& other)
+    {
+        internal = std::make_shared<Internal>(*other.internal);
+        return *this;
+    }
+
+    Set& operator=(const MutableSet<T>& other)
+    {
+        internal = std::make_shared<Internal>(*other.internal);
+        return *this;
+    }
+
     bool operator==(const Set& other) const
     {
         if (internal == other.internal) {
@@ -98,10 +110,12 @@ public:
 
         return *internal == *(other.internal);
     }
+
     bool operator!=(const Set& other) const
     {
         return !this->operator==(other);
     }
+
     bool operator==(const MutableSet<T>& other) const
     {
         if (internal == other.internal) {
@@ -110,35 +124,43 @@ public:
 
         return *internal == *(other.internal);
     }
+
     bool operator!=(const MutableSet<T>& other) const
     {
         return !this->operator==(other);
     }
+
     // -- Instance Methods
     uinteger32 classHash() const
     {
         return Set::staticClassHash();
     }
+
     const character* className() const
     {
         return Set::staticClassName();
     }
+
     boolean classNameIs(const character* className) const
     {
         return !::strcmp(Set::staticClassName(), className);
     }
+
     const_iterator begin() const noexcept
     {
         return internal->begin();
     }
+
     const_iterator end() const noexcept
     {
         return internal->end();
     }
+
     const_iterator cbegin() const noexcept
     {
         return internal->cbegin();
     }
+
     const_iterator cend() const noexcept
     {
         return internal->cend();
@@ -153,10 +175,12 @@ public:
     {
         return internal->anyObject();
     }
+
     boolean contains(const T& object) const
     {
         return internal->contains(object);
     }
+
     const_iterator find(const T& object) const
     {
         return internal->find(object);
@@ -167,5 +191,5 @@ public:
         return internal->description(state);
     }
 };
-
+    
 }

@@ -57,6 +57,7 @@ class Array
 public:
     // -- Constructors/Destructors
     Array() : internal{ std::make_shared<Internal>() } { }
+    Array(const std::shared_ptr<Internal>& other) : internal{other} { }
     Array(const Array& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     Array(Array&& other) : internal{ std::move(other.internal) } { }
     Array(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
@@ -170,11 +171,6 @@ public:
     const character* className() const
     {
         return Array::staticClassName();
-    }
-
-    const Implementation<T>& implementation() const
-    {
-        return *(internal.get());
     }
 
     boolean classNameIs(const character* className) const

@@ -57,6 +57,7 @@ class MutableArray
 public:
     // -- Constructors/Destructors
     MutableArray() : internal{ std::make_shared<Internal>() } { }
+    MutableArray(const std::shared_ptr<Internal>& other) : internal{other.internal} { }
     MutableArray(const MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     MutableArray(MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     MutableArray(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
@@ -147,14 +148,6 @@ public:
     }
 
     // -- Instance Methods
-
-    const Implementation<T>& implementation() const {
-        return *(internal.get());
-    }
-
-    Implementation<T>& implementation() {
-        return *(internal.get());
-    }
 
     uinteger32 classHash() const
     {

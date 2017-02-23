@@ -158,6 +158,14 @@ public:
 
     // -- Instance Methods
 
+    const Implementation<T>& implementation() const {
+        return *(internal.get());
+    }
+
+    Implementation<T>& implementation() {
+        return *(internal.get());
+    }
+
     uinteger32 classHash() const
     {
         return MutableArray::staticClassHash();

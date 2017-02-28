@@ -304,6 +304,12 @@ public:
     {
         internal->sort();
     }
+
+    void rearrange(Array<T> movingTs, size_t to)
+    {
+        internal->rearrange(movingTs, to);
+    }
+
 };
     
 }

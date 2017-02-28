@@ -26,6 +26,7 @@
 #include <Base/Internal/MutableString.hpp>
 #include <Base/Internal/Object.hpp>
 #include <vector>
+#include <list>
 #include <initializer_list>
 
 namespace NxA {
@@ -195,6 +196,26 @@ struct MutableArrayInternal : public Object::Internal, public std::vector<T>
     void sort()
     {
         std::sort(this->std::vector<T>::begin(), this->std::vector<T>::end());
+    }
+
+    void rearrange(Array<T> movingTs, size_t to)
+    {
+        NXA_ASSERT_TRUE(to <= this->length() && to >= 0);
+        NXA_ASSERT_TRUE(movingTs.length() <= this->length());
+
+        std::list<T> listTs{std::begin(*this), std::end(*this)};
+        auto insertion = std::begin(listTs);
+        std::advance(insertion, to);
+
+        for (auto&& movingT : movingTs) {
+            auto elem = std::find(std::begin(listTs), std::end(listTs), movingT);
+            NXA_ASSERT_TRUE(elem != std::end(listTs));
+            listTs.splice(insertion, listTs, elem);
+        }
+
+        NXA_ASSERT_TRUE(listTs.size() == this->length());
+
+        std::copy(std::begin(listTs), std::end(listTs), std::begin(*this));
     }
 
     // -- Overriden Object::Internal Instance Methods

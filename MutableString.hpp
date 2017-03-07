@@ -31,8 +31,6 @@ namespace NxA {
 
 class Blob;
 class MutableStringInternal;
-template <class T, template <typename> class I>
-class Array;
 
 // -- Public Interface
 

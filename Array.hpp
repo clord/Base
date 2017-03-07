@@ -39,20 +39,20 @@ namespace NxA {
 
 // -- Class
 
-template <class T, template <typename> class Implementation>
+template <class T, template <typename, typename...> class Implementation, typename... Rest>
 class Array
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(Implementation<T>);
+    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(Implementation<T, Rest...>);
 
     std::shared_ptr<Internal> internal;
 
-    template <typename V, template <typename> class I>
+    template <typename V, template <typename, typename...> class I, typename... R>
     friend class MutableArray;
 
-    template <typename V, template <typename> class I>
+    template <typename V, template <typename, typename...> class I, typename... R>
     friend class Array;
 
-    friend Implementation<T>;
+    friend Implementation<T, Rest...>;
 
 public:
     // -- Constructors/Destructors
@@ -61,11 +61,11 @@ public:
     Array(const Array& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     Array(Array&& other) : internal{ std::move(other.internal) } { }
     Array(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
-    Array(MutableArray<T, Implementation>&& other) : internal{ std::move(other.internal) } { }
+    Array(MutableArray<T, Implementation, Rest...>&& other) : internal{ std::move(other.internal) } { }
     Array(std::vector<T>&& other) : internal{ std::make_shared<Internal>(std::move(other)) } { }
-    template <template <typename> class I>
+    template <template <typename, typename...> class I>
     Array(const MutableArray<T, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    template <typename V, template <typename> class I, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
+    template <typename V, template <typename, typename...> class I, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
     Array(const Array<V, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     ~Array() { }
 
@@ -115,7 +115,7 @@ public:
         return *this;
     }
 
-    template <template <typename> class I>
+    template <template <typename, typename...> class I>
     Array& operator=(const MutableArray<T, I>& other)
     {
         internal = std::make_shared<Internal>(*other.internal);
@@ -136,7 +136,7 @@ public:
         return !this->operator==(other);
     }
 
-    template <template <typename> class I>
+    template <template <typename, typename...> class I>
     bool operator==(const MutableArray<T, I>& other) const
     {
         if (internal == other.internal) {
@@ -146,7 +146,7 @@ public:
         return *internal == *(other.internal);
     }
 
-    template <template <typename> class I>
+    template <template <typename, typename...> class I>
     bool operator!=(const MutableArray<T, I>& other) const
     {
         return !this->operator==(other);

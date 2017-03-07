@@ -39,20 +39,20 @@ namespace NxA {
 
 // -- Class
 
-template <class T, template <typename> class Implementation>
+template <class T, template <typename, typename...> class Implementation, typename... Rest>
 class MutableArray
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(Implementation<T>);
+    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(Implementation<T, Rest...>);
 
     std::shared_ptr<Internal> internal;
 
-    template <typename V, template <typename> class I>
+    template <typename V, template <typename, typename...> class I, typename... R>
     friend class MutableArray;
 
-    template <typename V, template <typename> class I>
+    template <typename V, template <typename, typename...> class I, typename... R>
     friend class Array;
 
-    friend Implementation<T>;
+    friend Implementation<T, Rest...>;
 
 public:
     // -- Constructors/Destructors
@@ -62,7 +62,7 @@ public:
     MutableArray(MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     MutableArray(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
     MutableArray(MutableArray<T>&& other) : internal{ std::move(other.internal) } { }
-    template <template <typename> class I>
+    template <template <typename, typename...> class I>
     MutableArray(const Array<T, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     ~MutableArray() = default;
 
@@ -121,7 +121,7 @@ public:
         return !this->operator==(other);
     }
 
-    template <template <typename> class I>
+    template <template <typename, typename...> class I>
     bool operator==(const Array<T, I>& other) const
     {
         if (internal == other.internal) {
@@ -131,7 +131,7 @@ public:
         return *internal == *(other.internal);
     }
 
-    template <template <typename> class I>
+    template <template <typename, typename...> class I>
     bool operator!=(const Array<T, I>& other) const
     {
         return !this->operator==(other);
@@ -224,7 +224,7 @@ public:
         }
     }
 
-    template <template <typename> class I>
+    template <template <typename, typename...> class I>
     void append(const Array<T, I>& objects)
     {
         for (auto& object : objects) {
@@ -232,7 +232,7 @@ public:
         }
     }
 
-    template <template <typename> class I>
+    template <template <typename, typename...> class I>
     void append(Array<T, I>& objects)
     {
         for (auto& object : objects) {

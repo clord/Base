@@ -124,10 +124,10 @@ template <> struct TypeName<name> \
 template <class T>
 class MutableArrayInternal;
 
-template <class T, template <typename> class Implementation = MutableArrayInternal>
+template <class T, template <typename, typename...> class Implementation = MutableArrayInternal, typename... Rest>
 class Array;
 
-template <class T, template <typename> class Implementation = MutableArrayInternal>
+template <class T, template <typename, typename...> class Implementation = MutableArrayInternal, typename... Rest>
 class MutableArray;
 
 NXA_SPECIALIZE_TYPENAME_FOR_TYPE(boolean);

@@ -38,9 +38,6 @@ namespace NxA {
 template <typename T>
 class Set;
 
-template <typename T, template <typename> class>
-class Array;
-
 template <class T>
 class MutableSet
 {

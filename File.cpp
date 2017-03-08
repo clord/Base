@@ -58,10 +58,15 @@ Blob File::readFileAt(const String& path)
         throw FileError::exceptionWith("Error reading file at '%s'.", path.asUTF8());
     }
 
-    std::fstream file(path.asUTF8(), std::ios::in | std::ios::binary);
-    file.read(reinterpret_cast<character*>(fileData.get()), fileSize);
+    try {
+        std::fstream file(path.asUTF8(), std::ios::in | std::ios::binary);
+        file.read(reinterpret_cast<character*>(fileData.get()), fileSize);
 
-    if (file.rdstate() & std::ifstream::failbit) {
+        if (file.rdstate() & std::ifstream::failbit) {
+            throw FileError::exceptionWith("Error reading file at '%s'.", path.asUTF8());
+        }
+    }
+    catch (const boost::filesystem::filesystem_error& e) {
         throw FileError::exceptionWith("Error reading file at '%s'.", path.asUTF8());
     }
 
@@ -75,8 +80,13 @@ void File::writeBlobToFileAt(const Blob& content, const String& path)
     std::fstream file(path.asUTF8(), std::ios::out | std::ios::binary);
     file.write(reinterpret_cast<const character*>(content.data()), content.size());
 
-    if (file.rdstate() & std::ifstream::failbit) {
-        throw FileError::exceptionWith("Error writing to file at '%s'.", path.asUTF8());
+    try {
+        if (file.rdstate() & std::ifstream::failbit) {
+            throw FileError::exceptionWith("Error writing to file at '%s'.", path.asUTF8());
+        }
+    }
+    catch (const boost::filesystem::filesystem_error& e) {
+        throw FileError::exceptionWith("Error reading file at '%s'.", path.asUTF8());
     }
 }
 
@@ -172,8 +182,13 @@ boolean File::directoryExistsAt(const String& path)
         return false;
     }
 
-    boost::filesystem::path boostPath(path.asUTF8());
-    return (boost::filesystem::exists(boostPath) && boost::filesystem::is_directory(boostPath));
+    try {
+        boost::filesystem::path boostPath(path.asUTF8());
+        return (boost::filesystem::exists(boostPath) && boost::filesystem::is_directory(boostPath));
+    }
+    catch (const boost::filesystem::filesystem_error& e) {
+        return false;
+    }
 }
 
 count File::sizeOfFileAt(const String& path)
@@ -182,8 +197,13 @@ count File::sizeOfFileAt(const String& path)
         return 0;
     }
 
-    boost::filesystem::path boostPath(path.asUTF8());
-    return (boost::filesystem::file_size(boostPath));
+    try {
+        boost::filesystem::path boostPath(path.asUTF8());
+        return (boost::filesystem::file_size(boostPath));
+    }
+    catch (...) {
+        throw FileError::exceptionWith("Error getting size of file at '%s'.", path.asUTF8());
+    }
 }
 
 void File::createDirectoryAt(const String& path)
@@ -205,17 +225,22 @@ Array<String> File::pathsForFilesInDirectory(const String& path)
 
     MutableArray<String> pathsFound;
 
-    if (File::directoryExistsAt(path)) {
-        boost::filesystem::path boostPath(path.asUTF8());
-        boost::filesystem::directory_iterator end_iterator;
+    try {
+        if (File::directoryExistsAt(path)) {
+            boost::filesystem::path boostPath(path.asUTF8());
+            boost::filesystem::directory_iterator end_iterator;
 
-        // cycle through the directory
-        for (boost::filesystem::directory_iterator iterator(boostPath); iterator != end_iterator; ++iterator) {
-            auto& pathFound = iterator->path();
-            if (boost::filesystem::is_regular_file(pathFound)) {
-                pathsFound.append(String::stringWithUTF8(pathFound.c_str()));
+            // cycle through the directory
+            for (boost::filesystem::directory_iterator iterator(boostPath); iterator != end_iterator; ++iterator) {
+                auto& pathFound = iterator->path();
+                if (boost::filesystem::is_regular_file(pathFound)) {
+                    pathsFound.append(String::stringWithUTF8(pathFound.c_str()));
+                }
             }
         }
+    }
+    catch (const boost::filesystem::filesystem_error& e) {
+        throw FileError::exceptionWith("Error listing content of directory at '%s'.", path.asUTF8());
     }
 
     return {std::move(pathsFound)};
@@ -261,8 +286,13 @@ timestamp File::modificationDateInSecondsSince1970ForFile(const String& path)
 {
     NXA_ASSERT_TRUE(path.length() > 0);
 
-    boost::filesystem::path boostPath(path.asUTF8());
-    return (boost::filesystem::last_write_time(boostPath));
+    try {
+        boost::filesystem::path boostPath(path.asUTF8());
+        return (boost::filesystem::last_write_time(boostPath));
+    }
+    catch (const boost::filesystem::filesystem_error& e) {
+        throw FileError::exceptionWith("Error getting modification time at '%s'.", path.asUTF8());
+    }
 }
 
 void File::setModificationDateInSecondsSince1970ForFile(timestamp modificationDateInSeconds, const String& path)

@@ -63,8 +63,8 @@ public:
     Array(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
     Array(MutableArray<T, Implementation, Rest...>&& other) : internal{ std::move(other.internal) } { }
     Array(std::vector<T>&& other) : internal{ std::make_shared<Internal>(std::move(other)) } { }
-    template <template <typename, typename...> class I>
-    Array(const MutableArray<T, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    template <template <typename, typename...> class I, typename... R>
+    Array(const MutableArray<T, I, R...>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     template <typename V, template <typename, typename...> class I, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
     Array(const Array<V, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     ~Array() { }

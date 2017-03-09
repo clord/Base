@@ -57,13 +57,15 @@ class MutableArray
 public:
     // -- Constructors/Destructors
     MutableArray() : internal{ std::make_shared<Internal>() } { }
-    MutableArray(const std::shared_ptr<Internal>& other) : internal{other.internal} { }
+    MutableArray(const std::shared_ptr<Internal>& other) : internal{other} { }
     MutableArray(const MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     MutableArray(MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     MutableArray(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
     MutableArray(MutableArray<T>&& other) : internal{ std::move(other.internal) } { }
-    template <template <typename, typename...> class I>
-    MutableArray(const Array<T, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    template <template <typename, typename...> class I, typename... R>
+    MutableArray(const MutableArray<T, I, R...>& other) : internal{ std::make_shared<Internal>(std::vector<T>{other.internal->begin(), other.internal->end()}) } { }
+    template <template <typename, typename...> class I, typename... R>
+    MutableArray(const Array<T, I, R...>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     ~MutableArray() = default;
 
     // -- Class Methods

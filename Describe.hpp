@@ -120,7 +120,7 @@ struct Describer<dec::decimal<i>>
 template <typename T>
 struct Describer<Optional<T>>
 {
-    static String describeWithState(Optional<T> item, const DescriberState& state)
+    static String describeWithState(const Optional<T>& item, const DescriberState& state)
     {
         if (!item) {
             auto innerState = state.increaseIndent();
@@ -131,10 +131,10 @@ struct Describer<Optional<T>>
     }
 };
 
-template <typename T, template <typename> class I>
-struct Describer<Array<T, I>>
+template <typename T, template <typename> class I, typename... Rest>
+struct Describer<Array<T, I, Rest...>>
 {
-    static String describeWithState(Array<T, I> items, const DescriberState& state)
+    static String describeWithState(const Array<T, I, Rest...>& items, const DescriberState& state)
     {
         auto indented = state.increaseIndent();
 
@@ -154,10 +154,10 @@ struct Describer<Array<T, I>>
     }
 };
 
-template <typename T, template <typename> class I>
-struct Describer<MutableArray<T, I>>
+template <typename T, template <typename> class I, typename... Rest>
+struct Describer<MutableArray<T, I, Rest...>>
 {
-    static String describeWithState(MutableArray<T, I> items, const DescriberState& state)
+    static String describeWithState(const MutableArray<T, I, Rest...>& items, const DescriberState& state)
     {
         auto indented = state.increaseIndent();
 

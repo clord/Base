@@ -61,7 +61,7 @@ public:
     Array(const Array& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     Array(Array&& other) : internal{ std::move(other.internal) } { }
     Array(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
-    Array(MutableArray<T, Implementation, Rest...>&& other) : internal{ std::move(other.internal) } { }
+    Array(MutableArray<T, Implementation, Rest...>&& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     Array(std::vector<T>&& other) : internal{ std::make_shared<Internal>(std::move(other)) } { }
     template <template <typename, typename...> class I, typename... R>
     Array(const MutableArray<T, I, R...>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }

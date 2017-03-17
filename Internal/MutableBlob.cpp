@@ -65,7 +65,7 @@ char base64_encode_value(char value_in)
     return encoding[(int)value_in];
 }
 
-int base64_encode_block(const char* plaintext_in, int length_in, char* code_out, base64_encodestate* state_in)
+int base64_encode_block(const char* plaintext_in, count length_in, char* code_out, base64_encodestate* state_in)
 {
     const char* plainchar = plaintext_in;
     const char* const plaintextend = plaintext_in + length_in;
@@ -160,7 +160,7 @@ void base64_init_decodestate(base64_decodestate* state_in)
     state_in->plainchar = 0;
 }
 
-int base64_decode_block(const char* code_in, const int length_in, char* plaintext_out, base64_decodestate* state_in)
+int base64_decode_block(const char* code_in, const count length_in, char* plaintext_out, base64_decodestate* state_in)
 {
     const char* codechar = code_in;
     char* plainchar = plaintext_out;
@@ -168,8 +168,6 @@ int base64_decode_block(const char* code_in, const int length_in, char* plaintex
 
     *plainchar = state_in->plainchar;
 
-// -- Static analyzer trigger a false positive in the code below.
-#ifndef __clang_analyzer__
     switch (state_in->step) {
         while (1) {
             case step_a:
@@ -216,7 +214,7 @@ int base64_decode_block(const char* code_in, const int length_in, char* plaintex
                 *plainchar++ |= (fragment & 0x03f);
         }
     }
-#endif
+
     /* control should not reach here */
     return static_cast<int>(plainchar - plaintext_out);
 }
@@ -398,13 +396,14 @@ String MutableBlobInternal::base64StringFor(const byte* memory, count size)
     base64_encodestate encodeState;
     base64_init_encodestate(&encodeState);
 
-    character codeOut[size * 2];
-    int codeLength = base64_encode_block(reinterpret_cast<const char*>(memory), static_cast<int>(size), codeOut, &encodeState);
+    auto result = MutableBlobInternal::blobWithCapacity(size * 2);
+    auto* codeOut = reinterpret_cast<char*>(result->data());
+    int codeLength = base64_encode_block(reinterpret_cast<const char*>(memory), size, codeOut, &encodeState);
     codeLength += base64_encode_blockend(codeOut + codeLength, &encodeState);
-    NXA_ASSERT_TRUE(codeLength <= sizeof(codeOut));
+    NXA_ASSERT_TRUE(codeLength <= size * 2);
 
-    auto result = String::stringWithMemoryAndLength(codeOut, codeLength);
-    return result;
+    auto resultString = String::stringWithMemoryAndLength(codeOut, codeLength);
+    return resultString;
 }
 
 // -- Factory Methods
@@ -419,11 +418,11 @@ std::shared_ptr<MutableBlobInternal> MutableBlobInternal::blobWithBase64String(c
     base64_init_decodestate(&decodeState);
 
     count lengthIn = string.length();
-    character codeOut[lengthIn];
-    count codeLength = base64_decode_block(string.asUTF8(), static_cast<int>(string.length()), codeOut, &decodeState);
-    NXA_ASSERT_TRUE(codeLength <= sizeof(codeOut));
-
-    return MutableBlobInternal::blobWithMemoryAndSize(reinterpret_cast<byte*>(codeOut), codeLength);
+    auto result = MutableBlobInternal::blobWithCapacity(lengthIn);
+    count codeLength = base64_decode_block(string.asUTF8(), lengthIn, reinterpret_cast<char*>(result->data()), &decodeState);
+    NXA_ASSERT_TRUE(codeLength <= lengthIn);
+    result->resize(codeLength);
+    return result;
 }
 
 std::shared_ptr<MutableBlobInternal> MutableBlobInternal::blobWithStringWithTerminator(const String& string)

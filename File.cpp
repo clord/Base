@@ -35,7 +35,7 @@
 #include <fstream>
 #include <memory>
 #include <string>
-#include <errno.h>
+#include <cerrno>
 #include <dirent.h>
 #include <pwd.h>
 
@@ -90,7 +90,7 @@ void File::deleteFileAt(const String& path)
 String File::pathSeparator()
 {
     if (Platform::CurrentPlatform == Platform::Kind::Windows) {
-        return String("\\");
+        return String(R"(\)");
     }
     else {
         return String("/");
@@ -102,8 +102,8 @@ String File::joinPaths(const String& first, String second)
     MutableString result(first);
 
     if (Platform::CurrentPlatform == Platform::Kind::Windows) {
-        if (!result.hasPostfix("\\")) {
-            result.append("\\");
+        if (!result.hasPostfix(R"(\)")) {
+            result.append(R"(\)");
         }
     }
     else {
@@ -127,7 +127,7 @@ String File::removePrefixFromPath(const String& prefix, const String& path)
 
     const character* separator;
     if (Platform::CurrentPlatform == Platform::Kind::Windows) {
-        separator = "\\";
+        separator = R"(\)";
     }
     else {
         separator = "/";

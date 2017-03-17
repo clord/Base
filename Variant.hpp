@@ -22,6 +22,7 @@
 #pragma once
 
 #include <Base/Types.hpp>
+#include <Base/Exception.hpp>
 
 #include <cstddef>
 #include <cstdint>

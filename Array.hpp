@@ -67,7 +67,7 @@ public:
     Array(const MutableArray<T, I, R...>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
     template <typename V, template <typename, typename...> class I, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
     Array(const Array<V, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    ~Array() { }
+    ~Array() = default;
 
     // -- Class Methods
     static const character* staticClassName()
@@ -85,7 +85,7 @@ public:
         if (!buffer) {
             const character* format = "Array<%s>";
             const character* valueTypeName = TypeName<T>::get();
-            count needed = snprintf(NULL, 0, format, valueTypeName) + 1;
+            count needed = snprintf(nullptr, 0, format, valueTypeName) + 1;
             buffer = std::make_unique<character[]>(needed);
             snprintf(buffer.get(), needed, format, valueTypeName);
         }

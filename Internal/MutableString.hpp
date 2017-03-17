@@ -59,7 +59,7 @@ struct MutableStringInternal : public Object::Internal, public std::string
         NXA_ASSERT_NOT_NULL(other);
     }
 
-    virtual ~MutableStringInternal() = default;
+    ~MutableStringInternal() override = default;
 
     template <typename... Args>
     static MutableStringInternal stringWithFormat(count sizeGuess, const character* format, Args&&... args)

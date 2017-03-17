@@ -31,7 +31,7 @@ using namespace NxA;
 
 float Platform::bigEndianFloatValueAt(const byte* pointer)
 {
-    const character* charsPtr = reinterpret_cast<const character*>(pointer);
+    const auto* charsPtr = reinterpret_cast<const character*>(pointer);
     uint32_t bigEndianVersion =
         ((charsPtr[0] << 24) & 0xff000000) | ((charsPtr[1] << 16) & 0xff0000) | ((charsPtr[2] << 8) & 0xff00) | (charsPtr[3] & 0xff);
     return *reinterpret_cast<float*>(&bigEndianVersion);
@@ -39,20 +39,20 @@ float Platform::bigEndianFloatValueAt(const byte* pointer)
 
 uinteger32 Platform::bigEndianUInteger32ValueAt(const byte* pointer)
 {
-    const character* charsPtr = reinterpret_cast<const character*>(pointer);
+    const auto* charsPtr = reinterpret_cast<const character*>(pointer);
     return ((charsPtr[0] << 24) & 0xff000000) | ((charsPtr[1] << 16) & 0xff0000) | ((charsPtr[2] << 8) & 0xff00) | (charsPtr[3] & 0xff);
 }
 
 uinteger16 Platform::bigEndianUInteger16ValueAt(const byte* pointer)
 {
-    const character* charsPtr = reinterpret_cast<const character*>(pointer);
+    const auto* charsPtr = reinterpret_cast<const character*>(pointer);
     return ((charsPtr[0] << 8) & 0xff00) | (charsPtr[1] & 0xff);
 }
 
 void Platform::writeBigEndianFloatValueAt(float value, byte* pointer)
 {
-    character* charsPtr = reinterpret_cast<character*>(pointer);
-    const character* valuePtr = reinterpret_cast<const character*>(&value);
+    auto* charsPtr = reinterpret_cast<character*>(pointer);
+    const auto* valuePtr = reinterpret_cast<const character*>(&value);
     charsPtr[0] = valuePtr[3];
     charsPtr[1] = valuePtr[2];
     charsPtr[2] = valuePtr[1];
@@ -61,7 +61,7 @@ void Platform::writeBigEndianFloatValueAt(float value, byte* pointer)
 
 void Platform::writeBigEndianUInteger32ValueAt(uinteger32 value, byte* pointer)
 {
-    character* charsPtr = reinterpret_cast<character*>(pointer);
+    auto* charsPtr = reinterpret_cast<character*>(pointer);
     charsPtr[0] = (value >> 24) & 0xff;
     charsPtr[1] = (value >> 16) & 0xff;
     charsPtr[2] = (value >> 8) & 0xff;
@@ -70,7 +70,7 @@ void Platform::writeBigEndianUInteger32ValueAt(uinteger32 value, byte* pointer)
 
 void Platform::writeBigEndianUInteger16ValueAt(uinteger16 value, byte* pointer)
 {
-    character* charsPtr = reinterpret_cast<character*>(pointer);
+    auto* charsPtr = reinterpret_cast<character*>(pointer);
     charsPtr[0] = (value >> 8) & 0xff;
     charsPtr[1] = value & 0xff;
 }

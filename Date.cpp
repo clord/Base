@@ -24,7 +24,7 @@
 
 #include <iostream>
 #include <ctime>
-#include <time.h>
+#include <ctime>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"

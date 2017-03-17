@@ -22,6 +22,7 @@
 // -- Base64 encoder/decoder
 
 #include <typeinfo>
+#include <Base/Types.hpp>
 
 namespace NxA {
 
@@ -31,31 +32,24 @@ namespace NxA {
  For details, see http://sourceforge.net/projects/libb64
  */
 
-typedef enum { step_A, step_B, step_C } base64_encodestep;
+enum class base64_encodestep { step_A, step_B, step_C };
 
-typedef struct
+struct base64_encodestate
 {
-    base64_encodestep step;
-    char result;
-    int stepcount;
-} base64_encodestate;
+    base64_encodestep step{base64_encodestep::step_A};
+    char result{0};
+    int stepcount{0};
+};
 
-typedef enum { step_a, step_b, step_c, step_d } base64_decodestep;
+enum class base64_decodestep { step_a, step_b, step_c, step_d };
 
-typedef struct
+struct base64_decodestate
 {
-    base64_decodestep step;
-    char plainchar;
-} base64_decodestate;
+    base64_decodestep step{base64_decodestep::step_a};
+    char plainchar{0};
+};
 
 const int CHARS_PER_LINE = 72;
-
-void base64_init_encodestate(base64_encodestate* state_in)
-{
-    state_in->step = step_A;
-    state_in->result = 0;
-    state_in->stepcount = 0;
-}
 
 char base64_encode_value(char value_in)
 {
@@ -76,31 +70,31 @@ int base64_encode_block(const char* plaintext_in, count length_in, char* code_ou
     result = state_in->result;
 
     switch (state_in->step) {
-        while (1) {
-            case step_A:
+        while (true) {
+            case base64_encodestep::step_A:
                 if (plainchar == plaintextend) {
                     state_in->result = result;
-                    state_in->step = step_A;
+                    state_in->step = base64_encodestep::step_A;
                     return static_cast<int>(codechar - code_out);
                 }
                 fragment = *plainchar++;
                 result = (fragment & 0x0fc) >> 2;
                 *codechar++ = base64_encode_value(result);
                 result = (fragment & 0x003) << 4;
-            case step_B:
+            case base64_encodestep::step_B:
                 if (plainchar == plaintextend) {
                     state_in->result = result;
-                    state_in->step = step_B;
+                    state_in->step = base64_encodestep::step_B;
                     return static_cast<int>(codechar - code_out);
                 }
                 fragment = *plainchar++;
                 result |= (fragment & 0x0f0) >> 4;
                 *codechar++ = base64_encode_value(result);
                 result = (fragment & 0x00f) << 2;
-            case step_C:
+            case base64_encodestep::step_C:
                 if (plainchar == plaintextend) {
                     state_in->result = result;
-                    state_in->step = step_C;
+                    state_in->step = base64_encodestep::step_C;
                     return static_cast<int>(codechar - code_out);
                 }
                 fragment = *plainchar++;
@@ -125,16 +119,16 @@ int base64_encode_blockend(char* code_out, base64_encodestate* state_in)
     char* codechar = code_out;
 
     switch (state_in->step) {
-        case step_B:
+        case base64_encodestep::step_B:
             *codechar++ = base64_encode_value(state_in->result);
             *codechar++ = '=';
             *codechar++ = '=';
             break;
-        case step_C:
+        case base64_encodestep::step_C:
             *codechar++ = base64_encode_value(state_in->result);
             *codechar++ = '=';
             break;
-        case step_A:
+        case base64_encodestep::step_A:
             break;
     }
     *codechar++ = '\n';
@@ -154,12 +148,6 @@ int base64_decode_value(char value_in)
     return decoding[(int)value_in];
 }
 
-void base64_init_decodestate(base64_decodestate* state_in)
-{
-    state_in->step = step_a;
-    state_in->plainchar = 0;
-}
-
 int base64_decode_block(const char* code_in, const count length_in, char* plaintext_out, base64_decodestate* state_in)
 {
     const char* codechar = code_in;
@@ -169,21 +157,21 @@ int base64_decode_block(const char* code_in, const count length_in, char* plaint
     *plainchar = state_in->plainchar;
 
     switch (state_in->step) {
-        while (1) {
-            case step_a:
+        while (true) {
+            case base64_decodestep::step_a:
                 do {
                     if (codechar == code_in + length_in) {
-                        state_in->step = step_a;
+                        state_in->step = base64_decodestep::step_a;
                         state_in->plainchar = *plainchar;
                         return static_cast<int>(plainchar - plaintext_out);
                     }
                     fragment = (char)base64_decode_value(*codechar++);
                 } while (fragment < 0);
                 *plainchar = (fragment & 0x03f) << 2;
-            case step_b:
+            case base64_decodestep::step_b:
                 do {
                     if (codechar == code_in + length_in) {
-                        state_in->step = step_b;
+                        state_in->step = base64_decodestep::step_b;
                         state_in->plainchar = *plainchar;
                         return static_cast<int>(plainchar - plaintext_out);
                     }
@@ -191,10 +179,10 @@ int base64_decode_block(const char* code_in, const count length_in, char* plaint
                 } while (fragment < 0);
                 *plainchar++ |= (fragment & 0x030) >> 4;
                 *plainchar = (fragment & 0x00f) << 4;
-            case step_c:
+            case base64_decodestep::step_c:
                 do {
                     if (codechar == code_in + length_in) {
-                        state_in->step = step_c;
+                        state_in->step = base64_decodestep::step_c;
                         state_in->plainchar = *plainchar;
                         return static_cast<int>(plainchar - plaintext_out);
                     }
@@ -202,10 +190,10 @@ int base64_decode_block(const char* code_in, const count length_in, char* plaint
                 } while (fragment < 0);
                 *plainchar++ |= (fragment & 0x03c) >> 2;
                 *plainchar = (fragment & 0x003) << 6;
-            case step_d:
+            case base64_decodestep::step_d:
                 do {
                     if (codechar == code_in + length_in) {
-                        state_in->step = step_d;
+                        state_in->step = base64_decodestep::step_d;
                         state_in->plainchar = *plainchar;
                         return static_cast<int>(plainchar - plaintext_out);
                     }
@@ -274,7 +262,7 @@ static FORCE_INLINE uint64_t fmix64(uint64_t k)
 
 void MurmurHash3_x64_128(const void* key, const int len, const uint32_t seed, void* out)
 {
-    const uint8_t* data = (const uint8_t*)key;
+    const auto* data = (const uint8_t*)key;
     const int nblocks = len / 16;
     int i;
 
@@ -287,7 +275,7 @@ void MurmurHash3_x64_128(const void* key, const int len, const uint32_t seed, vo
     //----------
     // body
 
-    const uint64_t* blocks = (const uint64_t*)(data);
+    const auto* blocks = (const uint64_t*)(data);
 
     for (i = 0; i < nblocks; i++) {
         uint64_t k1 = getblock(blocks, i * 2 + 0);
@@ -315,7 +303,7 @@ void MurmurHash3_x64_128(const void* key, const int len, const uint32_t seed, vo
     //----------
     // tail
 
-    const uint8_t* tail = (const uint8_t*)(data + nblocks * 16);
+    const auto* tail = (const uint8_t*)(data + nblocks * 16);
 
     uint64_t k1 = 0;
     uint64_t k2 = 0;
@@ -394,7 +382,6 @@ using namespace NxA;
 String MutableBlobInternal::base64StringFor(const byte* memory, count size)
 {
     base64_encodestate encodeState;
-    base64_init_encodestate(&encodeState);
 
     auto result = MutableBlobInternal::blobWithCapacity(size * 2);
     auto* codeOut = reinterpret_cast<char*>(result->data());
@@ -415,7 +402,6 @@ std::shared_ptr<MutableBlobInternal> MutableBlobInternal::blobWithBase64String(c
     }
 
     base64_decodestate decodeState;
-    base64_init_decodestate(&decodeState);
 
     count lengthIn = string.length();
     auto result = MutableBlobInternal::blobWithCapacity(lengthIn);

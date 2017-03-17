@@ -53,7 +53,7 @@ struct MutableSetInternal : public Object::Internal, public std::set<T>
     MutableSetInternal(const MutableSetInternal& other) = default;
     MutableSetInternal(MutableSetInternal&& other) = default;
     MutableSetInternal(std::initializer_list<T> other) : std::vector<T>{ other.begin(), other.end() } { }
-    virtual ~MutableSetInternal() = default;
+    ~MutableSetInternal() override = default;
     MutableSetInternal& operator=(const MutableSetInternal& other) = default;
     MutableSetInternal(std::set<T>&& other) : std::set<T>{ std::move(other) } { }
 
@@ -158,7 +158,7 @@ struct MutableSetInternal : public Object::Internal, public std::set<T>
     String description(const DescriberState& state) const
     {
         auto indented = state.increaseIndent();
-        auto result = MutableString::stringWithFormat(indented.indentedLine("<Set length=\"%ld\">"), this->length());
+        auto result = MutableString::stringWithFormat(indented.indentedLine(R"(<Set length="%ld">)"), this->length());
 
         for (auto&& item : *this) {
             result.append(NxA::describe(item, indented));

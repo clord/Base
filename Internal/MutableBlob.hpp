@@ -43,7 +43,7 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
     MutableBlobInternal(const std::vector<byte>& other) : std::vector<byte>{ other } { }
     MutableBlobInternal(std::vector<byte>&& other) : std::vector<byte>{ std::move(other) } { }
 
-    virtual ~MutableBlobInternal() = default;
+    ~MutableBlobInternal() override = default;
 
     // -- Factory Methods
     static std::shared_ptr<MutableBlobInternal> blobWithCapacity(count size)

@@ -148,7 +148,7 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::stringWithUTF16AtA
     }
 
     count length = size / 2;
-    const integer16* characters = reinterpret_cast<const integer16*>(data);
+    auto characters = reinterpret_cast<const integer16*>(data);
 
     std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
     return std::make_shared<MutableStringInternal>(

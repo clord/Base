@@ -39,7 +39,7 @@ struct MutableMapInternal : public Object::Internal, public std::map<const Tkey,
     MutableMapInternal(const MutableMapInternal& other) : std::map<const Tkey, Tvalue>{ other } { }
     MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{ other } { }
     MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{ std::move(other) } { }
-    virtual ~MutableMapInternal() = default;
+    ~MutableMapInternal() override = default;
 
     // -- Iterators
     using iterator = typename std::map<const Tkey, Tvalue>::iterator;

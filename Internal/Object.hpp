@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <Base/Types.hpp>
+
 namespace NxA {
 
 struct Object
@@ -28,8 +30,8 @@ struct Object
     struct Internal
     {
         // -- Constructors/Destructors
-        Internal() { }
-
+        Internal() = default;
+        
         virtual ~Internal() = default;
 
         // -- Instance Methods

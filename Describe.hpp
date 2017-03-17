@@ -139,10 +139,10 @@ struct Describer<Array<T, I, Rest...>>
         auto indented = state.increaseIndent();
 
         if (items.length() == 0) {
-            return indented.indentedLine("<Array length=\"0\" />");
+            return indented.indentedLine(R"(<Array length="0" />)");
         }
 
-        auto result = MutableString::stringWithFormat(indented.indentedLine("<Array length=\"%ld\">"), items.length());
+        auto result = MutableString::stringWithFormat(indented.indentedLine(R"(<Array length="%ld">)"), items.length());
 
         for (auto&& item : items) {
             result.append(Describer<T>::describeWithState(item, indented));
@@ -162,10 +162,10 @@ struct Describer<MutableArray<T, I, Rest...>>
         auto indented = state.increaseIndent();
 
         if (items.length() == 0) {
-            return indented.indentedLine("<MutableArray length=\"0\" />");
+            return indented.indentedLine(R"(<MutableArray length="0" />)");
         }
 
-        auto result = MutableString::stringWithFormat(indented.indentedLine("<MutableArray length=\"%ld\">"), items.length());
+        auto result = MutableString::stringWithFormat(indented.indentedLine(R"(<MutableArray length="%ld">)"), items.length());
 
         for (auto&& item : items) {
             result.append(Describer<T>::describeWithState(item, indented));

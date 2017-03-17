@@ -71,7 +71,7 @@ public:
         if (!buffer) {
             const character* format = "Set<%s>";
             const character* valueTypeName = TypeName<T>::get();
-            count needed = snprintf(NULL, 0, format, valueTypeName) + 1;
+            count needed = snprintf(nullptr, 0, format, valueTypeName) + 1;
             buffer = std::make_unique<character[]>(needed);
             snprintf(buffer.get(), needed, format, valueTypeName);
         }

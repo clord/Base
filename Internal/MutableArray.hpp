@@ -51,7 +51,7 @@ struct MutableArrayInternal : public Object::Internal, public std::vector<T>
     MutableArrayInternal(std::initializer_list<T> other) : std::vector<T>{ other.begin(), other.end() } { }
     template <typename V, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
     MutableArrayInternal(const MutableArrayInternal<V>& other) : std::vector<T>{ other.begin(), other.end() } { }
-    virtual ~MutableArrayInternal() = default;
+    ~MutableArrayInternal() override = default;
 
     // -- Iterators
     using iterator = typename std::vector<T>::iterator;

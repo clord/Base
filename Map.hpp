@@ -68,7 +68,7 @@ public:
             const character* format = "Map<%s, %s>";
             const character* keyTypeName = TypeName<Tkey>::get();
             const character* valueTypeName = TypeName<Tvalue>::get();
-            count needed = snprintf(NULL, 0, format, keyTypeName, valueTypeName) + 1;
+            count needed = snprintf(nullptr, 0, format, keyTypeName, valueTypeName) + 1;
             buffer = std::make_unique<character[]>(needed);
             snprintf(buffer.get(), needed, format, keyTypeName, valueTypeName);
         }

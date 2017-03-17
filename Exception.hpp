@@ -33,7 +33,7 @@
         public: \
             explicit exception_name(const character* reason) : parent_class_name(reason) { } \
             explicit exception_name(const Exception& other) : parent_class_name(other.what()) { } \
-            virtual ~exception_name() { }; \
+            virtual ~exception_name() = default; \
             static exception_name exceptionWith(const character* format, ...) \
             { \
                 constexpr size_t formatStringBufferSize = 256; \
@@ -65,7 +65,7 @@ public:
     // -- Constructors & Destructors
     Exception() = delete;
     explicit Exception(const character* reason) : std::runtime_error(reason) { }
-    virtual ~Exception() { }
+    ~Exception() override = default;
 };
 
 class FatalException : public std::logic_error
@@ -74,7 +74,7 @@ public:
     // -- Constructors & Destructors
     FatalException() = delete;
     explicit FatalException(const character* reason) : std::logic_error(reason) { }
-    virtual ~FatalException() { }
+    ~FatalException() override = default;
 };
     
 }

@@ -31,31 +31,31 @@ NXA_EXCEPTION_NAMED_WITH_PARENT(AssertionFailed, NxA::FatalException);
 
 #ifdef DEBUG
 // -- Replacement for printf, but only prints its message in DEBUG builds. Otherwise it compiles down to a NO-OP.
-#define NXA_DLOG(...) do { printf("%s: ", __PRETTY_FUNCTION__); printf(__VA_ARGS__); printf("\n"); } while (0)
+#define NXA_DLOG(...) do { printf("%s: ", __PRETTY_FUNCTION__); printf(__VA_ARGS__); printf("\n"); } while (false)
 
 // -- Prints a message and throws an exception in all builds but also breaks into the debugger in DEBUG builds.
-#define NXA_ALOG(...) do { throw NxA::AssertionFailed::exceptionWith(__VA_ARGS__); } while (0)
+#define NXA_ALOG(...) do { throw NxA::AssertionFailed::exceptionWith(__VA_ARGS__); } while (false)
 
 // -- NXA_ALOG_DEBUG does the same thing as ALog in DEBUG builds.
 #define NXA_ALOG_DEBUG NXA_ALOG
 #else
-#define NXA_DLOG(...) do { } while (0)
-#define NXA_ALOG(...) do { printf("%s: ", __PRETTY_FUNCTION__); printf(__VA_ARGS__);throw NxA::AssertionFailed::exceptionWith(__VA_ARGS__); } while (0)
-#define NXA_ALOG_DEBUG(...) do { printf("%s: ", __PRETTY_FUNCTION__); printf(__VA_ARGS__); } while (0)
+#define NXA_DLOG(...) do { } while (false)
+#define NXA_ALOG(...) do { printf("%s: ", __PRETTY_FUNCTION__); printf(__VA_ARGS__);throw NxA::AssertionFailed::exceptionWith(__VA_ARGS__); } while (false)
+#define NXA_ALOG_DEBUG(...) do { printf("%s: ", __PRETTY_FUNCTION__); printf(__VA_ARGS__); } while (false)
 #endif
 
 // -- Replacements for assert which use NXA_ALOG().
-#define NXA_ASSERT_NOT_NULL(expression) do { if ((expression) == nullptr) { NXA_ALOG("%s is NULL.", #expression); } } while(0)
-#define NXA_ASSERT_NULL(expression) do { if ((expression) != nullptr) { NXA_ALOG("%s is not NULL.", #expression); } } while(0)
-#define NXA_ASSERT_TRUE(expression) do { if (!(expression)) { NXA_ALOG("%s is false.", #expression); } } while(0)
-#define NXA_ASSERT_FALSE(expression) do { if (expression) { NXA_ALOG("%s is true.", #expression); } } while(0)
-#define NXA_ASSERT_EQ(expression1, expression2) do { if ((expression1) != (expression2)) { NXA_ALOG("%s is not equal to %s.", #expression1, #expression2); } } while(0)
-#define NXA_ASSERT_NOT_EQ(expression1, expression2) do { if ((expression1) == (expression2)) { NXA_ALOG("%s is equal to %s.", #expression1, #expression2); } } while(0)
+#define NXA_ASSERT_NOT_NULL(expression) do { if ((expression) == nullptr) { NXA_ALOG("%s is NULL.", #expression); } } while (false)
+#define NXA_ASSERT_NULL(expression) do { if ((expression) != nullptr) { NXA_ALOG("%s is not NULL.", #expression); } } while (false)
+#define NXA_ASSERT_TRUE(expression) do { if (!(expression)) { NXA_ALOG("%s is false.", #expression); } } while (false)
+#define NXA_ASSERT_FALSE(expression) do { if (expression) { NXA_ALOG("%s is true.", #expression); } } while (false)
+#define NXA_ASSERT_EQ(expression1, expression2) do { if ((expression1) != (expression2)) { NXA_ALOG("%s is not equal to %s.", #expression1, #expression2); } } while (false)
+#define NXA_ASSERT_NOT_EQ(expression1, expression2) do { if ((expression1) == (expression2)) { NXA_ALOG("%s is equal to %s.", #expression1, #expression2); } } while (false)
 
 // -- Replacements for assert which use NXA_ALOG() and, in non-DEBUG builds, only prints its message.
-#define NXA_ASSERT_NOT_NULL_DEBUG(expression) do { if ((expression) == nullptr) { NXA_ALOG_DEBUG("%s is NULL.", #expression); } } while(0)
-#define NXA_ASSERT_NULL_DEBUG(expression) do { if ((expression) != nullptr) { NXA_ALOG_DEBUG("%s is not NULL.", #expression); } } while(0)
-#define NXA_ASSERT_TRUE_DEBUG(expression) do { if (!(expression)) { NXA_ALOG_DEBUG("%s is false.", #expression); } } while(0)
-#define NXA_ASSERT_FALSE_DEBUG(expression) do { if (expression) { NXA_ALOG_DEBUG("%s is true.", #expression); } } while(0)
-#define NXA_ASSERT_EQ_DEBUG(expression1, expression2) do { if ((expression1) != (expression2)) { NXA_ALOG_DEBUG("%s is not equal to %s.", #expression1, #expression2); } } while(0)
-#define NXA_ASSERT_NOT_EQ_DEBUG(expression1, expression2) do { if ((expression1) == (expression2)) { NXA_ALOG_DEBUG("%s is equal to %s.", #expression1, #expression2); } } while(0)
+#define NXA_ASSERT_NOT_NULL_DEBUG(expression) do { if ((expression) == nullptr) { NXA_ALOG_DEBUG("%s is NULL.", #expression); } } while (false)
+#define NXA_ASSERT_NULL_DEBUG(expression) do { if ((expression) != nullptr) { NXA_ALOG_DEBUG("%s is not NULL.", #expression); } } while (false)
+#define NXA_ASSERT_TRUE_DEBUG(expression) do { if (!(expression)) { NXA_ALOG_DEBUG("%s is false.", #expression); } } while (false)
+#define NXA_ASSERT_FALSE_DEBUG(expression) do { if (expression) { NXA_ALOG_DEBUG("%s is true.", #expression); } } while (false)
+#define NXA_ASSERT_EQ_DEBUG(expression1, expression2) do { if ((expression1) != (expression2)) { NXA_ALOG_DEBUG("%s is not equal to %s.", #expression1, #expression2); } } while (false)
+#define NXA_ASSERT_NOT_EQ_DEBUG(expression1, expression2) do { if ((expression1) == (expression2)) { NXA_ALOG_DEBUG("%s is equal to %s.", #expression1, #expression2); } } while (false)

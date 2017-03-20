@@ -65,7 +65,7 @@ public:
     template <template <typename, typename...> class I, typename... R>
     MutableArray(const MutableArray<T, I, R...>& other) : internal{ std::make_shared<Internal>(std::vector<T>{other.internal->begin(), other.internal->end()}) } { }
     template <template <typename, typename...> class I, typename... R>
-    MutableArray(const Array<T, I, R...>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    MutableArray(const Array<T, I, R...>& other) : internal{ std::make_shared<Internal>(std::vector<T>{other.internal->begin(), other.internal->end()}) } { }
     ~MutableArray() = default;
 
     // -- Class Methods

@@ -22,8 +22,6 @@
 #pragma once
 
 #include <Base/Types.hpp>
-
-#include <boost/scope_exit.hpp>
 #include <stdexcept>
 
 // -- Macros
@@ -45,15 +43,6 @@
                 return exception_name(buffer); \
             } \
         };
-
-#define NXA_SCOPE_EXIT \
-        _Pragma("clang diagnostic push") \
-        _Pragma("clang diagnostic ignored \"-Wshadow\"") \
-        BOOST_SCOPE_EXIT
-
-#define NXA_SCOPE_EXIT_END \
-        BOOST_SCOPE_EXIT_END \
-        _Pragma("clang diagnostic pop") \
 
 // -- Public Interface
 

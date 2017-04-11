@@ -38,12 +38,9 @@
 
 namespace NxA {
 
-struct BadVariantAccess : public FatalException
-{
-    explicit BadVariantAccess(const character* what_arg) : FatalException{what_arg} { }
-};
-
 namespace VariantDetail {
+
+NXA_EXCEPTION_NAMED_WITH_PARENT(BadVariantAccess, NxA::Exception);
 
 static constexpr count invalidValue = count(-1);
 
@@ -384,7 +381,7 @@ public:
             return getUnchecked<T>();
         }
         else {
-            throw BadVariantAccess("in get<T>()");
+            throw VariantDetail::BadVariantAccess("in get<T>()");
         }
     }
 
@@ -396,7 +393,7 @@ public:
             return getUnchecked<T>();
         }
         else {
-            throw BadVariantAccess("in get<T>()");
+            throw VariantDetail::BadVariantAccess("in get<T>()");
         }
     }
 

@@ -25,7 +25,18 @@
 
 namespace NxA {
 
-NXA_EXCEPTION_NAMED_WITH_PARENT(AssertionFailed, NxA::FatalException);
+// -- This exception type is only used for assertions and should not
+// -- be derived from anythere else. Use NxA::Exception instead.
+class FatalException : public std::logic_error
+{
+public:
+    // -- Constructors & Destructors
+    FatalException() = delete;
+    explicit FatalException(const character* reason) : std::logic_error(reason) { }
+    ~FatalException() override = default;
+};
+    
+NXA_EXCEPTION_NAMED_WITH_PARENT(AssertionFailed, FatalException);
 
 }
 

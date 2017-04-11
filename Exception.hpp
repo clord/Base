@@ -57,13 +57,4 @@ public:
     ~Exception() override = default;
 };
 
-class FatalException : public std::logic_error
-{
-public:
-    // -- Constructors & Destructors
-    FatalException() = delete;
-    explicit FatalException(const character* reason) : std::logic_error(reason) { }
-    ~FatalException() override = default;
-};
-    
 }

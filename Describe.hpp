@@ -97,7 +97,7 @@ struct Describer<T, std::enable_if_t<std::is_pointer<T>::value>>
 template <typename T>
 struct Describer<std::shared_ptr<T>>
 {
-    static String describeWithState(std::shared_ptr<T> item, const DescriberState& state)
+    static String describeWithState(const std::shared_ptr<T>& item, const DescriberState& state)
     {
         if (!item) {
             auto innerState = state.increaseIndent();
@@ -111,7 +111,7 @@ struct Describer<std::shared_ptr<T>>
 template <int i>
 struct Describer<dec::decimal<i>>
 {
-    static String describeWithState(dec::decimal<i> item, const DescriberState& state)
+    static String describeWithState(const dec::decimal<i>& item, const DescriberState& state)
     {
         return String{dec::toString(item)};
     }

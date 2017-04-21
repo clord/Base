@@ -375,6 +375,18 @@ public:
 
     template <typename T,
               typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
+    inline Optional<T> maybeGet() const
+    {
+        if (typeIndex == VariantDetail::DirectTypeIndex<T, Types...>::index) {
+            return {getUnchecked<T>()};
+        }
+        else {
+            return NxA::nothing;
+        }
+    }
+
+    template <typename T,
+              typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
     inline T& get()
     {
         if (typeIndex == VariantDetail::DirectTypeIndex<T, Types...>::index) {
@@ -474,6 +486,12 @@ template <typename Variant, typename Function>
 decltype(auto) inline withVariant(Variant& variant, Function&& function)
 {
     return Variant::visit(variant, std::forward<Function>(function));
+}
+
+template <typename ResultType, typename T>
+decltype(auto) maybeGet(T&& someVariant)
+{
+    return someVariant.template maybeGet<ResultType>();
 }
 
 template <typename ResultType, typename T>

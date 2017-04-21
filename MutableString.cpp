@@ -39,6 +39,8 @@ MutableString::MutableString(std::string&& other) : internal{std::make_shared<In
 MutableString::MutableString(const character* other, size_t size) : internal{std::make_shared<Internal>(other, size)} { }
 MutableString::MutableString(std::shared_ptr<Internal>&& other) : internal{std::move(other)} { }
 MutableString::~MutableString() = default;
+MutableString::MutableString(MutableString&&) = default;
+
 
 // -- Factory Methods
 

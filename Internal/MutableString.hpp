@@ -181,6 +181,14 @@ struct MutableStringInternal : public Object::Internal, public std::string
     {
         return t;
     }
+    template <typename T>
+    static const character* stringArgumentAsCharacter(Optional<T> t)
+    {
+        if (!t) {
+            return "<nothing>";
+        }
+        return stringArgumentAsCharacter(*t);
+    }
     static const character* stringArgumentAsCharacter(const std::string& cppstring);
     static const character* stringArgumentAsCharacter(const String& nxastring);
     static const character* stringArgumentAsCharacter(const MutableString& nxastring);

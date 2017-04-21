@@ -58,6 +58,12 @@ public:
         return String{Internal::stringWithFormat(256, format.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...)};
     }
 
+    static String stringWithFormat(String format)
+    {
+        return format;
+    }
+
+
     static String stringWithUTF8(const character* other)
     {
         return {other, strlen(other)};

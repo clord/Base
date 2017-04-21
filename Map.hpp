@@ -162,6 +162,11 @@ public:
         return internal->length();
     }
 
+    Optional<Tvalue> maybeValueForKey(const Tkey& key) const
+    {
+        return internal->maybeValueForKey(key);
+    }
+    
     Tvalue& valueForKey(const Tkey& key)
     {
         return internal->valueForKey(key);

@@ -73,7 +73,7 @@ inline constexpr Optional<typename std::decay<T>::type> makeOptional(T&& v)
 }
 
 template <typename T, typename Function>
-auto maybe(const NxA::Optional<T>& arg, Function&& f) -> NxA::Optional<typename std::result_of<Function(T)>::type>
+auto maybe(const NxA::Optional<T>& arg, Function&& f) -> NxA::Optional<typename std::result_of<Function(const T&)>::type>
 {
     if (!arg) {
         return nothing;

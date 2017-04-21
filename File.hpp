@@ -46,9 +46,35 @@ public:
     static void deleteFileAt(const String&);
 
     static String pathSeparator();
-    static String joinPaths(const String&, String);
     static String removePrefixFromPath(const String&, const String&);
     static String extensionForFilePath(const String&);
+
+    template <typename ...Rest>
+    static String joinPaths(MutableString result, String second, Rest&&... rest)
+    {
+        if (Platform::CurrentPlatform == Platform::Kind::Windows) {
+            if (!result.hasPostfix(R"(\)")) {
+                result.append(R"(\)");
+            }
+        }
+        else {
+            if (!result.hasPostfix("/")) {
+                result.append("/");
+            }
+
+            if (second.hasPrefix("/")) {
+                second = second.subString(1);
+            }
+        }
+
+        result.append(second);
+
+        return joinPaths(std::move(result), std::forward<Rest>(rest)...);
+    }
+    static String joinPaths(MutableString result) {
+        return {std::move(result)};
+    }
+
 
     static boolean fileExistsAt(const String&);
     static boolean directoryExistsAt(const String&);

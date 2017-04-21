@@ -107,30 +107,6 @@ String File::pathSeparator()
     }
 }
 
-String File::joinPaths(const String& first, String second)
-{
-    MutableString result(first);
-
-    if (Platform::CurrentPlatform == Platform::Kind::Windows) {
-        if (!result.hasPostfix(R"(\)")) {
-            result.append(R"(\)");
-        }
-    }
-    else {
-        if (!result.hasPostfix("/")) {
-            result.append("/");
-        }
-
-        if (second.hasPrefix("/")) {
-            second = second.subString(1);
-        }
-    }
-
-    result.append(second);
-
-    return {std::move(result)};
-}
-
 String File::removePrefixFromPath(const String& prefix, const String& path)
 {
     MutableString fullPrefix(prefix);

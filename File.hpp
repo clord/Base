@@ -26,6 +26,8 @@
 #include <Base/Uncopyable.hpp>
 #include <Base/Array.hpp>
 #include <Base/GeneratedObjectCode.hpp>
+#include <Base/MutableString.hpp>
+#include <Base/String.hpp>
 
 namespace NxA {
 
@@ -71,6 +73,7 @@ public:
 
         return joinPaths(std::move(result), std::forward<Rest>(rest)...);
     }
+
     static String joinPaths(MutableString result) {
         return {std::move(result)};
     }

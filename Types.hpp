@@ -113,7 +113,7 @@ struct TypeName<Optional<T>>
 #define NXA_STR_VALUE_FOR_TYPE(arg...) #arg
 
 #define NXA_SPECIALIZE_TYPENAME_FOR_TYPE(name) \
-template <> struct TypeName<name> \
+template <> struct NxA::TypeName<name> \
 { \
     static const character* get() \
     { \

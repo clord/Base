@@ -23,7 +23,6 @@
 
 #include "Base/Types.hpp"
 #include "Base/String.hpp"
-#include "Base/Internal/Object.hpp"
 
 #include <map>
 
@@ -32,14 +31,14 @@ namespace NxA {
 // -- Class
 
 template <typename Tkey, typename Tvalue>
-struct MutableMapInternal : public Object::Internal, public std::map<const Tkey, Tvalue>
+struct MutableMapInternal : public std::map<const Tkey, Tvalue>
 {
     // -- Constructors/Destructors
     MutableMapInternal() : std::map<const Tkey, Tvalue>() { }
     MutableMapInternal(const MutableMapInternal& other) : std::map<const Tkey, Tvalue>{ other } { }
     MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{ other } { }
     MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{ std::move(other) } { }
-    ~MutableMapInternal() override = default;
+    ~MutableMapInternal() = default;
 
     // -- Iterators
     using iterator = typename std::map<const Tkey, Tvalue>::iterator;
@@ -148,14 +147,7 @@ struct MutableMapInternal : public Object::Internal, public std::map<const Tkey,
         this->erase(position);
     }
 
-    // -- Overriden Object::Internal Instance Methods
-    uinteger32 classHash() const override
-    {
-        NXA_ALOG("Illegal call.");
-        return 0;
-    }
-
-    const character* className() const override
+    virtual const character* className() const final
     {
         NXA_ALOG("Illegal call.");
         return nullptr;

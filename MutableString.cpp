@@ -82,25 +82,9 @@ boolean MutableString::operator==(const MutableString& other) const
 
 // -- Instance Methods
 
-uinteger32 MutableString::classHash() const
-{
-    return MutableString::staticClassHash();
-}
-
-const character* MutableString::className() const
-{
-    return MutableString::staticClassName();
-}
-
 boolean MutableString::classNameIs(const character* className) const
 {
     return !::strcmp(MutableString::staticClassName(), className);
-}
-
-uinteger32 MutableString::staticClassHash()
-{
-    static uinteger32 result = String::hashFor(MutableString::staticClassName());
-    return result;
 }
 
 String MutableString::description(const DescriberState& state) const

@@ -79,12 +79,6 @@ public:
         return buffer.get();
     }
 
-    static uinteger32 staticClassHash()
-    {
-        static uinteger32 result = String::hashFor(Set::staticClassName());
-        return result;
-    }
-
     // -- Iterators
     using const_iterator = typename Internal::const_iterator;
     using iterator = const_iterator;
@@ -131,12 +125,7 @@ public:
     }
 
     // -- Instance Methods
-    uinteger32 classHash() const
-    {
-        return Set::staticClassHash();
-    }
-
-    const character* className() const
+    virtual const character* className() const final
     {
         return Set::staticClassName();
     }

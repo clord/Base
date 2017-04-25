@@ -159,11 +159,6 @@ boolean String::operator==(const String& other) const
 
 // -- Instance Methods
 
-uinteger32 String::classHash() const
-{
-    return String::staticClassHash();
-}
-
 const character* String::className() const
 {
     return String::staticClassName();
@@ -172,12 +167,6 @@ const character* String::className() const
 boolean String::classNameIs(const character* className) const
 {
     return !::strcmp(String::staticClassName(), className);
-}
-
-uinteger32 String::staticClassHash()
-{
-    static uinteger32 result = String::hashFor(String::staticClassName());
-    return result;
 }
 
 String String::description(const DescriberState& state) const

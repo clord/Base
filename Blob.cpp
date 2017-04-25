@@ -110,10 +110,6 @@ const byte& Blob::operator[](integer index) const
 
 // -- Instance Methods
 
-uinteger32 Blob::classHash() const
-{
-    return Blob::staticClassHash();
-}
 const character* Blob::className() const
 {
     return Blob::staticClassName();
@@ -122,12 +118,6 @@ const character* Blob::className() const
 bool Blob::classNameIs(const character* className) const
 {
     return !::strcmp(Blob::staticClassName(), className);
-}
-
-uinteger32 Blob::staticClassHash()
-{
-    static uinteger32 result = String::hashFor(Blob::staticClassName());
-    return result;
 }
 
 count Blob::size() const

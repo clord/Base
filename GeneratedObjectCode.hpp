@@ -48,12 +48,13 @@ class DescriberState;
         private:\
             using Internal = class_name; \
 
-#define NXA_GENERATED_INTERNAL_OBJECT_NAME_AND_HASH_METHODS_DECLARATIONS_FOR(class_name...) \
-        virtual uinteger32 classHash() const override \
+#define NXA_GENERATED_INTERNAL_OBJECT_CLASS_NAME_METHODS_DECLARATIONS_FOR(class_name...) \
+        virtual const character* className() const \
         { \
-            static uinteger32 result = String::hashFor(this->className()); \
-            return result; \
-        } \
+            return NXA_STR_VALUE_FOR(class_name); \
+        }
+
+#define NXA_GENERATED_INTERNAL_OBJECT_CLASS_NAME_OVERRIDING_METHODS_DECLARATIONS_FOR(class_name...) \
         virtual const character* className() const override \
         { \
             return NXA_STR_VALUE_FOR(class_name); \
@@ -78,8 +79,6 @@ class DescriberState;
             { \
                 return NXA_STR_VALUE_FOR(class_name); \
             } \
-            static uinteger32 staticClassHash(); \
-            uinteger32 classHash() const; \
             const character* className() const; \
             bool classNameIs(const character* className) const; \
             String description(const DescriberState&) const; \
@@ -123,10 +122,6 @@ class DescriberState;
                 return true; \
             } \
             return *internal == *(other.internal); \
-        } \
-        uinteger32 class_name::classHash() const \
-        { \
-            return internal->classHash(); \
         } \
         const character* class_name::className() const \
         { \

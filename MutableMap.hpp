@@ -77,12 +77,6 @@ public:
         return buffer.get();
     }
 
-    static uinteger32 staticClassHash()
-    {
-        static uinteger32 value = String::hashFor(MutableMap::staticClassName());
-        return value;
-    }
-
     // -- Iterators
     using iterator = typename MutableMapInternal<const Tkey, Tvalue>::iterator;
     using const_iterator = typename MutableMapInternal<const Tkey, Tvalue>::const_iterator;
@@ -125,12 +119,7 @@ public:
     }
 
     // -- Instance Methods
-    uinteger32 classHash() const
-    {
-        return MutableMap::staticClassHash();
-    }
-
-    const character* className() const
+    virtual const character* className() const final
     {
         return MutableMap::staticClassName();
     }

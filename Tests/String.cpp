@@ -635,24 +635,6 @@ TEST(Base_String, HashFor_ConstCharacterPointerAndStringPointer_AreEqual)
     ASSERT_EQ(String::hashFor(testPtr), testStr.hash());
 }
 
-TEST(Base_String, StaticClassHash_AString_ReturnsExpectedValue)
-{
-    // -- Given.
-    // -- When.
-    // -- Then.
-    ASSERT_EQ(String::staticClassHash(), String::hashFor("String"));
-}
-
-TEST(Base_String, ClassHash_AString_ReturnsExpectedValue)
-{
-    // -- Given.
-    String test("Hello");
-
-    // -- When.
-    // -- Then.
-    ASSERT_EQ(test.classHash(), String::staticClassHash());
-}
-
 TEST(Base_String, IntegerValue_AStringWithAnInteger_ReturnsCorrectValue)
 {
     // -- Given.

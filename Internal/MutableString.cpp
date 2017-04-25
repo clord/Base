@@ -160,17 +160,6 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::stringWithUTF16(co
     return MutableStringInternal::stringWithUTF16AtAndSize(other.data(), other.size());
 }
 
-uinteger32 MutableStringInternal::classHash() const
-{
-    NXA_ALOG("Illegal call.");
-    return 0;
-}
-const character* MutableStringInternal::className() const
-{
-    NXA_ALOG("Illegal call.");
-    return nullptr;
-}
-
 // -- Operators
 
 bool MutableStringInternal::operator==(const character* other) const

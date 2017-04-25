@@ -23,7 +23,6 @@
 
 #include <Base/Types.hpp>
 #include <Base/Assert.hpp>
-#include <Base/Internal/Object.hpp>
 #include <Base/GeneratedObjectCode.hpp>
 #include <Base/Internal/MutableArray.hpp>
 
@@ -97,11 +96,6 @@ public:
         return buffer.get();
     }
 
-    static uinteger32 staticClassHash()
-    {
-        return static_cast<uinteger32>(std::hash<std::string> {}(std::string{Array::staticClassName()}));
-    }
-
     // -- Iterators
     using iterator = typename Internal::iterator;
     using const_iterator = typename Internal::const_iterator;
@@ -167,12 +161,7 @@ public:
     }
 
     // -- Instance Methods
-    uinteger32 classHash() const
-    {
-        return Array::staticClassHash();
-    }
-
-    const character* className() const
+    virtual const character* className() const final
     {
         return Array::staticClassName();
     }

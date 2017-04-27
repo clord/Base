@@ -80,13 +80,15 @@ struct MutableMapInternal : public std::map<const Tkey, Tvalue>
         return this->std::map<const Tkey, Tvalue>::size();
     }
 
-    void setValueForKey(Tvalue value, const Tkey& key)
+    boolean setValueForKeyCausedAnInsertion(const Tvalue& value, const Tkey& key)
     {
-        auto pvalue = std::pair<const Tkey, Tvalue>(key, value);
-        auto result = std::map<const Tkey, Tvalue>::insert(pvalue);
+        auto result = std::map<const Tkey, Tvalue>::insert(std::pair<const Tkey, Tvalue>(key, value));
         if (!result.second) {
             result.first->second = value;
+            return false;
         }
+
+        return true;
     }
 
     Tvalue& valueForKey(const Tkey& key)
@@ -107,11 +109,6 @@ struct MutableMapInternal : public std::map<const Tkey, Tvalue>
         return {pos->second};
     }
 
-    boolean containsValueForKey(const Tkey& key) const
-    {
-        return this->std::map<const Tkey, Tvalue>::find(key) != this->std::map<const Tkey, Tvalue>::end();
-    }
-
     Tvalue& operator[](const Tkey& key)
     {
         iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
@@ -125,9 +122,15 @@ struct MutableMapInternal : public std::map<const Tkey, Tvalue>
         this->clear();
     }
 
-    void removeValueForKey(const Tkey& key)
+    boolean removeValueForKeyCausedARemoval(const Tkey& key)
     {
-        this->erase(key);
+        iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
+        if (pos == this->cend()) {
+            return false;
+        }
+
+        this->erase(pos);
+        return true;
     }
 
     void removeValueAt(const_iterator position)

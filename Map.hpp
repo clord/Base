@@ -172,11 +172,6 @@ public:
     {
         return internal->maybeValueForKey(key);
     }
-    
-    boolean containsValueForKey(const Tkey& key) const
-    {
-        return internal->containsValueForKey(key);
-    }
 };
     
 }

@@ -163,9 +163,13 @@ public:
         return internal->length();
     }
 
-    void setValueForKey(Tvalue value, const Tkey& key)
+    boolean setValueForKeyCausedAnInsertion(const Tvalue& value, const Tkey& key)
     {
-        internal->setValueForKey(value, key);
+        return internal->setValueForKeyCausedAnInsertion(value, key);
+    }
+    void setValueForKey(const Tvalue& value, const Tkey& key)
+    {
+        internal->setValueForKeyCausedAnInsertion(value, key);
     }
 
     Tvalue& valueForKey(const Tkey& key)
@@ -186,24 +190,23 @@ public:
         return internal->maybeValueForKey(key);
     }
 
-    boolean containsValueForKey(const Tkey& key) const
+    boolean removeValueForKeyCausedARemoval(const Tkey& key)
     {
-        return internal->containsValueForKey(key);
+        return internal->removeValueForKeyCausedARemoval(key);
+    }
+    void removeValueForKey(const Tkey& key)
+    {
+        internal->removeValueForKeyCausedARemoval(key);
     }
 
     void removeValueAt(const_iterator position)
     {
-        return internal->removeValueAt(position);
-    }
-
-    void removeValueForKey(const Tkey& key)
-    {
-        return internal->removeValueForKey(key);
+        internal->removeValueAt(position);
     }
 
     void removeAll()
     {
-        return internal->removeAll();
+        internal->removeAll();
     }
 };
     

@@ -122,7 +122,7 @@ template <> struct TypeName<name> \
 };
 
 template <class T>
-class MutableArrayInternal;
+struct MutableArrayInternal;
 
 template <class T, template <typename, typename...> class Implementation = MutableArrayInternal, typename... Rest>
 class Array;

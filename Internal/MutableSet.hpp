@@ -34,7 +34,7 @@ namespace NxA {
 // -- Forward Declarations
 
 template <class T>
-class MutableSetInternal;
+struct MutableSetInternal;
 
 // -- Utility Methods
 

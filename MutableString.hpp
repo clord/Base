@@ -30,7 +30,7 @@
 namespace NxA {
 
 class Blob;
-class MutableStringInternal;
+struct MutableStringInternal;
 
 // -- Public Interface
 

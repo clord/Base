@@ -89,6 +89,15 @@ struct MutableMapInternal : public std::map<const Tkey, Tvalue>
         }
     }
 
+    Tvalue& valueForKey(const Tkey& key)
+    {
+        return std::map<const Tkey, Tvalue>::operator[](key);
+    }
+    Tvalue& valueForKey(const Tkey&& key)
+    {
+        return std::map<const Tkey, Tvalue>::operator[](std::move(key));
+    }
+
     const Optional<Tvalue> maybeValueForKey(const Tkey& key) const
     {
         const_iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
@@ -98,15 +107,12 @@ struct MutableMapInternal : public std::map<const Tkey, Tvalue>
         return {pos->second};
     }
 
-    const Tvalue& valueForKey(const Tkey& key) const
+    boolean containsValueForKey(const Tkey& key) const
     {
-        const_iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
-        NXA_ASSERT_TRUE(pos != this->cend());
-
-        return pos->second;
+        return this->std::map<const Tkey, Tvalue>::find(key) != this->std::map<const Tkey, Tvalue>::end();
     }
 
-    Tvalue& valueForKey(const Tkey& key)
+    Tvalue& operator[](const Tkey& key)
     {
         iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
         NXA_ASSERT_TRUE(pos != this->end());
@@ -114,24 +120,6 @@ struct MutableMapInternal : public std::map<const Tkey, Tvalue>
         return pos->second;
     }
 
-    Tvalue& operator[](const Tkey& key)
-    {
-        return std::map<const Tkey, Tvalue>::operator[](key);
-    }
-
-    Tvalue& operator[](Tkey&& key)
-    {
-        return std::map<const Tkey, Tvalue>::operator[](std::move(key));
-    }
-
-    const Tvalue& operator[](const Tkey& key) const
-    {
-        return valueForKey(key);
-    }
-    boolean containsValueForKey(const Tkey& key) const
-    {
-        return this->std::map<const Tkey, Tvalue>::find(key) != this->std::map<const Tkey, Tvalue>::end();
-    }
     void removeAll()
     {
         this->clear();

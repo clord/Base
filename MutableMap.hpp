@@ -172,10 +172,13 @@ public:
     {
         return internal->valueForKey(key);
     }
-
     const Tvalue& valueForKey(const Tkey& key) const
     {
-        return internal->valueForKey(key);
+        return internal->operator[](key);
+    }
+    Tvalue& valueForKey(Tkey&& key)
+    {
+        return internal->valueForKey(std::move(key));
     }
 
     Optional<Tvalue> maybeValueForKey(const Tkey& key) const

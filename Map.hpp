@@ -108,11 +108,15 @@ public:
     }
     const Tvalue& operator[](const Tkey& key) const
     {
-        return internal->valueForKey(key);
+        return internal->operator[](key);
     }
     Tvalue& operator[](const Tkey& key)
     {
-        return internal->valueForKey(key);
+        return internal->operator[](key);
+    }
+    Tvalue& operator[](Tkey&& key)
+    {
+        return internal->operator[](std::move(key));
     }
 
     // -- Instance Methods
@@ -151,21 +155,24 @@ public:
         return internal->length();
     }
 
+    Tvalue& valueForKey(const Tkey& key)
+    {
+        return internal->operator[](key);
+    }
+    const Tvalue& valueForKey(const Tkey& key) const
+    {
+        return internal->operator[](key);
+    }
+    Tvalue& valueForKey(Tkey&& key)
+    {
+        return internal->operator[](std::move(key));
+    }
+
     Optional<Tvalue> maybeValueForKey(const Tkey& key) const
     {
         return internal->maybeValueForKey(key);
     }
     
-    Tvalue& valueForKey(const Tkey& key)
-    {
-        return internal->valueForKey(key);
-    }
-
-    const Tvalue& valueForKey(const Tkey& key) const
-    {
-        return internal->valueForKey(key);
-    }
-
     boolean containsValueForKey(const Tkey& key) const
     {
         return internal->containsValueForKey(key);

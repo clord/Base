@@ -23,7 +23,6 @@
 
 #include <Base/Types.hpp>
 #include <Base/Assert.hpp>
-#include <Base/GeneratedObjectCode.hpp>
 #include <Base/Internal/MutableArray.hpp>
 
 #include <initializer_list>
@@ -41,8 +40,7 @@ namespace NxA {
 template <class T, template <typename, typename...> class Implementation, typename... Rest>
 class Array
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(Implementation<T, Rest...>);
-
+    using Internal = Implementation<T, Rest...>;
     std::shared_ptr<Internal> internal;
 
     template <typename V, template <typename, typename...> class I, typename... R>

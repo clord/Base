@@ -25,7 +25,6 @@
 #include <Base/Exception.hpp>
 #include <Base/Uncopyable.hpp>
 #include <Base/Array.hpp>
-#include <Base/GeneratedObjectCode.hpp>
 #include <Base/MutableString.hpp>
 #include <Base/String.hpp>
 

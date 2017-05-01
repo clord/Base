@@ -19,28 +19,27 @@
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#pragma once
+// -- Instance Methods
 
-#include <Base/Types.hpp>
+#if !defined(NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL)
+    const character* className() const
+    #ifdef NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS
+        override
+    #endif
+    {
+        return NXA_OBJECT_CLASS::staticClassNameConst;
+    }
+#endif
 
-namespace NxA {
+#ifdef NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS
+    virtual std::shared_ptr<NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS> baseInternalSharedPointer() override
+    {
+        return std::static_pointer_cast<NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS>(std::make_shared<Internal>(*this));
+    }
+#elif defined(NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL)
+    virtual std::shared_ptr<Internal> baseInternalSharedPointer() = 0;
+#endif
 
-class String;
-
-class Date
-{
-    static constexpr const character* staticClassNameConst = "Date";
-
-    #define NXA_OBJECT_CLASS                            Date
-    #define NXA_INTERNAL_OBJECT_SHOULD_NEVER_BE_COPIED
-    #include <Base/ObjectDeclaration.ipp>
-
-public:
-    // -- Class Methods
-    static String formattedStringWithTimestampAndFormat(timestamp, const character*);
-
-    static timestamp currentDateInSecondsSinceJanuary1st1970();
-    static timestamp currentGMTDateInSecondsSinceJanuary1st1970();
-};
-
-}
+#undef NXA_OBJECT_CLASS
+#undef NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS
+#undef NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL

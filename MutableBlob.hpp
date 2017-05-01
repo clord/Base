@@ -22,18 +22,24 @@
 #pragma once
 
 #include <Base/Types.hpp>
-#include <Base/GeneratedObjectCode.hpp>
+#include <Base/WeakReference.hpp>
 
 namespace NxA {
 
+// -- Forward Declarations
 struct MutableBlobInternal;
 class String;
 class Blob;
+class DescriberState;
 
+// -- Public Interface
 class MutableBlob
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableBlobInternal);
-    NXA_GENERATED_OBJECT_METHODS_DECLARATIONS_FOR(MutableBlob);
+    static constexpr const character* staticClassNameConst = "MutableBlob";
+
+    #define NXA_OBJECT_CLASS                    MutableBlob
+    #define NXA_INTERNAL_OBJECT_CLASS           MutableBlobInternal
+    #include <Base/ObjectDeclaration.ipp>
 
     friend Blob;
 

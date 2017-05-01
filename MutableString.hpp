@@ -22,22 +22,23 @@
 #pragma once
 
 #include <Base/Types.hpp>
-#include <Base/GeneratedObjectCode.hpp>
 #include <Base/Internal/MutableString.hpp>
 #include <Base/String.hpp>
 
-// -- Forward Declarations
 namespace NxA {
 
+// -- Forward Declarations
 class Blob;
 class MutableStringInternal;
 
 // -- Public Interface
-
 class MutableString
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableStringInternal);
-    NXA_GENERATED_OBJECT_METHODS_DECLARATIONS_FOR(MutableString);
+    static constexpr const character* staticClassNameConst = "MutableString";
+
+    #define NXA_OBJECT_CLASS                   MutableString
+    #define NXA_INTERNAL_OBJECT_CLASS          MutableStringInternal
+    #include <Base/ObjectDeclaration.ipp>
 
     friend String;
 

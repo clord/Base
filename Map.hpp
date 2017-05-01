@@ -26,7 +26,6 @@
 #include <Base/MutableString.hpp>
 #include <Base/MutableMap.hpp>
 #include <Base/Internal/MutableMap.hpp>
-#include <Base/GeneratedObjectCode.hpp>
 
 #include <mutex>
 
@@ -37,8 +36,7 @@ namespace NxA {
 template <typename Tkey, typename Tvalue>
 class Map
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableMapInternal<const Tkey, Tvalue>);
-
+    using Internal = MutableMapInternal<const Tkey, Tvalue>;
     std::shared_ptr<MutableMapInternal<const Tkey, Tvalue>> internal;
 
     friend MutableString;

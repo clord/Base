@@ -24,7 +24,6 @@
 #include <Base/Types.hpp>
 #include <Base/String.hpp>
 #include <Base/MutableSet.hpp>
-#include <Base/GeneratedObjectCode.hpp>
 #include <Base/Internal/MutableSet.hpp>
 
 #include <algorithm>
@@ -39,8 +38,7 @@ namespace NxA {
 template <class T>
 class Set
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableSetInternal<T>);
-
+    using Internal = MutableSetInternal<T>;
     std::shared_ptr<Internal> internal = std::make_shared<Internal>();
 
     friend class MutableSet<T>;

@@ -24,13 +24,12 @@
 #include <Base/Assert.hpp>
 #include <Base/Types.hpp>
 #include <Base/Internal/MutableString.hpp>
+
 #include <vector>
 #include <list>
 #include <initializer_list>
 
 namespace NxA {
-
-// -- Forward Declarations
 
 // -- Utility Methods
 

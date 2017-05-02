@@ -33,7 +33,7 @@ class Blob;
 // -- Public Interface
 class String
 {
-    static constexpr const character* staticClassNameConst = "String";
+    static constexpr auto staticClassNameConst = "String";
 
     #define NXA_OBJECT_CLASS                   String
     #define NXA_INTERNAL_OBJECT_CLASS          MutableStringInternal

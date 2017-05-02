@@ -34,7 +34,7 @@ class MutableStringInternal;
 // -- Public Interface
 class MutableString
 {
-    static constexpr const character* staticClassNameConst = "MutableString";
+    static constexpr auto staticClassNameConst = "MutableString";
 
     #define NXA_OBJECT_CLASS                   MutableString
     #define NXA_INTERNAL_OBJECT_CLASS          MutableStringInternal

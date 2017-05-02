@@ -33,7 +33,7 @@ class DescriberState;
 
 class Blob
 {
-    static constexpr const character* staticClassNameConst = "Blob";
+    static constexpr auto staticClassNameConst = "Blob";
 
     #define NXA_OBJECT_CLASS                    Blob
     #define NXA_INTERNAL_OBJECT_CLASS           MutableBlobInternal

@@ -35,7 +35,7 @@ class DescriberState;
 // -- Public Interface
 class MutableBlob
 {
-    static constexpr const character* staticClassNameConst = "MutableBlob";
+    static constexpr auto staticClassNameConst = "MutableBlob";
 
     #define NXA_OBJECT_CLASS                    MutableBlob
     #define NXA_INTERNAL_OBJECT_CLASS           MutableBlobInternal

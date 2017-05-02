@@ -29,7 +29,7 @@ class String;
 
 class Date
 {
-    static constexpr const character* staticClassNameConst = "Date";
+    static constexpr auto staticClassNameConst = "Date";
 
     #define NXA_OBJECT_CLASS                            Date
     #define NXA_INTERNAL_OBJECT_SHOULD_NEVER_BE_COPIED

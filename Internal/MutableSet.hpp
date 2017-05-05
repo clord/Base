@@ -109,20 +109,20 @@ struct MutableSetInternal : public std::set<T>
         return this->clear();
     }
 
-    void append(T object)
+    void add(T object)
     {
         this->insert(object);
     }
 
-    void append(MutableSetInternal<T> other)
+    void add(MutableSetInternal<T> other)
     {
         for (auto object : other) {
-            this->append(object);
+            this->add(object);
         }
     }
 
     template <class... ConstructorArguments>
-    void emplaceAppend(ConstructorArguments&&... arguments)
+    void emplaceAdd(ConstructorArguments&&... arguments)
     {
         this->emplace(std::forward<ConstructorArguments>(arguments)...);
     }

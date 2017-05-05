@@ -60,7 +60,7 @@ public:
     template <typename... FormatArguments>
     static MutableString stringWithFormat(MutableString format, FormatArguments&&... formatArguments)
     {
-        return MutableString{Internal::stringWithFormat(256, format.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...)};
+        return MutableString{ Internal::stringWithFormat(256, format.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...) };
     }
 
     static MutableString stringWith(const character* other)

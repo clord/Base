@@ -29,7 +29,6 @@ namespace NxA {
 
 // -- Forward Declarations
 class Blob;
-class MutableStringInternal;
 
 // -- Public Interface
 class MutableString

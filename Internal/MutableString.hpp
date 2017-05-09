@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -25,7 +25,6 @@
 #include <Base/Blob.hpp>
 #include <Base/Optional.hpp>
 #include <Base/Platform.hpp>
-#include <Base/Internal/Object.hpp>
 #include <Base/Array.hpp>
 
 #include <string>
@@ -49,7 +48,7 @@ namespace NxA {
 class String;
 class MutableString;
 
-struct MutableStringInternal : public Object::Internal, public std::string
+struct MutableStringInternal : public std::string
 {
     // -- Constructors/Destructors
     MutableStringInternal() : std::string{"", 0} { }
@@ -60,7 +59,7 @@ struct MutableStringInternal : public Object::Internal, public std::string
         NXA_ASSERT_NOT_NULL(other);
     }
 
-    ~MutableStringInternal() override = default;
+    ~MutableStringInternal() = default;
 
     template <typename... Args>
     static MutableStringInternal stringWithFormat(count sizeGuess, const character* format, Args&&... args)
@@ -173,9 +172,11 @@ struct MutableStringInternal : public Object::Internal, public std::string
 
     void replaceOccurenceOfStringWith(const character* occurence, const character* replacement);
 
-    // -- Overriden Object::Internal Instance Methods
-    uinteger32 classHash() const override;
-    const character* className() const override;
+    virtual const character* className() const final
+    {
+        NXA_ALOG("Illegal call.");
+        return nullptr;
+    }
 
     template <typename T>
     static T stringArgumentAsCharacter(T&& t)

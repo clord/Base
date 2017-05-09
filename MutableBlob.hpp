@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -22,18 +22,24 @@
 #pragma once
 
 #include <Base/Types.hpp>
-#include <Base/GeneratedObjectCode.hpp>
+#include <Base/WeakReference.hpp>
 
 namespace NxA {
 
+// -- Forward Declarations
 struct MutableBlobInternal;
 class String;
 class Blob;
+class DescriberState;
 
+// -- Public Interface
 class MutableBlob
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableBlobInternal);
-    NXA_GENERATED_OBJECT_METHODS_DECLARATIONS_FOR(MutableBlob);
+    static constexpr auto staticClassNameConst = "MutableBlob";
+
+    #define NXA_OBJECT_CLASS                    MutableBlob
+    #define NXA_INTERNAL_OBJECT_CLASS           MutableBlobInternal
+    #include <Base/ObjectDeclaration.ipp>
 
     friend Blob;
 

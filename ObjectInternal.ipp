@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -19,25 +19,27 @@
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#pragma once
+// -- Instance Methods
 
-#include <Base/Types.hpp>
-
-namespace NxA {
-
-struct Object
-{
-    struct Internal
+#if !defined(NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL)
+    const character* className() const
+    #ifdef NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS
+        override
+    #endif
     {
-        // -- Constructors/Destructors
-        Internal() = default;
-        
-        virtual ~Internal() = default;
+        return NXA_OBJECT_CLASS::staticClassNameConst;
+    }
+#endif
 
-        // -- Instance Methods
-        virtual uinteger32 classHash() const = 0;
-        virtual const character* className() const = 0;
-    };
-};
-    
-}
+#ifdef NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS
+    virtual std::shared_ptr<NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS> baseInternalSharedPointer() override
+    {
+        return std::static_pointer_cast<NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS>(std::make_shared<Internal>(*this));
+    }
+#elif defined(NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL)
+    virtual std::shared_ptr<Internal> baseInternalSharedPointer() = 0;
+#endif
+
+#undef NXA_OBJECT_CLASS
+#undef NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS
+#undef NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL

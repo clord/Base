@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -24,7 +24,6 @@
 #include <Base/Types.hpp>
 #include <Base/String.hpp>
 #include <Base/MutableSet.hpp>
-#include <Base/GeneratedObjectCode.hpp>
 #include <Base/Internal/MutableSet.hpp>
 
 #include <algorithm>
@@ -39,8 +38,7 @@ namespace NxA {
 template <class T>
 class Set
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableSetInternal<T>);
-
+    using Internal = MutableSetInternal<T>;
     std::shared_ptr<Internal> internal = std::make_shared<Internal>();
 
     friend class MutableSet<T>;
@@ -77,12 +75,6 @@ public:
         }
 
         return buffer.get();
-    }
-
-    static uinteger32 staticClassHash()
-    {
-        static uinteger32 result = String::hashFor(Set::staticClassName());
-        return result;
     }
 
     // -- Iterators
@@ -131,12 +123,7 @@ public:
     }
 
     // -- Instance Methods
-    uinteger32 classHash() const
-    {
-        return Set::staticClassHash();
-    }
-
-    const character* className() const
+    virtual const character* className() const final
     {
         return Set::staticClassName();
     }

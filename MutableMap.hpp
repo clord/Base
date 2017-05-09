@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -24,7 +24,6 @@
 #include <Base/Types.hpp>
 #include <Base/String.hpp>
 #include <Base/Internal/MutableMap.hpp>
-#include <Base/GeneratedObjectCode.hpp>
 
 #include <mutex>
 
@@ -38,8 +37,7 @@ class Map;
 template <typename Tkey, typename Tvalue>
 class MutableMap
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableMapInternal<const Tkey, Tvalue>);
-
+    using Internal = MutableMapInternal<const Tkey, Tvalue>;
     std::shared_ptr<MutableMapInternal<const Tkey, Tvalue>> internal;
 
     friend Map<const Tkey, Tvalue>;
@@ -75,12 +73,6 @@ public:
         }
 
         return buffer.get();
-    }
-
-    static uinteger32 staticClassHash()
-    {
-        static uinteger32 value = String::hashFor(MutableMap::staticClassName());
-        return value;
     }
 
     // -- Iterators
@@ -125,12 +117,7 @@ public:
     }
 
     // -- Instance Methods
-    uinteger32 classHash() const
-    {
-        return MutableMap::staticClassHash();
-    }
-
-    const character* className() const
+    virtual const character* className() const final
     {
         return MutableMap::staticClassName();
     }
@@ -174,19 +161,26 @@ public:
         return internal->length();
     }
 
-    void setValueForKey(Tvalue value, const Tkey& key)
+    boolean setValueForKeyCausedAnInsertion(const Tvalue& value, const Tkey& key)
     {
-        internal->setValueForKey(value, key);
+        return internal->setValueForKeyCausedAnInsertion(value, key);
+    }
+    void setValueForKey(const Tvalue& value, const Tkey& key)
+    {
+        internal->setValueForKeyCausedAnInsertion(value, key);
     }
 
     Tvalue& valueForKey(const Tkey& key)
     {
         return internal->valueForKey(key);
     }
-
     const Tvalue& valueForKey(const Tkey& key) const
     {
-        return internal->valueForKey(key);
+        return internal->operator[](key);
+    }
+    Tvalue& valueForKey(Tkey&& key)
+    {
+        return internal->valueForKey(std::move(key));
     }
 
     Optional<Tvalue> maybeValueForKey(const Tkey& key) const
@@ -194,24 +188,23 @@ public:
         return internal->maybeValueForKey(key);
     }
 
-    boolean containsValueForKey(const Tkey& key) const
+    boolean removeValueForKeyCausedARemoval(const Tkey& key)
     {
-        return internal->containsValueForKey(key);
+        return internal->removeValueForKeyCausedARemoval(key);
+    }
+    void removeValueForKey(const Tkey& key)
+    {
+        internal->removeValueForKeyCausedARemoval(key);
     }
 
     void removeValueAt(const_iterator position)
     {
-        return internal->removeValueAt(position);
-    }
-
-    void removeValueForKey(const Tkey& key)
-    {
-        return internal->removeValueForKey(key);
+        internal->removeValueAt(position);
     }
 
     void removeAll()
     {
-        return internal->removeAll();
+        internal->removeAll();
     }
 };
     

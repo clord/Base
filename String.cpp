@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -159,11 +159,6 @@ boolean String::operator==(const String& other) const
 
 // -- Instance Methods
 
-uinteger32 String::classHash() const
-{
-    return String::staticClassHash();
-}
-
 const character* String::className() const
 {
     return String::staticClassName();
@@ -172,12 +167,6 @@ const character* String::className() const
 boolean String::classNameIs(const character* className) const
 {
     return !::strcmp(String::staticClassName(), className);
-}
-
-uinteger32 String::staticClassHash()
-{
-    static uinteger32 result = String::hashFor(String::staticClassName());
-    return result;
 }
 
 String String::description(const DescriberState& state) const

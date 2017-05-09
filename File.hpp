@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -25,7 +25,6 @@
 #include <Base/Exception.hpp>
 #include <Base/Uncopyable.hpp>
 #include <Base/Array.hpp>
-#include <Base/GeneratedObjectCode.hpp>
 #include <Base/MutableString.hpp>
 #include <Base/String.hpp>
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -26,7 +26,6 @@
 #include <Base/MutableString.hpp>
 #include <Base/MutableMap.hpp>
 #include <Base/Internal/MutableMap.hpp>
-#include <Base/GeneratedObjectCode.hpp>
 
 #include <mutex>
 
@@ -37,8 +36,7 @@ namespace NxA {
 template <typename Tkey, typename Tvalue>
 class Map
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(MutableMapInternal<const Tkey, Tvalue>);
-
+    using Internal = MutableMapInternal<const Tkey, Tvalue>;
     std::shared_ptr<MutableMapInternal<const Tkey, Tvalue>> internal;
 
     friend MutableString;
@@ -76,12 +74,6 @@ public:
         return buffer.get();
     }
 
-    static uinteger32 staticClassHash()
-    {
-        static uinteger32 value = String::hashFor(Map::staticClassName());
-        return value;
-    }
-
     // -- Iterators
     using const_iterator = typename MutableMapInternal<const Tkey, Tvalue>::const_iterator;
 
@@ -114,20 +106,19 @@ public:
     }
     const Tvalue& operator[](const Tkey& key) const
     {
-        return internal->valueForKey(key);
+        return internal->operator[](key);
     }
     Tvalue& operator[](const Tkey& key)
     {
-        return internal->valueForKey(key);
+        return internal->operator[](key);
+    }
+    Tvalue& operator[](Tkey&& key)
+    {
+        return internal->operator[](std::move(key));
     }
 
     // -- Instance Methods
-    uinteger32 classHash() const
-    {
-        return Map::staticClassHash();
-    }
-
-    const character* className() const
+    virtual const character* className() const final
     {
         return Map::staticClassName();
     }
@@ -162,24 +153,22 @@ public:
         return internal->length();
     }
 
+    Tvalue& valueForKey(const Tkey& key)
+    {
+        return internal->operator[](key);
+    }
+    const Tvalue& valueForKey(const Tkey& key) const
+    {
+        return internal->operator[](key);
+    }
+    Tvalue& valueForKey(Tkey&& key)
+    {
+        return internal->operator[](std::move(key));
+    }
+
     Optional<Tvalue> maybeValueForKey(const Tkey& key) const
     {
         return internal->maybeValueForKey(key);
-    }
-    
-    Tvalue& valueForKey(const Tkey& key)
-    {
-        return internal->valueForKey(key);
-    }
-
-    const Tvalue& valueForKey(const Tkey& key) const
-    {
-        return internal->valueForKey(key);
-    }
-
-    boolean containsValueForKey(const Tkey& key) const
-    {
-        return internal->containsValueForKey(key);
     }
 };
     

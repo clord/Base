@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -23,7 +23,6 @@
 
 #include "Base/Types.hpp"
 #include "Base/String.hpp"
-#include "Base/Internal/Object.hpp"
 
 #include <map>
 
@@ -32,14 +31,14 @@ namespace NxA {
 // -- Class
 
 template <typename Tkey, typename Tvalue>
-struct MutableMapInternal : public Object::Internal, public std::map<const Tkey, Tvalue>
+struct MutableMapInternal : public std::map<const Tkey, Tvalue>
 {
     // -- Constructors/Destructors
     MutableMapInternal() : std::map<const Tkey, Tvalue>() { }
     MutableMapInternal(const MutableMapInternal& other) : std::map<const Tkey, Tvalue>{ other } { }
     MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{ other } { }
     MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{ std::move(other) } { }
-    ~MutableMapInternal() override = default;
+    ~MutableMapInternal() = default;
 
     // -- Iterators
     using iterator = typename std::map<const Tkey, Tvalue>::iterator;
@@ -81,13 +80,24 @@ struct MutableMapInternal : public Object::Internal, public std::map<const Tkey,
         return this->std::map<const Tkey, Tvalue>::size();
     }
 
-    void setValueForKey(Tvalue value, const Tkey& key)
+    boolean setValueForKeyCausedAnInsertion(const Tvalue& value, const Tkey& key)
     {
-        auto pvalue = std::pair<const Tkey, Tvalue>(key, value);
-        auto result = std::map<const Tkey, Tvalue>::insert(pvalue);
+        auto result = std::map<const Tkey, Tvalue>::insert(std::pair<const Tkey, Tvalue>(key, value));
         if (!result.second) {
             result.first->second = value;
+            return false;
         }
+
+        return true;
+    }
+
+    Tvalue& valueForKey(const Tkey& key)
+    {
+        return std::map<const Tkey, Tvalue>::operator[](key);
+    }
+    Tvalue& valueForKey(const Tkey&& key)
+    {
+        return std::map<const Tkey, Tvalue>::operator[](std::move(key));
     }
 
     const Optional<Tvalue> maybeValueForKey(const Tkey& key) const
@@ -99,15 +109,7 @@ struct MutableMapInternal : public Object::Internal, public std::map<const Tkey,
         return {pos->second};
     }
 
-    const Tvalue& valueForKey(const Tkey& key) const
-    {
-        const_iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
-        NXA_ASSERT_TRUE(pos != this->cend());
-
-        return pos->second;
-    }
-
-    Tvalue& valueForKey(const Tkey& key)
+    Tvalue& operator[](const Tkey& key)
     {
         iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
         NXA_ASSERT_TRUE(pos != this->end());
@@ -115,32 +117,20 @@ struct MutableMapInternal : public Object::Internal, public std::map<const Tkey,
         return pos->second;
     }
 
-    Tvalue& operator[](const Tkey& key)
-    {
-        return std::map<const Tkey, Tvalue>::operator[](key);
-    }
-
-    Tvalue& operator[](Tkey&& key)
-    {
-        return std::map<const Tkey, Tvalue>::operator[](std::move(key));
-    }
-
-    const Tvalue& operator[](const Tkey& key) const
-    {
-        return valueForKey(key);
-    }
-    boolean containsValueForKey(const Tkey& key) const
-    {
-        return this->std::map<const Tkey, Tvalue>::find(key) != this->std::map<const Tkey, Tvalue>::end();
-    }
     void removeAll()
     {
         this->clear();
     }
 
-    void removeValueForKey(const Tkey& key)
+    boolean removeValueForKeyCausedARemoval(const Tkey& key)
     {
-        this->erase(key);
+        iterator pos = this->std::map<const Tkey, Tvalue>::find(key);
+        if (pos == this->cend()) {
+            return false;
+        }
+
+        this->erase(pos);
+        return true;
     }
 
     void removeValueAt(const_iterator position)
@@ -148,14 +138,7 @@ struct MutableMapInternal : public Object::Internal, public std::map<const Tkey,
         this->erase(position);
     }
 
-    // -- Overriden Object::Internal Instance Methods
-    uinteger32 classHash() const override
-    {
-        NXA_ALOG("Illegal call.");
-        return 0;
-    }
-
-    const character* className() const override
+    virtual const character* className() const final
     {
         NXA_ALOG("Illegal call.");
         return nullptr;

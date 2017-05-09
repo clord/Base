@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -25,7 +25,6 @@
 #include "Base/Assert.hpp"
 #include "Base/Types.hpp"
 #include "Base/MutableString.hpp"
-#include "Base/Internal/Object.hpp"
 
 #include <set>
 
@@ -46,14 +45,14 @@ String descriptionOfObjectsInSet(const MutableSetInternal<T>&);
 // -- Class
 
 template <class T>
-struct MutableSetInternal : public Object::Internal, public std::set<T>
+struct MutableSetInternal : public std::set<T>
 {
     // -- Constructors/Destructors
     MutableSetInternal() = default;
     MutableSetInternal(const MutableSetInternal& other) = default;
     MutableSetInternal(MutableSetInternal&& other) = default;
     MutableSetInternal(std::initializer_list<T> other) : std::vector<T>{ other.begin(), other.end() } { }
-    ~MutableSetInternal() override = default;
+    ~MutableSetInternal() = default;
     MutableSetInternal& operator=(const MutableSetInternal& other) = default;
     MutableSetInternal(std::set<T>&& other) : std::set<T>{ std::move(other) } { }
 
@@ -169,14 +168,7 @@ struct MutableSetInternal : public Object::Internal, public std::set<T>
         return {std::move(result)};
     }
 
-    // -- Overriden Object::Internal Instance Methods
-    uinteger32 classHash() const override
-    {
-        NXA_ALOG("Illegal call.");
-        return 0;
-    }
-
-    const character* className() const override
+    virtual const character* className() const final
     {
         NXA_ALOG("Illegal call.");
         return nullptr;

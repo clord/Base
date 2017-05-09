@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -23,8 +23,6 @@
 
 #include <Base/Types.hpp>
 #include <Base/Assert.hpp>
-#include <Base/Internal/Object.hpp>
-#include <Base/GeneratedObjectCode.hpp>
 #include <Base/Internal/MutableArray.hpp>
 
 #include <initializer_list>
@@ -42,8 +40,7 @@ namespace NxA {
 template <class T, template <typename, typename...> class Implementation, typename... Rest>
 class Array
 {
-    NXA_GENERATED_INTERNAL_OBJECT_FORWARD_DECLARATION_USING(Implementation<T, Rest...>);
-
+    using Internal = Implementation<T, Rest...>;
     std::shared_ptr<Internal> internal;
 
     template <typename V, template <typename, typename...> class I, typename... R>
@@ -95,11 +92,6 @@ public:
         }
 
         return buffer.get();
-    }
-
-    static uinteger32 staticClassHash()
-    {
-        return static_cast<uinteger32>(std::hash<std::string> {}(std::string{Array::staticClassName()}));
     }
 
     // -- Iterators
@@ -167,12 +159,7 @@ public:
     }
 
     // -- Instance Methods
-    uinteger32 classHash() const
-    {
-        return Array::staticClassHash();
-    }
-
-    const character* className() const
+    virtual const character* className() const final
     {
         return Array::staticClassName();
     }

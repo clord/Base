@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -24,14 +24,12 @@
 #include <Base/Assert.hpp>
 #include <Base/Types.hpp>
 #include <Base/Internal/MutableString.hpp>
-#include <Base/Internal/Object.hpp>
+
 #include <vector>
 #include <list>
 #include <initializer_list>
 
 namespace NxA {
-
-// -- Forward Declarations
 
 // -- Utility Methods
 
@@ -42,7 +40,7 @@ String descriptionOfObjectsInArray(const MutableArrayInternal<T>&);
 // -- Class
 
 template <class T>
-struct MutableArrayInternal : public Object::Internal, public std::vector<T>
+struct MutableArrayInternal : public std::vector<T>
 {
     // -- Constructors/Destructors
     MutableArrayInternal() : std::vector<T>() { }
@@ -51,7 +49,7 @@ struct MutableArrayInternal : public Object::Internal, public std::vector<T>
     MutableArrayInternal(std::initializer_list<T> other) : std::vector<T>{ other.begin(), other.end() } { }
     template <typename V, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
     MutableArrayInternal(const MutableArrayInternal<V>& other) : std::vector<T>{ other.begin(), other.end() } { }
-    ~MutableArrayInternal() override = default;
+    ~MutableArrayInternal() = default;
 
     // -- Iterators
     using iterator = typename std::vector<T>::iterator;
@@ -218,14 +216,7 @@ struct MutableArrayInternal : public Object::Internal, public std::vector<T>
         std::copy(std::begin(listTs), std::end(listTs), std::begin(*this));
     }
 
-    // -- Overriden Object::Internal Instance Methods
-    uinteger32 classHash() const override
-    {
-        NXA_ALOG("Illegal call.");
-        return 0;
-    }
-
-    const character* className() const override
+    virtual const character* className() const final
     {
         NXA_ALOG("Illegal call.");
         return nullptr;

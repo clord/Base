@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -92,7 +92,7 @@ TEST(Base_Map, SetValueForKey_ValueFromAPointer_SetsCorrectValue)
     TestMapUInteger32ToString test;
 
     // -- When.
-    test.setValueForKey(String(otherTestString), 0);
+    test.setValueForKey(String{ otherTestString }, 0);
 
     // -- Then.
     ASSERT_STREQ(otherTestString, test.valueForKey(0).asUTF8());
@@ -115,10 +115,10 @@ TEST(Base_Map, SetValueForKey_ValueFromAPointerOverAnExistingValue_SetsCorrectVa
     // -- Given.
     static const character* otherTestString = "testString";
     TestMapUInteger32ToString test;
-    test.setValueForKey(String("Initial String"), 44);
+    test.setValueForKey(String{ "Initial String" }, 44);
 
     // -- When.
-    test[44] = String(otherTestString);
+    test.setValueForKey(String{ otherTestString }, 44);
 
     // -- Then.
     ASSERT_STREQ(otherTestString, test.valueForKey(44).asUTF8());
@@ -131,7 +131,142 @@ TEST(Base_Map, SetValueForKey_ValueFromAReferenceOverAnExistingValue_SetsCorrect
     test.setValueForKey(testString, 44);
 
     // -- When.
-    test[44] = otherString;
+    test.setValueForKey(otherString, 44);
+
+    // -- Then.
+    ASSERT_STREQ(otherString.asUTF8(), test.valueForKey(44).asUTF8());
+}
+
+TEST(Base_Map, SetValueForKeyCausedAnInsertion_IntegerValue_SetsCorrectValue)
+{
+    // -- Given.
+    static const uinteger32 integerValue = 72;
+    TestMapUInteger32ToUInteger32 test;
+
+    // -- When.
+    auto existed = !test.setValueForKeyCausedAnInsertion(integerValue, 0);
+
+    // -- Then.
+    ASSERT_FALSE(existed);
+    ASSERT_EQ(integerValue, test.valueForKey(0));
+}
+
+TEST(Base_Map, SetValueForKeyCausedAnInsertion_ValueFromAPointer_SetsCorrectValue)
+{
+    // -- Given.
+    static const character* otherTestString = "testString";
+    TestMapUInteger32ToString test;
+
+    // -- When.
+    auto existed = !test.setValueForKeyCausedAnInsertion(String{ otherTestString }, 0);
+
+    // -- Then.
+    ASSERT_FALSE(existed);
+    ASSERT_STREQ(otherTestString, test.valueForKey(0).asUTF8());
+}
+
+TEST(Base_Map, SetValueForKeyCausedAnInsertion_ValueFromAReference_SetsCorrectValue)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+
+    // -- When.
+    auto existed = !test.setValueForKeyCausedAnInsertion(testString, 0);
+
+    // -- Then.
+    ASSERT_FALSE(existed);
+    ASSERT_STREQ(testString.asUTF8(), test.valueForKey(0).asUTF8());
+}
+
+TEST(Base_Map, SetValueForKeyCausedAnInsertion_ValueFromAPointerOverAnExistingValue_SetsCorrectValue)
+{
+    // -- Given.
+    static const character* otherTestString = "testString";
+    TestMapUInteger32ToString test;
+    test.setValueForKey(String{ "Initial String" }, 44);
+
+    // -- When.
+    auto existed = !test.setValueForKeyCausedAnInsertion(String{ otherTestString }, 44);
+
+    // -- Then.
+    ASSERT_TRUE(existed);
+    ASSERT_STREQ(otherTestString, test.valueForKey(44).asUTF8());
+}
+
+TEST(Base_Map, SetValueForKeyCausedAnInsertion_ValueFromAReferenceOverAnExistingValue_SetsCorrectValue)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 44);
+
+    // -- When.
+    auto existed = !test.setValueForKeyCausedAnInsertion(otherString, 44);
+
+    // -- Then.
+    ASSERT_TRUE(existed);
+    ASSERT_STREQ(otherString.asUTF8(), test.valueForKey(44).asUTF8());
+}
+
+TEST(Base_Map, ValueForKey_IntegerValue_SetsCorrectValue)
+{
+    // -- Given.
+    static const uinteger32 integerValue = 72;
+    TestMapUInteger32ToUInteger32 test;
+
+    // -- When.
+    test.valueForKey(0) = integerValue;
+
+    // -- Then.
+    ASSERT_EQ(integerValue, test.valueForKey(0));
+}
+
+TEST(Base_Map, ValueForKey_ValueFromAPointer_SetsCorrectValue)
+{
+    // -- Given.
+    static const character* otherTestString = "testString";
+    TestMapUInteger32ToString test;
+
+    // -- When.
+    test.valueForKey(0) = String(otherTestString);
+
+    // -- Then.
+    ASSERT_STREQ(otherTestString, test.valueForKey(0).asUTF8());
+}
+
+TEST(Base_Map, ValueForKey_ValueFromAReference_SetsCorrectValue)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+
+    // -- When.
+    test.valueForKey(0) = testString;
+
+    // -- Then.
+    ASSERT_STREQ(testString.asUTF8(), test.valueForKey(0).asUTF8());
+}
+
+TEST(Base_Map, ValueForKey_ValueFromAPointerOverAnExistingValue_SetsCorrectValue)
+{
+    // -- Given.
+    static const character* otherTestString = "testString";
+    TestMapUInteger32ToString test;
+    test.setValueForKey(String{ "Initial String" }, 44);
+
+    // -- When.
+    test.valueForKey(44) = String(otherTestString);
+
+    // -- Then.
+    ASSERT_STREQ(otherTestString, test.valueForKey(44).asUTF8());
+}
+
+TEST(Base_Map, ValueForKey_ValueFromAReferenceOverAnExistingValue_SetsCorrectValue)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 44);
+
+    // -- When.
+    test.valueForKey(44) = otherString;
 
     // -- Then.
     ASSERT_STREQ(otherString.asUTF8(), test.valueForKey(44).asUTF8());
@@ -161,7 +296,7 @@ TEST(Base_Map, ValueForKey_MapWithAnotherValue_ReturnsCorrectValue)
     ASSERT_STREQ(otherString.asUTF8(), test.valueForKey(0x2423).asUTF8());
 }
 
-TEST(Base_Map, ValueForKey_LookingForAnUnknownKey_ThrowsException)
+TEST(Base_Map, ValueForKey_LookingForAnUnknownKey_CreatesANewEntry)
 {
     // -- Given.
     TestMapUInteger32ToString test;
@@ -169,8 +304,11 @@ TEST(Base_Map, ValueForKey_LookingForAnUnknownKey_ThrowsException)
     test.setValueForKey(otherString, 0x2423);
 
     // -- When.
+    test.valueForKey(0x23);
+
     // -- Then.
-    ASSERT_THROW(test.valueForKey(0x23).asUTF8(), std::exception);
+    ASSERT_TRUE(test.maybeValueForKey(0x23) ? true : false);
+    ASSERT_STREQ("", test.valueForKey(0x23).asUTF8());
 }
 
 TEST(Base_Map, ValueForKey_ConstMapWithAGivenValue_ReturnsCorrectValue)
@@ -179,7 +317,7 @@ TEST(Base_Map, ValueForKey_ConstMapWithAGivenValue_ReturnsCorrectValue)
     TestMapUInteger32ToString test;
     test.setValueForKey(testString, 0x2323);
     test.setValueForKey(otherString, 0x2423);
-    const TestMapUInteger32ToString constTest = test;
+    const TestMapUInteger32ToString& constTest = test;
 
     // -- When.
     // -- Then.
@@ -192,7 +330,7 @@ TEST(Base_Map, ValueForKey_ConstMapWithAnotherValue_ReturnsCorrectValue)
     TestMapUInteger32ToString test;
     test.setValueForKey(testString, 0x2323);
     test.setValueForKey(otherString, 0x2423);
-    const TestMapUInteger32ToString constTest = test;
+    const TestMapUInteger32ToString& constTest = test;
 
     // -- When.
     // -- Then.
@@ -205,14 +343,14 @@ TEST(Base_Map, ValueForKey_LookingForAnUnknownKeyInConstMap_ThrowsException)
     TestMapUInteger32ToString test;
     test.setValueForKey(testString, 0x2323);
     test.setValueForKey(otherString, 0x2423);
-    const TestMapUInteger32ToString constTest = test;
+    const TestMapUInteger32ToString& constTest = test;
 
     // -- When.
     // -- Then.
     ASSERT_THROW(constTest.valueForKey(0x23).asUTF8(), std::exception);
 }
 
-TEST(Base_Map, ContainsValueForKey_UnknownKey_ReturnsFalse)
+TEST(Base_Map, OperatorSquareBrackets_MapWithAGivenValue_ReturnsCorrectValue)
 {
     // -- Given.
     TestMapUInteger32ToString test;
@@ -221,10 +359,10 @@ TEST(Base_Map, ContainsValueForKey_UnknownKey_ReturnsFalse)
 
     // -- When.
     // -- Then.
-    ASSERT_FALSE(test.containsValueForKey(0x23));
+    ASSERT_STREQ(testString.asUTF8(), test[0x2323].asUTF8());
 }
 
-TEST(Base_Map, ContainsValueForKey_KnownKey_ReturnsTrue)
+TEST(Base_Map, OperatorSquareBrackets_MapWithAnotherValue_ReturnsCorrectValue)
 {
     // -- Given.
     TestMapUInteger32ToString test;
@@ -233,7 +371,146 @@ TEST(Base_Map, ContainsValueForKey_KnownKey_ReturnsTrue)
 
     // -- When.
     // -- Then.
-    ASSERT_TRUE(test.containsValueForKey(0x2323));
+    ASSERT_STREQ(otherString.asUTF8(), test[0x2423].asUTF8());
+}
+
+TEST(Base_Map, OperatorSquareBrackets_LookingForAnUnknownKey_ThrowsException)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 0x2323);
+    test.setValueForKey(otherString, 0x2423);
+
+    // -- When.
+    // -- Then.
+    ASSERT_THROW(test[0x23].asUTF8(), std::exception);
+}
+
+TEST(Base_Map, OperatorSquareBrackets_ConstMapWithAGivenValue_ReturnsCorrectValue)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 0x2323);
+    test.setValueForKey(otherString, 0x2423);
+    const TestMapUInteger32ToString& constTest = test;
+
+    // -- When.
+    // -- Then.
+    ASSERT_STREQ(testString.asUTF8(), constTest[0x2323].asUTF8());
+}
+
+TEST(Base_Map, OperatorSquareBrackets_ConstMapWithAnotherValue_ReturnsCorrectValue)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 0x2323);
+    test.setValueForKey(otherString, 0x2423);
+    const TestMapUInteger32ToString& constTest = test;
+
+    // -- When.
+    // -- Then.
+    ASSERT_STREQ(otherString.asUTF8(), constTest[0x2423].asUTF8());
+}
+
+TEST(Base_Map, OperatorSquareBrackets_LookingForAnUnknownKeyInConstMap_ThrowsException)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 0x2323);
+    test.setValueForKey(otherString, 0x2423);
+    const TestMapUInteger32ToString& constTest = test;
+
+    // -- When.
+    // -- Then.
+    ASSERT_THROW(constTest[0x23].asUTF8(), std::exception);
+}
+
+TEST(Base_Map, MaybeValueForKey_UnknownKey_ReturnsFalse)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 0x2323);
+    test.setValueForKey(otherString, 0x2423);
+
+    // -- When.
+    // -- Then.
+    ASSERT_FALSE(test.maybeValueForKey(0x23));
+}
+
+TEST(Base_Map, MaybeValueForKey_KnownKey_ReturnsTrue)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 0x2323);
+    test.setValueForKey(otherString, 0x2423);
+
+    // -- When.
+    // -- Then.
+    ASSERT_TRUE(test.maybeValueForKey(0x2323) ? true : false);
+}
+
+TEST(Base_Map, RemoveValueForKey_UnknownKey_ReturnsFalse)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 0x2323);
+    test.setValueForKey(otherString, 0x2423);
+
+    // -- When.
+    test.removeValueForKey(0x23);
+
+    // -- Then.
+    ASSERT_EQ(2, test.length());
+    ASSERT_TRUE(test.maybeValueForKey(0x2323) ? true : false);
+    ASSERT_TRUE(test.maybeValueForKey(0x2423) ? true : false);
+}
+
+TEST(Base_Map, RemoveValueForKey_KnownKey_ReturnsTrueAndRemovesTheKey)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 0x2323);
+    test.setValueForKey(otherString, 0x2423);
+
+    // -- When.
+    test.removeValueForKey(0x2323);
+
+    // -- Then.
+    ASSERT_EQ(1, test.length());
+    ASSERT_TRUE(test.maybeValueForKey(0x2423) ? true : false);
+}
+
+TEST(Base_Map, RemoveValueForKeyCausedARemoval_UnknownKey_ReturnsFalse)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 0x2323);
+    test.setValueForKey(otherString, 0x2423);
+
+    // -- When.
+    auto existed = test.removeValueForKeyCausedARemoval(0x23);
+
+    // -- Then.
+    ASSERT_FALSE(existed);
+    ASSERT_EQ(2, test.length());
+    ASSERT_TRUE(test.maybeValueForKey(0x2323) ? true : false);
+    ASSERT_TRUE(test.maybeValueForKey(0x2423) ? true : false);
+}
+
+TEST(Base_Map, RemoveValueForKeyCausedARemoval_KnownKey_ReturnsTrueAndRemovesTheKey)
+{
+    // -- Given.
+    TestMapUInteger32ToString test;
+    test.setValueForKey(testString, 0x2323);
+    test.setValueForKey(otherString, 0x2423);
+
+    // -- When.
+    auto existed = test.removeValueForKeyCausedARemoval(0x2323);
+
+    // -- Then.
+    ASSERT_TRUE(existed);
+    ASSERT_EQ(1, test.length());
+    ASSERT_TRUE(test.maybeValueForKey(0x2423) ? true : false);
 }
 
 TEST(Base_Map, Length_MapWithKeys_ReturnsCorrectValue)

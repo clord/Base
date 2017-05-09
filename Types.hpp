@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -79,7 +79,7 @@ struct TypeName<std::shared_ptr<T>>
 #define NXA_STR_VALUE_FOR_TYPE(arg...) #arg
 
 #define NXA_SPECIALIZE_TYPENAME_FOR_TYPE(name) \
-template <> struct TypeName<name> \
+template <> struct NxA::TypeName<name> \
 { \
     static const character* get() \
     { \

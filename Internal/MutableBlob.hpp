@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015-2016 Next Audio Labs, LLC. All rights reserved.
+//  Copyright (c) 2015-2017 Next Audio Labs, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in the
@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include "Base/Internal/Object.hpp"
 #include "Base/Assert.hpp"
 #include "Base/Types.hpp"
 
@@ -36,14 +35,14 @@ void MurmurHash3_x64_128(const void*, const int, const uint32_t, void*);
 
 // -- Class
 
-struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
+struct MutableBlobInternal : public std::vector<byte>
 {
     // -- Constructors/Destructors
     MutableBlobInternal() : std::vector<byte>() { }
     MutableBlobInternal(const std::vector<byte>& other) : std::vector<byte>{ other } { }
     MutableBlobInternal(std::vector<byte>&& other) : std::vector<byte>{ std::move(other) } { }
 
-    ~MutableBlobInternal() override = default;
+    ~MutableBlobInternal() = default;
 
     // -- Factory Methods
     static std::shared_ptr<MutableBlobInternal> blobWithCapacity(count size)
@@ -166,14 +165,7 @@ struct MutableBlobInternal : public Object::Internal, public std::vector<byte>
 
     String description() const;
 
-    // -- Overriden Object::Internal Instance Methods
-    uinteger32 classHash() const override
-    {
-        NXA_ALOG("Illegal call.");
-        return 0;
-    }
-
-    const character* className() const override
+    virtual const character* className() const final
     {
         NXA_ALOG("Illegal call.");
         return nullptr;

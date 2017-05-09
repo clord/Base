@@ -22,7 +22,7 @@
 #pragma once
 
 #include <Base/Types.hpp>
-
+#include <stdarg.h>
 #include <stdexcept>
 
 // -- Macros

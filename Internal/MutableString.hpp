@@ -23,6 +23,7 @@
 
 #include <Base/Assert.hpp>
 #include <Base/Blob.hpp>
+#include <Base/Optional.hpp>
 #include <Base/Platform.hpp>
 #include <Base/Internal/Object.hpp>
 #include <Base/Array.hpp>

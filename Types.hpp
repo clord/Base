@@ -27,7 +27,6 @@
 #include <cstdint>
 #include <memory>
 #include <typeinfo>
-#include <experimental/optional>
 
 namespace NxA {
 
@@ -57,30 +56,6 @@ using decimal2 = dec::decimal<2>;
 using decimal3 = dec::decimal<3>;
 using decimal = decimal3;
 
-// -- Provide an optional type based on std::experimental::optional. TODO: change to std::optional in C++1y
-
-template <typename T>
-using Optional = std::experimental::optional<T>;
-
-using NullOptional = std::experimental::nullopt_t;
-
-constexpr NullOptional nothing{0};
-
-template <typename T>
-inline constexpr Optional<typename std::decay<T>::type> makeOptional(T&& v)
-{
-    return Optional<typename std::decay<T>::type>(std::forward<T>(v));
-}
-
-template <typename T, typename Function>
-auto maybe(const NxA::Optional<T>& arg, Function&& f) -> NxA::Optional<typename std::result_of<Function(const T&)>::type>
-{
-    if (!arg) {
-        return nothing;
-    }
-    return {f(*arg)};
-}
-
 // -- Template used by default to produce the name of unknown types.
 template <typename T>
 struct TypeName
@@ -93,15 +68,6 @@ struct TypeName
 
 template <typename T>
 struct TypeName<std::shared_ptr<T>>
-{
-    static const character* get()
-    {
-        return TypeName<T>::get();
-    }
-};
-
-template <typename T>
-struct TypeName<Optional<T>>
 {
     static const character* get()
     {

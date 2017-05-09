@@ -27,6 +27,7 @@
 #include <Base/Exception.hpp>
 #include <Base/File.hpp>
 #include <Base/Flags.hpp>
+#include <Base/Optional.hpp>
 #include <Base/Array.hpp>
 #include <Base/MutableArray.hpp>
 #include <Base/Map.hpp>

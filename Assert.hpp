@@ -51,8 +51,13 @@ NXA_EXCEPTION_NAMED_WITH_PARENT(AssertionFailed, FatalException);
 #define NXA_ALOG_DEBUG NXA_ALOG
 #else
 #define NXA_DLOG(...) do { } while (false)
+#ifdef WIN32
+#define NXA_ALOG(...) do { printf("%s: ", __FUNCSIG__); printf(__VA_ARGS__);throw NxA::AssertionFailed::exceptionWith(__VA_ARGS__); } while (false)
+#define NXA_ALOG_DEBUG(...) do { printf("%s: ", __FUNCSIG__); printf(__VA_ARGS__); } while (false)
+#else
 #define NXA_ALOG(...) do { printf("%s: ", __PRETTY_FUNCTION__); printf(__VA_ARGS__);throw NxA::AssertionFailed::exceptionWith(__VA_ARGS__); } while (false)
 #define NXA_ALOG_DEBUG(...) do { printf("%s: ", __PRETTY_FUNCTION__); printf(__VA_ARGS__); } while (false)
+#endif
 #endif
 
 // -- Replacements for assert which use NXA_ALOG().

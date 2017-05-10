@@ -44,7 +44,6 @@ class Blob
 public:
     // -- Constructors/Destructors
     Blob();
-    Blob(const MutableBlob&);
     Blob(MutableBlob&&);
 
     // -- Factory Methods

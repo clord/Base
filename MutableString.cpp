@@ -137,7 +137,7 @@ void MutableString::append(const character* other)
     internal->append(other);
 }
 
-void MutableString::append(const character other)
+void MutableString::append(character other)
 {
     internal->append(other);
 }

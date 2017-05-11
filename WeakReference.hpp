@@ -34,14 +34,15 @@ public:
     // -- Constructors & Destructors
     WeakReference() = default;
     WeakReference(const WeakReference<T>& other) : std::weak_ptr<typename T::Internal>{ other } { }
-    WeakReference(WeakReference<T>&&) = default;
+    WeakReference(WeakReference<T>&&) noexcept = default;
     WeakReference(const T& other) : std::weak_ptr<typename T::Internal>{ other.internal } { }
     ~WeakReference() = default;
 
     // -- Operators
-    void operator=(WeakReference&& other)
+    WeakReference& operator=(WeakReference&& other) noexcept
     {
         this->std::weak_ptr<typename T::Internal>::operator=(std::move(other));
+        return *this;
     }
     bool operator==(const WeakReference& other) const
     {

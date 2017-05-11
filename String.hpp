@@ -57,12 +57,12 @@ public:
 
     // -- Factory Methods
     template <typename... FormatArguments>
-    static String stringWithFormat(String format, FormatArguments&&... formatArguments)
+    static String stringWithFormat(const String& format, FormatArguments&&... formatArguments)
     {
         return String{Internal::stringWithFormat(256, format.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...)};
     }
 
-    static String stringWithFormat(String format)
+    static String stringWithFormat(const String& format)
     {
         return format;
     }

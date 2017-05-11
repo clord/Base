@@ -58,7 +58,7 @@ public:
 
     // -- Factory Methods
     template <typename... FormatArguments>
-    static MutableString stringWithFormat(MutableString format, FormatArguments&&... formatArguments)
+    static MutableString stringWithFormat(const MutableString& format, FormatArguments&&... formatArguments)
     {
         return MutableString{Internal::stringWithFormat(256, format.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...)};
     }
@@ -114,10 +114,10 @@ public:
 
     void append(const character*);
 
-    void append(const character);
+    void append(character);
 
     template <typename... FormatArguments>
-    void appendStringWithFormat(MutableString formatString, FormatArguments&&... formatArguments)
+    void appendStringWithFormat(const MutableString& formatString, FormatArguments&&... formatArguments)
     {
         auto formatted = Internal::stringWithFormat(4096, formatString.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...);
         this->append(String{formatted});

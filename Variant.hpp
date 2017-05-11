@@ -23,6 +23,7 @@
 
 #include <Base/Types.hpp>
 #include <Base/Exception.hpp>
+#include <Base/Optional.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -324,7 +325,7 @@ private:
     }
 
 public:
-    inline Variant<Types...>& operator=(Variant<Types...>&& other)
+    inline Variant<Types...>& operator=(Variant<Types...>&& other) noexcept
     {
         moveAssign(std::move(other));
         return *this;
@@ -377,36 +378,30 @@ public:
               typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
     inline Optional<T> maybeGet() const
     {
-        if (typeIndex == VariantDetail::DirectTypeIndex<T, Types...>::index) {
-            return {getUnchecked<T>()};
-        }
-        else {
+        if (typeIndex != VariantDetail::DirectTypeIndex<T, Types...>::index) {
             return NxA::nothing;
         }
+        return {getUnchecked<T>()};
     }
 
     template <typename T,
               typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
     inline T& get()
     {
-        if (typeIndex == VariantDetail::DirectTypeIndex<T, Types...>::index) {
-            return getUnchecked<T>();
-        }
-        else {
+        if (typeIndex != VariantDetail::DirectTypeIndex<T, Types...>::index) {
             throw VariantDetail::BadVariantAccess("in get<T>()");
         }
+        return getUnchecked<T>();
     }
 
     template <typename T,
               typename std::enable_if<(VariantDetail::DirectTypeIndex<T, Types...>::index != VariantDetail::invalidValue)>::type* = nullptr>
     inline T const& get() const
     {
-        if (typeIndex == VariantDetail::DirectTypeIndex<T, Types...>::index) {
-            return getUnchecked<T>();
-        }
-        else {
+        if (typeIndex != VariantDetail::DirectTypeIndex<T, Types...>::index) {
             throw VariantDetail::BadVariantAccess("in get<T>()");
         }
+        return getUnchecked<T>();
     }
 
     inline integer whichType() const noexcept

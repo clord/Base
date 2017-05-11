@@ -75,7 +75,7 @@ struct MutableMapInternal : public std::map<const Tkey, Tvalue>
         return this->std::map<const Tkey, Tvalue>::cend();
     }
 
-    count length() const
+    size_t length() const
     {
         return this->std::map<const Tkey, Tvalue>::size();
     }

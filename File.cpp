@@ -36,8 +36,10 @@
 #include <memory>
 #include <string>
 #include <cerrno>
+#ifndef WIN32
 #include <dirent.h>
 #include <pwd.h>
+#endif
 
 using namespace NxA;
 
@@ -236,26 +238,25 @@ String File::temporaryDirectoryPath()
 
 String File::userHomeDirectoryPath()
 {
-    if (Platform::CurrentPlatform == Platform::Kind::OSX) {
-        const char* homeDirectory = nullptr;
+#ifdef __APPLE__
+	const char* homeDirectory = nullptr;
 
-        struct passwd* pwd = getpwuid(getuid());
-        if (pwd) {
-            homeDirectory = pwd->pw_dir;
-        }
-        else {
-            // -- try the $HOME environment variable
-            homeDirectory = getenv("HOME");
-        }
+    struct passwd* pwd = getpwuid(getuid());
+	if (pwd) {
+		homeDirectory = pwd->pw_dir;
+	}
+	else {
+		// -- try the $HOME environment variable
+		homeDirectory = getenv("HOME");
+	}
 
-        return String(homeDirectory);
-    }
-    else {
-        // -- Should return the path specified by the USERPROFILE environment variable.
-        // -- or the path formed by concatenating the HOMEDRIVE and HOMEPATH environment variables.
-        NXA_ALOG("Unsupported Platform.");
-        return {};
-    }
+    return String(homeDirectory);
+#else
+    // -- Should return the path specified by the USERPROFILE environment variable.
+    // -- or the path formed by concatenating the HOMEDRIVE and HOMEPATH environment variables.
+    NXA_ALOG("Unsupported Platform.");
+    return {};
+#endif
 }
 
 timestamp File::modificationDateInSecondsSince1970ForFile(const String& path)

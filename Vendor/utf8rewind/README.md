@@ -34,7 +34,7 @@
 			"Ἀριστοτέλης" -> "ἈΡΙΣΤΟΤΈΛΗΣ"
 		*/
 
-		converted_size = utf8toupper(input, strlen(input), output, output_size, &errors);
+		converted_size = utf8toupper(input, strlen(input), output, output_size, UTF8_LOCALE_DEFAULT, &errors);
 		if (converted_size == 0 ||
 			errors != UTF8_ERR_NONE)
 		{
@@ -94,7 +94,7 @@ This project is licensed under the MIT license, a full copy of which should have
 
 ## Download ##
 
-[utf8rewind-1.4.0.zip (7.67 MB)](https://bitbucket.org/knight666/utf8rewind/downloads/utf8rewind-1.4.0.zip)
+[utf8rewind-1.5.0.zip (7.71 MB)](https://bitbucket.org/knight666/utf8rewind/downloads/utf8rewind-1.5.0.zip)
 
 ### Clone in Mercurial ###
  

@@ -68,54 +68,22 @@ static const char basic_latin_uppercase_table[58] = {
 	0x59, 0x5A
 };
 
-#if WIN32 || _WINDOWS
-	#define UTF8_LOCALE_TYPE                     _locale_t
-	#define UTF8_LOCALE_GET()                    _get_current_locale()
-	#define UTF8_LOCALE_CHECK(_target, _name, _ansiCodepage, _oemCodepage) \
-		(_target)->locinfo->lc_codepage == _ansiCodepage || \
-		(_target)->locinfo->lc_codepage == _oemCodepage
-#else
-	#define UTF8_LOCALE_TYPE                     const char*
-	#define UTF8_LOCALE_GET()                    setlocale(LC_ALL, 0)
-	#define UTF8_LOCALE_CHECK(_target, _name, _ansiCodepage, _oemCodepage) \
-		!strncasecmp((_target), _name, 5)
-#endif
-
-uint32_t casemapping_locale()
-{
-	/*
-		Sources for locales and code pages
-
-		Windows
-		https://msdn.microsoft.com/en-US/goglobal/bb896001.aspx
-
-		POSIX
-		https://www-01.ibm.com/support/knowledgecenter/ssw_aix_61/com.ibm.aix.nlsgdrf/support_languages_locales.htm
-	*/
-
-	UTF8_LOCALE_TYPE locale = UTF8_LOCALE_GET();
-
-	if (UTF8_LOCALE_CHECK(locale, "lt_lt", 1257, 775))
-	{
-		return CASEMAPPING_LOCALE_LITHUANIAN;
-	}
-	else if (
-		UTF8_LOCALE_CHECK(locale, "tr_tr", 1254, 857) ||
-		UTF8_LOCALE_CHECK(locale, "az_az", 1254, 857))
-	{
-		return CASEMAPPING_LOCALE_TURKISH_OR_AZERI_LATIN;
-	}
-
-	return CASEMAPPING_LOCALE_DEFAULT;
-}
-
 uint8_t casemapping_initialize(
 	CaseMappingState* state,
 	const char* input, size_t inputSize,
 	char* target, size_t targetSize,
-	const uint32_t* propertyIndex1, const uint32_t* propertyIndex2, const uint32_t* propertyData)
+	const uint32_t* propertyIndex1, const uint32_t* propertyIndex2, const uint32_t* propertyData,
+	uint8_t quickCheck, size_t locale,
+	int32_t* errors)
 {
 	memset(state, 0, sizeof(CaseMappingState));
+
+	if (locale >= UTF8_LOCALE_MAXIMUM)
+	{
+		UTF8_SET_ERROR(INVALID_LOCALE);
+
+		return 0;
+	}
 
 	state->src = input;
 	state->src_size = inputSize;
@@ -124,22 +92,8 @@ uint8_t casemapping_initialize(
 	state->property_index1 = propertyIndex1;
 	state->property_index2 = propertyIndex2;
 	state->property_data = propertyData;
-	state->quickcheck_flags = 0;
-	state->locale = casemapping_locale();
-
-	if (propertyData == TitlecaseDataPtr)
-	{
-		state->quickcheck_flags = QuickCheckCaseMapped_Titlecase;
-	}
-	else if (
-		propertyData == UppercaseDataPtr)
-	{
-		state->quickcheck_flags = QuickCheckCaseMapped_Uppercase;
-	}
-	else
-	{
-		state->quickcheck_flags = QuickCheckCaseMapped_Lowercase;
-	}
+	state->quickcheck_flags = quickCheck;
+	state->locale = locale;
 
 	return 1;
 }
@@ -166,7 +120,7 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 	{
 		/* Get code point properties */
 
-		state->last_canonical_combining_class = 0;
+		state->last_canonical_combining_class = CCC_NOT_REORDERED;
 		state->last_general_category = UTF8_CATEGORY_SYMBOL_OTHER;
 
 		resolved = REPLACEMENT_CHARACTER_STRING;
@@ -175,7 +129,7 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 		goto writeresolved;
 	}
 
-	if (state->locale == CASEMAPPING_LOCALE_TURKISH_OR_AZERI_LATIN)
+	if (state->locale == UTF8_LOCALE_TURKISH_AND_AZERI_LATIN)
 	{
 		/*
 			Code point General Category does not need to be modified, because
@@ -207,16 +161,10 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 				{
 					uint8_t found = 0;
 
-					/* Initialize stream on the start of the sequence */
+					/* Initialize stream and read the next sequence */
 
-					if (!stream_initialize(&stream, state->src, state->src_size))
-					{
-						goto writeregular;
-					}
-
-					/* Read the current sequence */
-
-					if (!stream_read(&stream, QuickCheckNFCIndexPtr, QuickCheckNFCDataPtr))
+					if (!stream_initialize(&stream, state->src, state->src_size) ||
+						!stream_read(&stream, QuickCheckNFCIndexPtr, QuickCheckNFCDataPtr))
 					{
 						goto writeregular;
 					}
@@ -227,7 +175,7 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 					{
 						if (stream.codepoint[i] == CP_COMBINING_DOT_ABOVE)
 						{
-							stream.canonical_combining_class[i] = 255;
+							stream.canonical_combining_class[i] = CCC_INVALID;
 
 							found++;
 						}
@@ -280,7 +228,7 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 		}
 	}
 	else if (
-		state->locale == CASEMAPPING_LOCALE_LITHUANIAN)
+		state->locale == UTF8_LOCALE_LITHUANIAN)
 	{
 		if (state->property_data == LowercaseDataPtr)
 		{
@@ -322,16 +270,10 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 
 			}
 
-			/* Initialize stream on the start of the sequence */
+			/* Initialize stream and read the next sequence */
 
-			if (!stream_initialize(&stream, state->src, state->src_size))
-			{
-				goto writeregular;
-			}
-
-			/* Read the current sequence */
-
-			if (!stream_read(&stream, QuickCheckNFCIndexPtr, QuickCheckNFCDataPtr))
+			if (!stream_initialize(&stream, state->src, state->src_size) ||
+				!stream_read(&stream, QuickCheckNFCIndexPtr, QuickCheckNFCDataPtr))
 			{
 				goto writeregular;
 			}
@@ -368,7 +310,7 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 			{
 				/* Ensure the COMBINING DOT ABOVE comes before other accents with the same CCC */
 
-				if (stream.canonical_combining_class[stream.current - 1] == 230)
+				if (stream.canonical_combining_class[stream.current - 1] == CCC_ABOVE)
 				{
 					unicode_t cp_swap = stream.codepoint[stream.current - 1];
 					stream.codepoint[stream.current - 1] = CP_COMBINING_DOT_ABOVE;
@@ -379,11 +321,11 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 					stream.codepoint[stream.current] = CP_COMBINING_DOT_ABOVE;
 				}
 
-				stream.canonical_combining_class[stream.current] = 230;
+				stream.canonical_combining_class[stream.current] = CCC_ABOVE;
 
 				/* Check if sequence has become unstable */
 
-				stream.stable = stream.canonical_combining_class[stream.current - 1] <= 230;
+				stream.stable = stream.canonical_combining_class[stream.current - 1] <= CCC_ABOVE;
 
 				stream.current++;
 			}
@@ -396,7 +338,7 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 				/* Additional accents are always of the upper variety */
 
 				stream.codepoint[stream.current] = cp_additional_accent;
-				stream.canonical_combining_class[stream.current] = 230;
+				stream.canonical_combining_class[stream.current] = CCC_ABOVE;
 
 				/* Check if sequence has become unstable */
 
@@ -440,16 +382,10 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 
 			}
 
-			/* Initialize stream on the start of the sequence */
+			/* Initialize stream and read the next sequence */
 
-			if (!stream_initialize(&stream, state->src, state->src_size))
-			{
-				goto writeregular;
-			}
-
-			/* Read the current sequence */
-
-			if (!stream_read(&stream, QuickCheckNFCIndexPtr, QuickCheckNFCDataPtr))
+			if (!stream_initialize(&stream, state->src, state->src_size) ||
+				!stream_read(&stream, QuickCheckNFCIndexPtr, QuickCheckNFCDataPtr))
 			{
 				goto writeregular;
 			}
@@ -464,7 +400,7 @@ size_t casemapping_execute(CaseMappingState* state, int32_t* errors)
 			{
 				if (stream.codepoint[i] == CP_COMBINING_DOT_ABOVE)
 				{
-					stream.canonical_combining_class[i] = 255;
+					stream.canonical_combining_class[i] = CCC_INVALID;
 					erase_count++;
 				}
 			}
@@ -583,7 +519,7 @@ writeregular:
 
 					/* Convert if the "word" has ended */
 
-					if (PROPERTY_GET_CCC(peeked) == 0)
+					if (PROPERTY_GET_CCC(peeked) == CCC_NOT_REORDERED)
 					{
 						should_convert = (PROPERTY_GET_GC(peeked) & UTF8_CATEGORY_LETTER) == 0;
 

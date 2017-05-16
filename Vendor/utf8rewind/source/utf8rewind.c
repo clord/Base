@@ -544,7 +544,63 @@ const char* utf8seek(const char* text, size_t textSize, const char* textStart, o
 	}
 }
 
-size_t utf8toupper(const char* input, size_t inputSize, char* target, size_t targetSize, int32_t* errors)
+UTF8_API size_t utf8envlocale()
+{
+	/*
+		Sources for locales and code pages
+
+		Windows
+		https://msdn.microsoft.com/en-US/goglobal/bb896001.aspx
+
+		POSIX
+		https://www-01.ibm.com/support/knowledgecenter/ssw_aix_61/com.ibm.aix.nlsgdrf/support_languages_locales.htm
+	*/
+
+#if WIN32 || _WINDOWS
+	#define UTF8_LOCALE_CHECK(_name, _ansiCodepage, _oemCodepage) \
+		(codepage == _ansiCodepage || codepage == _oemCodepage)
+
+	unsigned int codepage;
+	_locale_t locale = _get_current_locale();
+
+	if (locale == 0)
+	{
+		return UTF8_LOCALE_DEFAULT;
+	}
+
+	// Microsoft changed the name of the codepage member in VS2015.
+
+	#if _MSC_VER >= 1900
+		codepage = ((__crt_locale_data_public*)(locale)->locinfo)->_locale_lc_codepage;
+	#else
+		codepage = locale->locinfo->lc_codepage;
+	#endif
+#else
+	#define UTF8_LOCALE_CHECK(_name, _ansiCodepage, _oemCodepage) \
+		!strncasecmp(locale, _name, 5)
+
+	const char* locale = setlocale(LC_ALL, 0);
+	if (locale == 0)
+	{
+		return UTF8_LOCALE_DEFAULT;
+	}
+#endif
+
+	if (UTF8_LOCALE_CHECK("lt_lt", 1257, 775))
+	{
+		return UTF8_LOCALE_LITHUANIAN;
+	}
+	else if (
+		UTF8_LOCALE_CHECK("tr_tr", 1254, 857) ||
+		UTF8_LOCALE_CHECK("az_az", 1254, 857))
+	{
+		return UTF8_LOCALE_TURKISH_AND_AZERI_LATIN;
+	}
+
+	return UTF8_LOCALE_DEFAULT;
+}
+
+size_t utf8toupper(const char* input, size_t inputSize, char* target, size_t targetSize, size_t locale, int32_t* errors)
 {
 	CaseMappingState state;
 
@@ -554,10 +610,14 @@ size_t utf8toupper(const char* input, size_t inputSize, char* target, size_t tar
 
 	/* Initialize case mapping */
 
-	if (!casemapping_initialize(&state, input, inputSize, target, targetSize, UppercaseIndex1Ptr, UppercaseIndex2Ptr, UppercaseDataPtr))
+	if (!casemapping_initialize(
+		&state,
+		input, inputSize,
+		target, targetSize,
+		UppercaseIndex1Ptr, UppercaseIndex2Ptr, UppercaseDataPtr,
+		QuickCheckCaseMapped_Uppercase, locale,
+		errors))
 	{
-		UTF8_SET_ERROR(NONE);
-
 		return state.total_bytes_needed;
 	}
 
@@ -580,7 +640,7 @@ size_t utf8toupper(const char* input, size_t inputSize, char* target, size_t tar
 	return state.total_bytes_needed;
 }
 
-size_t utf8tolower(const char* input, size_t inputSize, char* target, size_t targetSize, int32_t* errors)
+size_t utf8tolower(const char* input, size_t inputSize, char* target, size_t targetSize, size_t locale, int32_t* errors)
 {
 	CaseMappingState state;
 
@@ -590,10 +650,14 @@ size_t utf8tolower(const char* input, size_t inputSize, char* target, size_t tar
 
 	/* Initialize case mapping */
 
-	if (!casemapping_initialize(&state, input, inputSize, target, targetSize, LowercaseIndex1Ptr, LowercaseIndex2Ptr, LowercaseDataPtr))
+	if (!casemapping_initialize(
+		&state,
+		input, inputSize,
+		target, targetSize,
+		LowercaseIndex1Ptr, LowercaseIndex2Ptr, LowercaseDataPtr,
+		QuickCheckCaseMapped_Lowercase, locale,
+		errors))
 	{
-		UTF8_SET_ERROR(NONE);
-
 		return state.total_bytes_needed;
 	}
 
@@ -616,7 +680,7 @@ size_t utf8tolower(const char* input, size_t inputSize, char* target, size_t tar
 	return state.total_bytes_needed;
 }
 
-size_t utf8totitle(const char* input, size_t inputSize, char* target, size_t targetSize, int32_t* errors)
+size_t utf8totitle(const char* input, size_t inputSize, char* target, size_t targetSize, size_t locale, int32_t* errors)
 {
 	CaseMappingState state;
 
@@ -626,10 +690,14 @@ size_t utf8totitle(const char* input, size_t inputSize, char* target, size_t tar
 
 	/* Initialize case mapping */
 
-	if (!casemapping_initialize(&state, input, inputSize, target, targetSize, TitlecaseIndex1Ptr, TitlecaseIndex2Ptr, TitlecaseDataPtr))
+	if (!casemapping_initialize(
+		&state,
+		input, inputSize,
+		target, targetSize,
+		TitlecaseIndex1Ptr, TitlecaseIndex2Ptr, TitlecaseDataPtr,
+		QuickCheckCaseMapped_Titlecase, locale,
+		errors))
 	{
-		UTF8_SET_ERROR(NONE);
-
 		return state.total_bytes_needed;
 	}
 
@@ -649,7 +717,7 @@ size_t utf8totitle(const char* input, size_t inputSize, char* target, size_t tar
 			be converted to lowercase.
 		*/
 
-		if (state.last_canonical_combining_class == 0)
+		if (state.last_canonical_combining_class == CCC_NOT_REORDERED)
 		{
 			if (state.property_data == TitlecaseDataPtr)
 			{
@@ -681,7 +749,7 @@ size_t utf8totitle(const char* input, size_t inputSize, char* target, size_t tar
 	return state.total_bytes_needed;
 }
 
-size_t utf8casefold(const char* input, size_t inputSize, char* target, size_t targetSize, int32_t* errors)
+size_t utf8casefold(const char* input, size_t inputSize, char* target, size_t targetSize, size_t locale, int32_t* errors)
 {
 	CaseMappingState state;
 
@@ -691,94 +759,162 @@ size_t utf8casefold(const char* input, size_t inputSize, char* target, size_t ta
 
 	/* Initialize case mapping */
 
-	if (!casemapping_initialize(&state, input, inputSize, target, targetSize, CaseFoldingIndex1Ptr, CaseFoldingIndex2Ptr, CaseFoldingDataPtr))
+	if (!casemapping_initialize(
+		&state,
+		input, inputSize,
+		target, targetSize,
+		CaseFoldingIndex1Ptr, CaseFoldingIndex2Ptr, CaseFoldingDataPtr,
+		QuickCheckCaseMapped_Casefolded, locale,
+		errors))
 	{
-		UTF8_SET_ERROR(NONE);
-
 		return state.total_bytes_needed;
 	}
 
-	/* Execute case mapping as long as input remains */
-
-	while (state.src_size > 0)
+	if (state.locale == UTF8_LOCALE_TURKISH_AND_AZERI_LATIN)
 	{
-		const char* resolved = 0;
-		uint8_t bytes_needed = 0;
+		/* Exceptional behavior for Turkish and Azerbaijani (Latin) locales */
 
-		/* Read next code point */
-
-		if (!(state.last_code_point_size = codepoint_read(state.src, state.src_size, &state.last_code_point)))
+		while (state.src_size > 0)
 		{
-			goto invaliddata;
-		}
+			const char* resolved = 0;
+			uint8_t bytes_needed = 0;
 
-		/* Fixes for Turkish locale */
+			/* Read next code point */
 
-		if (state.locale == CASEMAPPING_LOCALE_TURKISH_OR_AZERI_LATIN)
-		{
-			if (state.last_code_point == CP_LATIN_CAPITAL_LETTER_I)
+			if (!(state.last_code_point_size = codepoint_read(state.src, state.src_size, &state.last_code_point)))
 			{
-				resolved = "\xC4\xB1";
-				bytes_needed = 2;
+				goto invaliddata;
 			}
-			else if (
-				state.last_code_point == CP_LATIN_CAPITAL_LETTER_I_WITH_DOT_ABOVE)
+
+			/* Move source cursor */
+
+			if (state.src_size >= state.last_code_point_size)
 			{
-				resolved = "i";
-				bytes_needed = 1;
+				state.src += state.last_code_point_size;
+				state.src_size -= state.last_code_point_size;
 			}
-		}
-
-		/* Resolve case folding */
-
-		if (resolved == 0 &&
-			(PROPERTY_GET_CM(state.last_code_point) & QuickCheckCaseMapped_Casefolded) != 0)
-		{
-			resolved = database_querydecomposition(state.last_code_point, state.property_index1, state.property_index2, state.property_data, &bytes_needed);
-		}
-
-		/* Move source cursor */
-
-		if (state.src_size >= state.last_code_point_size)
-		{
-			state.src += state.last_code_point_size;
-			state.src_size -= state.last_code_point_size;
-		}
-		else
-		{
-			state.src_size = 0;
-		}
-
-		/* Write to output */
-
-		if (resolved != 0)
-		{
-			/* Write resolved string to output */
-
-			if (state.dst != 0)
+			else
 			{
-				if (state.dst_size < bytes_needed)
+				state.src_size = 0;
+			}
+
+			/* Resolve case folding */
+
+			if ((PROPERTY_GET_CM(state.last_code_point) & QuickCheckCaseMapped_Casefolded) != 0)
+			{
+				if (state.last_code_point == CP_LATIN_CAPITAL_LETTER_I)
+				{
+					resolved = "\xC4\xB1";
+					bytes_needed = 2;
+				}
+				else if (
+					state.last_code_point == CP_LATIN_CAPITAL_LETTER_I_WITH_DOT_ABOVE)
+				{
+					resolved = "i";
+					bytes_needed = 1;
+				}
+				else
+				{
+					resolved = database_querydecomposition(state.last_code_point, state.property_index1, state.property_index2, state.property_data, &bytes_needed);
+				}
+			}
+
+			/* Write to output */
+
+			if (resolved != 0)
+			{
+				/* Write resolved string to output */
+
+				if (state.dst != 0)
+				{
+					if (state.dst_size < bytes_needed)
+					{
+						goto outofspace;
+					}
+
+					memcpy(state.dst, resolved, bytes_needed);
+
+					state.dst += bytes_needed;
+					state.dst_size -= bytes_needed;
+				}
+			}
+			else
+			{
+				/* Write code point unchanged to output */
+
+				if (!(bytes_needed = codepoint_write(state.last_code_point, &state.dst, &state.dst_size)))
 				{
 					goto outofspace;
 				}
-
-				memcpy(state.dst, resolved, bytes_needed);
-
-				state.dst += bytes_needed;
-				state.dst_size -= bytes_needed;
 			}
+
+			state.total_bytes_needed += bytes_needed;
 		}
-		else
+	}
+	else
+	{
+		/* Execute case mapping as long as input remains */
+
+		while (state.src_size > 0)
 		{
-			/* Write code point unchanged to output */
+			const char* resolved = 0;
+			uint8_t bytes_needed = 0;
 
-			if (!(bytes_needed = codepoint_write(state.last_code_point, &state.dst, &state.dst_size)))
+			/* Read next code point */
+
+			if (!(state.last_code_point_size = codepoint_read(state.src, state.src_size, &state.last_code_point)))
 			{
-				goto outofspace;
+				goto invaliddata;
 			}
-		}
 
-		state.total_bytes_needed += bytes_needed;
+			/* Move source cursor */
+
+			if (state.src_size >= state.last_code_point_size)
+			{
+				state.src += state.last_code_point_size;
+				state.src_size -= state.last_code_point_size;
+			}
+			else
+			{
+				state.src_size = 0;
+			}
+
+			/* Resolve case folding */
+
+			if ((PROPERTY_GET_CM(state.last_code_point) & QuickCheckCaseMapped_Casefolded) != 0)
+			{
+				resolved = database_querydecomposition(state.last_code_point, state.property_index1, state.property_index2, state.property_data, &bytes_needed);
+			}
+
+			if (resolved != 0)
+			{
+				/* Write resolved string to output */
+
+				if (state.dst != 0)
+				{
+					if (state.dst_size < bytes_needed)
+					{
+						goto outofspace;
+					}
+
+					memcpy(state.dst, resolved, bytes_needed);
+
+					state.dst += bytes_needed;
+					state.dst_size -= bytes_needed;
+				}
+			}
+			else
+			{
+				/* Write code point unchanged to output */
+
+				if (!(bytes_needed = codepoint_write(state.last_code_point, &state.dst, &state.dst_size)))
+				{
+					goto outofspace;
+				}
+			}
+
+			state.total_bytes_needed += bytes_needed;
+		}
 	}
 
 	UTF8_SET_ERROR(NONE);
@@ -800,7 +936,7 @@ uint8_t utf8isnormalized(const char* input, size_t inputSize, size_t flags, size
 {
 	const char* src = input;
 	size_t src_size = inputSize;
-	uint8_t last_canonical_class = 0;
+	uint8_t last_canonical_class = CCC_NOT_REORDERED;
 	size_t found_offset = 0;
 	uint8_t result = UTF8_NORMALIZATION_RESULT_YES;
 	unicode_t decoded;
@@ -867,7 +1003,7 @@ uint8_t utf8isnormalized(const char* input, size_t inputSize, size_t flags, size
 		/* Compare CCC to previous CCC */
 
 		if (last_canonical_class > canonical_class &&
-			canonical_class > 0)
+			canonical_class > CCC_NOT_REORDERED)
 		{
 			result = UTF8_NORMALIZATION_RESULT_NO;
 
@@ -1223,7 +1359,7 @@ size_t utf8iscategory(const char* input, size_t inputSize, size_t flags)
 		general_category = PROPERTY_GET_GC(code_point);
 		if ((general_category & flags) == 0 &&
 			/* Check for the start of the next grapheme cluster */
-			((flags & UTF8_CATEGORY_IGNORE_GRAPHEME_CLUSTER) != 0 || (canonical_combining_class = PROPERTY_GET_CCC(code_point)) == 0))
+			((flags & UTF8_CATEGORY_IGNORE_GRAPHEME_CLUSTER) != 0 || (canonical_combining_class = PROPERTY_GET_CCC(code_point)) == CCC_NOT_REORDERED))
 		{
 			break;
 		}

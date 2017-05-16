@@ -279,6 +279,7 @@ struct Optional : private Storage<ValueT>
         this->engaged = true;
     }
 
+#ifndef WIN32
     inline void
     swap(Optional& withOptional) noexcept(std::is_nothrow_move_constructible<ValueType>::value&& std::__is_nothrow_swappable<ValueType>::value)
     {
@@ -300,11 +301,12 @@ struct Optional : private Storage<ValueT>
             std::swap(this->engaged, withOptional.engaged);
         }
     }
+#endif
 
     inline constexpr ValueType const* operator->() const
     {
         NXA_ASSERT_TRUE(this->engaged);
-        return internalOperatorArrow(std::__has_operator_addressof<ValueType>{});
+		return &this->engagedValue;
     }
 
     inline ValueType* operator->()

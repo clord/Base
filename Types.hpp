@@ -76,7 +76,7 @@ struct TypeName<std::shared_ptr<T>>
 };
 
 // -- Specialization for each type we support.
-#define NXA_STR_VALUE_FOR_TYPE(arg...) #arg
+#define NXA_STR_VALUE_FOR_TYPE(arg) #arg
 
 #define NXA_SPECIALIZE_TYPENAME_FOR_TYPE(name) \
 template <> struct NxA::TypeName<name> \
@@ -111,11 +111,10 @@ NXA_SPECIALIZE_TYPENAME_FOR_TYPE(integer64);
 
 NXA_SPECIALIZE_TYPENAME_FOR_TYPE(byte);
 NXA_SPECIALIZE_TYPENAME_FOR_TYPE(character);
-
+#ifndef WIN32
 NXA_SPECIALIZE_TYPENAME_FOR_TYPE(count);
-
 NXA_SPECIALIZE_TYPENAME_FOR_TYPE(timestamp);
-
+#endif
 NXA_SPECIALIZE_TYPENAME_FOR_TYPE(decimal);
 
 }

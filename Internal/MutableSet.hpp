@@ -91,7 +91,7 @@ struct MutableSetInternal : public std::set<T>
         return this->std::set<T>::cend();
     }
 
-    count length() const
+    size_t length() const
     {
         return this->size();
     }

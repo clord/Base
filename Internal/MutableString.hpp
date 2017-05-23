@@ -28,6 +28,7 @@
 #include <Base/Array.hpp>
 
 #include <string>
+#include <cstring>
 #include <cstdio>
 #include <codecvt>
 #include <sstream>
@@ -39,9 +40,11 @@
 #include <boost/algorithm/string/replace.hpp>
 #pragma clang diagnostic pop
 
+#ifndef WIN32
 extern template class std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>;
 extern template class std::basic_stringbuf<char, std::char_traits<char>, std::allocator<char>>;
 extern template class std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
+#endif
 
 namespace NxA {
 
@@ -65,7 +68,7 @@ struct MutableStringInternal : public std::string
     static MutableStringInternal stringWithFormat(count sizeGuess, const character* format, Args&&... args)
     {
         NXA_ASSERT_NOT_NULL(format);
-        NXA_ASSERT_TRUE(sizeGuess > 1 && sizeGuess < std::numeric_limits<count>::max());
+        NXA_ASSERT_TRUE((sizeGuess > 1) && (sizeGuess < std::numeric_limits<count>::max()));
         auto finalStringLength = 0;
 
         {
@@ -91,7 +94,9 @@ struct MutableStringInternal : public std::string
 
     static std::shared_ptr<MutableStringInternal> stringWithUTF16AtAndSize(const byte* data, count size);
 
-    static std::shared_ptr<MutableStringInternal> stringWithUTF16(const Blob& other);
+	static std::shared_ptr<MutableStringInternal> stringWithUTF16(const Blob& other);
+
+	static std::shared_ptr<MutableStringInternal> stringWithUTF16(const wchar_t* other, count size);
 
     static std::shared_ptr<MutableStringInternal> stringByFilteringNonPrintableCharactersIn(const String& other);
 

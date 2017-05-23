@@ -24,7 +24,6 @@
 */
 
 #include "casemapping.h"
-
 #include "base.h"
 #include "codepoint.h"
 #include "database.h"

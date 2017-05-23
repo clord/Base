@@ -24,6 +24,7 @@
 #include "Base/Assert.hpp"
 #include "Base/Types.hpp"
 
+#include <cstring>
 #include <vector>
 
 namespace NxA {
@@ -136,12 +137,12 @@ struct MutableBlobInternal : public std::vector<byte>
 
     void appendWithStringTermination(const character* other)
     {
-        this->insert(this->end(), other, other + ::strlen(other) + 1);
+        this->insert(this->end(), other, other + std::strlen(other) + 1);
     }
 
     void appendWithoutStringTermination(const character* other)
     {
-        this->insert(this->end(), other, other + ::strlen(other));
+        this->insert(this->end(), other, other + std::strlen(other));
     }
 
     void append(const character other)

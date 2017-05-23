@@ -25,6 +25,7 @@
 #include <Base/Types.hpp>
 #include <Base/Internal/MutableString.hpp>
 
+#include <algorithm>
 #include <vector>
 #include <list>
 #include <initializer_list>

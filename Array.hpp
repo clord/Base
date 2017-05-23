@@ -27,6 +27,7 @@
 
 #include <initializer_list>
 #include <algorithm>
+#include <cstring>
 #include <vector>
 #include <mutex>
 #include <memory>
@@ -166,7 +167,7 @@ public:
 
     boolean classNameIs(const character* className) const
     {
-        return !::strcmp(Array::staticClassName(), className);
+        return !std::strcmp(Array::staticClassName(), className);
     }
 
     iterator begin() noexcept

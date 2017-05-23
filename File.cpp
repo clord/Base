@@ -36,7 +36,7 @@
 #include <memory>
 #include <string>
 #include <cerrno>
-#ifndef WIN32
+#ifndef _WIN32
 #include <dirent.h>
 #include <pwd.h>
 #endif
@@ -139,7 +139,7 @@ String File::extensionForFilePath(const String& path)
     return String::stringWithUTF8(boost::filesystem::extension(boostPath).c_str());
 }
 
-boolean File::fileExistsAt(const String& path)
+NxA::boolean File::fileExistsAt(const String& path)
 {
     if (!path.length()) {
         return false;
@@ -154,7 +154,7 @@ boolean File::fileExistsAt(const String& path)
     }
 }
 
-boolean File::directoryExistsAt(const String& path)
+NxA::boolean File::directoryExistsAt(const String& path)
 {
     if (!path.length()) {
         return false;
@@ -212,7 +212,7 @@ Array<String> File::pathsForFilesInDirectory(const String& path)
             for (boost::filesystem::directory_iterator iterator(boostPath); iterator != end_iterator; ++iterator) {
                 auto& pathFound = iterator->path();
                 if (boost::filesystem::is_regular_file(pathFound)) {
-                    pathsFound.append(String::stringWithUTF8(pathFound.c_str()));
+                    pathsFound.append(String{pathFound.string()});
                 }
             }
         }

@@ -469,6 +469,11 @@ public:
     {
         return !(*this < rhs);
     }
+
+    static const character* staticClassName()
+    {
+        return "Variant<...>";
+    }
 };
 
 template <typename Variant, typename Function>

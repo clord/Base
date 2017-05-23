@@ -73,7 +73,7 @@ const character* MutableStringInternal::stringArgumentAsCharacter(const MutableS
     return nxastring.asUTF8();
 }
 
-boolean MutableStringInternal::hasNonPrintableCharacters() const
+NxA::boolean MutableStringInternal::hasNonPrintableCharacters() const
 {
     const character* input = this->asUTF8();
     for (count index = 0; index < this->length(); ++index) {
@@ -153,6 +153,13 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::stringWithUTF16AtA
     std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
     return std::make_shared<MutableStringInternal>(
         convert.to_bytes(reinterpret_cast<const char16_t*>(characters), reinterpret_cast<const char16_t*>(characters + length)));
+}
+
+
+std::shared_ptr<MutableStringInternal> MutableStringInternal::stringWithUTF16(const wchar_t* other, count num)
+{
+	// TODO: Ideally not byte, but wchar_t
+	return MutableStringInternal::stringWithUTF16AtAndSize(reinterpret_cast<const byte*>(other), num);
 }
 
 std::shared_ptr<MutableStringInternal> MutableStringInternal::stringWithUTF16(const Blob& other)
@@ -290,53 +297,67 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::lowerCaseString() 
     }
 
     auto input = this->c_str();
-    auto worstCaseOutputLength = inputLength * 2;
-    character output[worstCaseOutputLength];
-    memset(output, 0, worstCaseOutputLength);
 
-    int32_t errors;
-    auto convertedSize = utf8tolower(input, inputLength, output, worstCaseOutputLength, &errors);
-    NXA_ASSERT_TRUE(errors == UTF8_ERR_NONE);
+	count convertedSize;
+	integer32 errors;
+	size_t i;
 
-    if (convertedSize == 0) {
-        return {std::make_shared<MutableStringInternal>()};
-    }
+	if ((convertedSize = utf8tolower(input, inputLength, NULL, 0, UTF8_LOCALE_DEFAULT, &errors)) == 0 || errors != UTF8_ERR_NONE) {
+		return { std::make_shared<MutableStringInternal>() };
+	}
 
-    return {std::make_shared<MutableStringInternal>(const_cast<const character*>(output), convertedSize)};
+	auto converted = static_cast<char*>(alloca(convertedSize + 1));
+
+	if (utf8tolower(input, inputLength, converted, convertedSize, UTF8_LOCALE_DEFAULT, &errors) == 0 || errors != UTF8_ERR_NONE) {
+		return { std::make_shared<MutableStringInternal>() };
+	}
+
+	converted[convertedSize] = 0;
+	
+	return { std::make_shared<MutableStringInternal>(converted, convertedSize) };
 }
 
 std::shared_ptr<MutableStringInternal> MutableStringInternal::upperCaseString() const
 {
-    auto input = this->c_str();
-    auto inputLength = this->length();
-    auto worstCaseOutputLength = inputLength * 2;
-    character output[worstCaseOutputLength];
-    memset(output, 0, worstCaseOutputLength);
+	auto inputLength = this->length();
+	if (!inputLength) {
+		return { std::make_shared<MutableStringInternal>() };
+	}
 
-    int32_t errors;
-    auto convertedSize = utf8toupper(input, inputLength, output, worstCaseOutputLength, &errors);
-    NXA_ASSERT_TRUE(errors == UTF8_ERR_NONE);
+	auto input = this->c_str();
 
-    if (convertedSize == 0) {
-        return {std::make_shared<MutableStringInternal>()};
-    }
+	count convertedSize;
+	integer32 errors;
+	size_t i;
 
-    return {std::make_shared<MutableStringInternal>(const_cast<const character*>(output), convertedSize)};
+	if ((convertedSize = utf8toupper(input, inputLength, NULL, 0, UTF8_LOCALE_DEFAULT, &errors)) == 0 || errors != UTF8_ERR_NONE) {
+		return { std::make_shared<MutableStringInternal>() };
+	}
+
+	auto converted = static_cast<char*>(alloca(convertedSize + 1));
+
+	if (utf8toupper(input, inputLength, converted, convertedSize, UTF8_LOCALE_DEFAULT, &errors) == 0 || errors != UTF8_ERR_NONE) {
+		return { std::make_shared<MutableStringInternal>() };
+	}
+
+	converted[convertedSize] = 0;
+
+	return { std::make_shared<MutableStringInternal>(converted, convertedSize) };
 }
 
-boolean MutableStringInternal::hasPrefix(const MutableStringInternal& prefix) const
+NxA::boolean MutableStringInternal::hasPrefix(const MutableStringInternal& prefix) const
 {
     return this->find(prefix) == 0;
 }
 
-boolean MutableStringInternal::hasPrefix(const character* prefix) const
+NxA::boolean MutableStringInternal::hasPrefix(const character* prefix) const
 {
     NXA_ASSERT_NOT_NULL(prefix);
 
     return this->find(prefix) == 0;
 }
 
-boolean MutableStringInternal::hasPostfix(const MutableStringInternal& postfix) const
+NxA::boolean MutableStringInternal::hasPostfix(const MutableStringInternal& postfix) const
 {
     size_t pos = this->find(postfix);
     if (pos == std::string::npos) {
@@ -346,7 +367,7 @@ boolean MutableStringInternal::hasPostfix(const MutableStringInternal& postfix) 
     return pos == (this->length() - postfix.length());
 }
 
-boolean MutableStringInternal::hasPostfix(const character* postfix) const
+NxA::boolean MutableStringInternal::hasPostfix(const character* postfix) const
 {
     NXA_ASSERT_NOT_NULL(postfix);
 
@@ -359,12 +380,12 @@ boolean MutableStringInternal::hasPostfix(const character* postfix) const
     return pos == (this->length() - length);
 }
 
-boolean MutableStringInternal::contains(const MutableStringInternal& other) const
+NxA::boolean MutableStringInternal::contains(const MutableStringInternal& other) const
 {
     return this->find(other) != std::string::npos;
 }
 
-boolean MutableStringInternal::contains(const character* other) const
+NxA::boolean MutableStringInternal::contains(const character* other) const
 {
     return this->find(other) != std::string::npos;
 }

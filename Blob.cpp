@@ -95,7 +95,7 @@ Blob& Blob::operator=(Blob&&) = default;
 
 Blob& Blob::operator=(const Blob&) = default;
 
-boolean Blob::operator==(const Blob& other) const
+NxA::boolean Blob::operator==(const Blob& other) const
 {
     if (internal == other.internal) {
         return true;

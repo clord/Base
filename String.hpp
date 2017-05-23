@@ -47,6 +47,7 @@ public:
     String();
     String(const character*, count);
     String(MutableString&&);
+    String(const MutableString&);
     explicit String(const std::string&);
     explicit String(const std::string&&);
 
@@ -66,11 +67,11 @@ public:
         return format;
     }
 
-
     static String stringWithUTF8(const character* other)
     {
         return {other, strlen(other)};
     }
+
     static String stringWithMemoryAndLength(const character* other, count length)
     {
         return {other, length};

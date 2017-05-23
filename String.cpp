@@ -100,7 +100,7 @@ String String::stringWithUTF16AtAndSize(const byte* data, count size)
 
 String String::stringWithUTF16(const Blob& other)
 {
-    return {Internal::stringWithUTF16(other)};
+    return { Internal::stringWithUTF16(other) };
 }
 
 String String::stringWithRepeatedCharacter(count number, character specificChar)
@@ -149,7 +149,7 @@ bool String::operator==(const MutableString& other) const
     return internal->operator==(*other.internal);
 }
 
-boolean String::operator==(const String& other) const
+NxA::boolean String::operator==(const String& other) const
 {
     if (internal == other.internal) {
         return true;
@@ -164,7 +164,7 @@ const character* String::className() const
     return String::staticClassName();
 }
 
-boolean String::classNameIs(const character* className) const
+NxA::boolean String::classNameIs(const character* className) const
 {
     return !::strcmp(String::staticClassName(), className);
 }
@@ -249,37 +249,37 @@ String String::upperCaseString() const
     return internal->upperCaseString();
 }
 
-boolean String::hasPrefix(const String& prefix) const
+NxA::boolean String::hasPrefix(const String& prefix) const
 {
     return internal->hasPrefix(*prefix.internal);
 }
 
-boolean String::hasPrefix(const character* prefix) const
+NxA::boolean String::hasPrefix(const character* prefix) const
 {
     return internal->hasPrefix(prefix);
 }
 
-boolean String::hasPostfix(const String& postfix) const
+NxA::boolean String::hasPostfix(const String& postfix) const
 {
     return internal->hasPostfix(*postfix.internal);
 }
 
-boolean String::hasPostfix(const character* postfix) const
+NxA::boolean String::hasPostfix(const character* postfix) const
 {
     return internal->hasPostfix(postfix);
 }
 
-boolean String::contains(const String& other) const
+NxA::boolean String::contains(const String& other) const
 {
     return internal->contains(*other.internal);
 }
 
-boolean String::contains(const character* other) const
+NxA::boolean String::contains(const character* other) const
 {
     return internal->contains(other);
 }
 
-boolean String::hasNonPrintableCharacters() const
+NxA::boolean String::hasNonPrintableCharacters() const
 {
     return internal->hasNonPrintableCharacters();
 }

@@ -81,7 +81,11 @@ public:
 
     // -- Operators
     MutableMap& operator=(MutableMap&&) = default;
-    MutableMap& operator=(const MutableMap& other) = default;
+    MutableMap& operator=(const MutableMap& other)
+    {
+        this->internal = std::make_shared<Internal>(*other.internal);
+        return *this;
+    }
 
     bool operator==(const MutableMap& other) const
     {

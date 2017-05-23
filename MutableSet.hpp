@@ -166,49 +166,49 @@ public:
         return internal->removeAll();
     }
 
-    void append(T object)
+    void add(T object)
     {
-        return internal->append(object);
+        return internal->add(object);
     }
 
     template <class... ConstructorArguments>
-    void emplaceAppend(ConstructorArguments&&... arguments)
+    void emplaceAdd(ConstructorArguments&&... arguments)
     {
-        internal->emplaceAppend(std::forward<ConstructorArguments>(arguments)...);
+        internal->emplaceAdd(std::forward<ConstructorArguments>(arguments)...);
     }
 
-    void append(MutableSet<T>& objects)
+    void add(MutableSet<T>& objects)
     {
         for (auto& object : objects) {
-            internal->append(object);
+            internal->add(object);
         }
     }
 
-    void append(const MutableSet<T>& objects)
+    void add(const MutableSet<T>& objects)
     {
         for (auto& object : objects) {
-            internal->append(object);
+            internal->add(object);
         }
     }
 
-    void append(const Set<T>& objects)
+    void add(const Set<T>& objects)
     {
         for (auto& object : objects) {
-            internal->append(object);
+            internal->dd(object);
         }
     }
 
-    void append(Set<T>& objects)
+    void add(Set<T>& objects)
     {
         for (auto& object : objects) {
-            internal->append(object);
+            internal->add(object);
         }
     }
 
-    void append(Array<T>& objects)
+    void add(Array<T>& objects)
     {
         for (auto& object : objects) {
-            internal->append(object);
+            internal->add(object);
         }
     }
 

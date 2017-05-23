@@ -31,7 +31,7 @@ TEST(Base_Set, SetWith_ASetWithStrings_ReturnsAnSetWithTheSameObjectsAsTheSource
 {
     // -- Given.
     MutableSet<String> test;
-    test.append(String("Test"));
+    test.add(String("Test"));
 
     // -- When.
     auto result = Set<String>(test);
@@ -98,7 +98,7 @@ TEST(Base_Set, OperatorSquareBrackets_AccessOnConstantSet_ReturnsCorrectValue)
     // -- Given.
     // -- When.
     MutableSet<String> test;
-    test.append(String("Test"));
+    test.add(String("Test"));
     Set<String> constTest(test);
 
     // -- Then.
@@ -106,13 +106,13 @@ TEST(Base_Set, OperatorSquareBrackets_AccessOnConstantSet_ReturnsCorrectValue)
     ASSERT_STREQ("Test", constTest.anyObject().asUTF8());
 }
 
-TEST(Base_Set, Append_AddingOneObject_AddsObjectCorrectly)
+TEST(Base_Set, add_AddingOneObject_AddsObjectCorrectly)
 {
     // -- Given.
     MutableSet<String> test;
 
     // -- When.
-    test.append(String("Test"));
+    test.add(String("Test"));
 
     // -- Then.
     ASSERT_EQ(1, test.length());
@@ -123,11 +123,11 @@ TEST(Base_Set, OperatorEqual_TwoDifferentSets_ReturnFalse)
 {
     // -- Given.
     MutableSet<String> test;
-    test.append(String("Test"));
-    test.append(String("Test2"));
+    test.add(String("Test"));
+    test.add(String("Test2"));
     MutableSet<String> test2;
-    test2.append(String("Test"));
-    test2.append(String("OtherTest2"));
+    test2.add(String("Test"));
+    test2.add(String("OtherTest2"));
 
     // -- When.
     // -- Then.
@@ -138,11 +138,11 @@ TEST(Base_Set, OperatorEqual_TwoEqualSets_ReturnTrue)
 {
     // -- Given.
     MutableSet<String> test;
-    test.append(String("Test"));
-    test.append(String("Test2"));
+    test.add(String("Test"));
+    test.add(String("Test2"));
     MutableSet<String> test2;
-    test2.append(String("Test"));
-    test2.append(String("Test2"));
+    test2.add(String("Test"));
+    test2.add(String("Test2"));
 
     // -- When.
     // -- Then.
@@ -154,8 +154,8 @@ TEST(Base_Set, EmptyAll_MutableSetWithTwoObject_AssignCopyStillHasElements)
     // -- Given.
     MutableSet<String> test1;
     Set<String> test2;
-    test1.append(String("Test"));
-    test1.append(String("Test2"));
+    test1.add(String("Test"));
+    test1.add(String("Test2"));
     test2 = test1;
 
     // -- When.
@@ -171,8 +171,8 @@ TEST(Base_Set, EmptyAll_ImmutableSetWithTwoObject_AssignCopyStillHasElements)
     // -- Given.
     MutableSet<String> test1;
     Set<String> test2;
-    test1.append(String("Test"));
-    test1.append(String("Test2"));
+    test1.add(String("Test"));
+    test1.add(String("Test2"));
     test2 = test1;
 
     // -- When.
@@ -187,8 +187,8 @@ TEST(Base_Set, EmptyAll_MutableSetWithTwoObject_CopyStillHasElements)
 {
     // -- Given.
     MutableSet<String> test1;
-    test1.append(String("Test"));
-    test1.append(String("Test2"));
+    test1.add(String("Test"));
+    test1.add(String("Test2"));
     Set<String> test2{test1};
 
     // -- When.
@@ -203,8 +203,8 @@ TEST(Base_Set, EmptyAll_ImmutableSetWithTwoObject_CopyStillHasElements)
 {
     // -- Given.
     MutableSet<String> test1;
-    test1.append(String("Test"));
-    test1.append(String("Test2"));
+    test1.add(String("Test"));
+    test1.add(String("Test2"));
     MutableSet<String> test2{test1};
 
     // -- When.
@@ -229,8 +229,8 @@ TEST(Base_Set, EmptyAll_SetWithTwoObject_RemovesAllObjects)
 {
     // -- Given.
     MutableSet<String> test;
-    test.append(String("Test"));
-    test.append(String("Test2"));
+    test.add(String("Test"));
+    test.add(String("Test2"));
 
     // -- When.
     test.removeAll();
@@ -246,9 +246,9 @@ TEST(Base_Set, Find_ObjectInTheMiddleWithSameValue_ReturnsPositionCorrectly)
     auto object1 = String("Test");
     auto object2 = String("Test2");
     auto object3 = String("Test3");
-    test.append(object1);
-    test.append(object2);
-    test.append(object3);
+    test.add(object1);
+    test.add(object2);
+    test.add(object3);
 
     // -- When.
     auto position = test.find(String("Test2"));
@@ -263,8 +263,8 @@ TEST(Base_Set, Contains_ObjectInTheSetWithSameValue_ReturnsTrue)
     MutableSet<String> test;
     auto object1 = String("Test");
     auto object2 = String("Test2");
-    test.append(object1);
-    test.append(object2);
+    test.add(object1);
+    test.add(object2);
     auto object3 = String("Test2");
 
     // -- When.
@@ -278,8 +278,8 @@ TEST(Base_Set, Contains_ObjectAlreadyInTheSet_ReturnsTrue)
     MutableSet<String> test;
     auto object1 = String("Test");
     auto object2 = String("Test2");
-    test.append(object1);
-    test.append(object2);
+    test.add(object1);
+    test.add(object2);
 
     // -- When.
     // -- Then.
@@ -292,8 +292,8 @@ TEST(Base_Set, Contains_ObjectNotInTheSet_ReturnsFalse)
     MutableSet<String> test;
     auto object1 = String("Test");
     auto object2 = String("Test2");
-    test.append(object1);
-    test.append(object2);
+    test.add(object1);
+    test.add(object2);
     auto object3 = String("Test3");
 
     // -- When.
@@ -308,9 +308,9 @@ TEST(Base_Set, Find_ObjectInEndWithSameObject_ReturnsPositionCorrectly)
     auto object1 = String("Test");
     auto object2 = String("Test2");
     auto object3 = String("Test3");
-    test.append(object1);
-    test.append(object2);
-    test.append(object3);
+    test.add(object1);
+    test.add(object2);
+    test.add(object3);
 
     // -- When.
     auto position = test.find(object3);

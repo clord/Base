@@ -29,7 +29,6 @@ namespace NxA {
 
 // -- Forward Declarations
 class Blob;
-struct MutableStringInternal;
 
 // -- Public Interface
 class MutableString
@@ -60,7 +59,7 @@ public:
     template <typename... FormatArguments>
     static MutableString stringWithFormat(const MutableString& format, FormatArguments&&... formatArguments)
     {
-        return MutableString{Internal::stringWithFormat(256, format.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...)};
+        return MutableString{ Internal::stringWithFormat(256, format.asUTF8(), Internal::stringArgumentAsCharacter(formatArguments)...) };
     }
 
     static MutableString stringWith(const character* other)

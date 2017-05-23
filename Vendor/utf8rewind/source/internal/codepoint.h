@@ -252,9 +252,7 @@
 /*!
 	\brief Get the number of bytes used for encoding a code point.
 
-	\param[in]  byte  Encoded byte
-
-	\return Number of bytes needed for decoding or 0 if input is illegal.
+	Number of bytes needed for decoding or 0 if input is illegal.
 */
 extern const uint8_t codepoint_decoded_length[256];
 

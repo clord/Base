@@ -42,26 +42,12 @@ public:
     };
 
     static constexpr Kind CurrentPlatform =
-#ifndef _Windows
-#if defined(_WIN32) || defined(WIN32) || defined(__Win32__) || defined(__WIN32__) || defined(_WINDOWS)
+#if defined(_Windows) || defined(_WIN32) || defined(WIN32) || defined(__Win32__) || defined(__WIN32__) || defined(_WINDOWS)
         Kind::Windows
-#else
-#if defined(__APPLE__) && defined(__MACH__)
+#elif defined(__APPLE__) && defined(__MACH__)
         Kind::OSX
 #else
         Kind::Unknown
-#endif
-#endif
-#else
-#if defined(__Win32__) || defined(_WIN32)
-        Kind::Windows
-#else
-#if defined(__APPLE__) && defined(__MACH__)
-        Kind::OSX
-#else
-        Kind::Unknown
-#endif
-#endif
 #endif
         ;
 

@@ -29,6 +29,23 @@
 #include "Base/File.hpp"
 #include "Base/Platform.hpp"
 
+#if defined(_WIN32)
+#undef WINVER
+#undef _WIN32_WINNT
+#define WINVER 0x0600
+#define _WIN32_WINNT 0x0600
+#include <Shlobj.h>
+#include <Windows.h>
+#include <initguid.h>
+#include <KnownFolders.h>
+#include <wchar.h>
+#elif defined(__APPLE__)
+#include <dirent.h>
+#include <pwd.h>
+#else
+#error "Unsupported Platform"
+#endif
+
 #include <boost/filesystem.hpp>
 
 #include <iostream>
@@ -36,10 +53,6 @@
 #include <memory>
 #include <string>
 #include <cerrno>
-#ifndef _WIN32
-#include <dirent.h>
-#include <pwd.h>
-#endif
 
 using namespace NxA;
 
@@ -179,7 +192,7 @@ count File::sizeOfFileAt(const String& path)
         boost::filesystem::path boostPath(path.asUTF8());
         return (boost::filesystem::file_size(boostPath));
     }
-    catch (std::exception & e) {
+    catch (std::exception& e) {
         throw FileError::exceptionWith("Error getting size of file at '%s': %s", path.asUTF8(), e.what());
     }
     catch (...) {
@@ -242,21 +255,33 @@ String File::temporaryDirectoryPath()
 String File::userHomeDirectoryPath()
 {
 #ifdef __APPLE__
-	const char* homeDirectory = nullptr;
+    const char* homeDirectory = nullptr;
 
     struct passwd* pwd = getpwuid(getuid());
-	if (pwd) {
-		homeDirectory = pwd->pw_dir;
-	}
-	else {
-		// -- try the $HOME environment variable
-		homeDirectory = getenv("HOME");
-	}
+    if (pwd) {
+        homeDirectory = pwd->pw_dir;
+    }
+    else {
+        // -- try the $HOME environment variable
+        homeDirectory = getenv("HOME");
+    }
 
-    return String(homeDirectory);
+    return {homeDirectory};
+#elif defined(_WIN32)
+    wchar_t* path = NULL;
+
+    HRESULT hr = SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &path);
+
+    if (SUCCEEDED(hr)) {
+       std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> cv;
+       auto str8 = cv.to_bytes(path);
+       CoTaskMemFree(path);
+       return String{std::move(str8)};
+    }
+
+    CoTaskMemFree(path);
+    return {};
 #else
-    // -- Should return the path specified by the USERPROFILE environment variable.
-    // -- or the path formed by concatenating the HOMEDRIVE and HOMEPATH environment variables.
     NXA_ALOG("Unsupported Platform.");
     return {};
 #endif

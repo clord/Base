@@ -75,7 +75,7 @@ boolean classNameIs(const character* className) const;
 String description(const DescriberState&) const;
 String description() const;
 
-// -- Since this is placed at the begiining of the class definition,
+// -- Since this is placed at the beginning of the class definition,
 // -- we restore the private setting for subsequent content.
 private:
 

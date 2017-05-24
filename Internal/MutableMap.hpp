@@ -36,8 +36,8 @@ struct MutableMapInternal : public std::map<const Tkey, Tvalue>
     // -- Constructors/Destructors
     MutableMapInternal() : std::map<const Tkey, Tvalue>() { }
     MutableMapInternal(const MutableMapInternal& other) : std::map<const Tkey, Tvalue>{ other } { }
-    MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{ other } { }
-    MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{ std::move(other) } { }
+    MutableMapInternal(const std::map<const Tkey, Tvalue>& other) : std::map<const Tkey, Tvalue>{ other } { }
+    MutableMapInternal(std::map<const Tkey, Tvalue>&& other) : std::map<const Tkey, Tvalue>{ std::move(other) } { }
     ~MutableMapInternal() = default;
 
     // -- Iterators

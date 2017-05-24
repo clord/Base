@@ -300,7 +300,6 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::lowerCaseString() 
 
 	count convertedSize;
 	integer32 errors;
-	size_t i;
 
 	if ((convertedSize = utf8tolower(input, inputLength, NULL, 0, UTF8_LOCALE_DEFAULT, &errors)) == 0 || errors != UTF8_ERR_NONE) {
 		return { std::make_shared<MutableStringInternal>() };
@@ -328,7 +327,6 @@ std::shared_ptr<MutableStringInternal> MutableStringInternal::upperCaseString() 
 
 	count convertedSize;
 	integer32 errors;
-	size_t i;
 
 	if ((convertedSize = utf8toupper(input, inputLength, NULL, 0, UTF8_LOCALE_DEFAULT, &errors)) == 0 || errors != UTF8_ERR_NONE) {
 		return { std::make_shared<MutableStringInternal>() };

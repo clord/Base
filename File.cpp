@@ -179,8 +179,11 @@ count File::sizeOfFileAt(const String& path)
         boost::filesystem::path boostPath(path.asUTF8());
         return (boost::filesystem::file_size(boostPath));
     }
+    catch (std::exception & e) {
+        throw FileError::exceptionWith("Error getting size of file at '%s': %s", path.asUTF8(), e.what());
+    }
     catch (...) {
-        throw FileError::exceptionWith("Error getting size of file at '%s'.", path.asUTF8());
+        throw FileError::exceptionWith("Unknown error getting size of file at '%s'.", path.asUTF8());
     }
 }
 

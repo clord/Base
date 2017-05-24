@@ -27,15 +27,15 @@
 
 namespace NxA {
 
-template <class T>
-class WeakReference : private std::weak_ptr<typename T::Internal>
+template <class T, class InternalClass>
+class WeakReference : private std::weak_ptr<InternalClass>
 {
 public:
     // -- Constructors & Destructors
     WeakReference() = default;
-    WeakReference(const WeakReference<T>& other) : std::weak_ptr<typename T::Internal>{ other } { }
-    WeakReference(WeakReference<T>&&) = default;
-    WeakReference(const T& other) : std::weak_ptr<typename T::Internal>{ other.internal } { }
+    WeakReference(const WeakReference<T, InternalClass>& other) : std::weak_ptr<InternalClass>{ other } { }
+    WeakReference(WeakReference<T, InternalClass>&&) = default;
+    WeakReference(const T& other) : std::weak_ptr<InternalClass>{ other } { }
     ~WeakReference() = default;
 
     // -- Operators

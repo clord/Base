@@ -22,11 +22,12 @@
 #include "Base/Types.hpp"
 #include "Base/String.hpp"
 #include "Base/Array.hpp"
-#include "Base/Internal/MutableString.hpp"
+#include "Base/Internal/MutableStringInternal.hpp"
 #include "Base/MutableString.hpp"
 #include "Base/Exception.hpp"
 #include "Base/Platform.hpp"
 #include "Base/Assert.hpp"
+#include "Base/Describe.hpp"
 
 using namespace NxA;
 
@@ -70,26 +71,24 @@ inline NxA::uinteger32 SBox(const NxA::byte* key, NxA::count len, NxA::uinteger3
     return h;
 }
 
+#define NXA_OBJECT_CLASS                            String
+#define NXA_INTERNAL_OBJECT_SHOULD_NOT_BE_COPIED
+#define NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME
+
+#include <Base/ObjectDefinition.ipp>
+
 // -- Constructors/Destructors
 
-String::String() : internal{std::make_shared<Internal>()} { }
-String::String(const String& other) = default;
-String::String(String&& other) = default;
-String::String(String&) = default;
-String::String(const std::string& other) : internal{std::make_shared<Internal>(other)} { }
-String::String(const std::string&& other) : internal{std::make_shared<Internal>(std::move(other))} { }
-String::String(const character* other, size_t size) : internal{std::make_shared<Internal>(other, size)} { }
-String::String(const MutableString& other) : internal{std::make_shared<Internal>(*std::static_pointer_cast<std::string>(other.internal))} { }
-
-String::String(MutableString&& other) : internal{std::move(other.internal)}
+String::String() : std::shared_ptr<Internal>{ std::make_shared<Internal>() } { }
+String::String(const std::string& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other) } { }
+String::String(const std::string&& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(std::move(other)) } { }
+String::String(const character* other, size_t size) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other, size) } { }
+String::String(const MutableString& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other.asStdString()) } { }
+String::String(MutableString&& other) : std::shared_ptr<Internal>{ std::move(other) }
 {
     // -- If we're moving this other mutable, it can't be referred to by anyone else.
-    NXA_ASSERT_TRUE(internal.use_count() == 1);
+    NXA_ASSERT_TRUE(this->use_count() == 1);
 }
-
-String::String(std::shared_ptr<Internal>&& other) : internal{std::move(other)} { }
-
-String::~String() = default;
 
 // -- Factory Methods
 
@@ -136,38 +135,17 @@ count String::lengthOf(const character* str)
 
 // -- Operators
 
-String& String::operator=(String&&) = default;
-String& String::operator=(String const&) = default;
-
 bool String::operator==(const character* other) const
 {
-    return internal->operator==(other);
+    return nxa_internal->operator==(other);
 }
 
 bool String::operator==(const MutableString& other) const
 {
-    return internal->operator==(*other.internal);
-}
-
-boolean String::operator==(const String& other) const
-{
-    if (internal == other.internal) {
-        return true;
-    }
-    return *internal == *(other.internal);
+    return nxa_internal->operator==(*NXA_INTERNAL_OBJECT_FOR(other));
 }
 
 // -- Instance Methods
-
-const character* String::className() const
-{
-    return String::staticClassName();
-}
-
-boolean String::classNameIs(const character* className) const
-{
-    return !::strcmp(String::staticClassName(), className);
-}
 
 String String::description(const DescriberState& state) const
 {
@@ -176,132 +154,132 @@ String String::description(const DescriberState& state) const
 
 integer32 String::compare(const char* other) const
 {
-    return internal->compare(other);
+    return nxa_internal->compare(other);
 }
 
 integer32 String::compare(const String& other) const
 {
-    return internal->compare(*other.internal);
+    return nxa_internal->compare(*NXA_INTERNAL_OBJECT_FOR(other));
 }
 
 count String::length() const
 {
-    return internal->length();
+    return nxa_internal->length();
 }
 
 uinteger32 String::hash() const
 {
-    return internal->hash();
+    return nxa_internal->hash();
 }
 
 integer String::integerValue() const
 {
-    return internal->integerValue();
+    return nxa_internal->integerValue();
 }
 
 decimal3 String::decimalValue() const
 {
-    return internal->decimalValue();
+    return nxa_internal->decimalValue();
 }
 
 const std::string& String::asStdString() const
 {
-    return internal->asStdString();
+    return nxa_internal->asStdString();
 }
 
 const character* String::asUTF8() const
 {
-    return internal->asUTF8();
+    return nxa_internal->asUTF8();
 }
 
 Blob String::asUTF16() const
 {
-    return internal->asUTF16();
+    return nxa_internal->asUTF16();
 }
 
 String String::stringByAppending(const String& other) const
 {
-    return {internal->stringByAppending(*other.internal)};
+    return { nxa_internal->stringByAppending(*NXA_INTERNAL_OBJECT_FOR(other)) };
 }
 
 Array<String> String::splitBySeparator(character separator) const
 {
-    return {internal->splitBySeparator(separator)};
+    return { nxa_internal->splitBySeparator(separator) };
 }
 
 String String::utfSeek(count skip) const
 {
-    return {internal->utfSeek(skip)};
+    return { nxa_internal->utfSeek(skip) };
 }
 
 String String::subString(count start, count end) const
 {
-    return {internal->subString(start, end)};
+    return { nxa_internal->subString(start, end) };
 }
 
 String String::lowerCaseString() const
 {
-    return {internal->lowerCaseString()};
+    return { nxa_internal->lowerCaseString() };
 }
 
 String String::upperCaseString() const
 {
-    return internal->upperCaseString();
+    return nxa_internal->upperCaseString();
 }
 
 boolean String::hasPrefix(const String& prefix) const
 {
-    return internal->hasPrefix(*prefix.internal);
+    return nxa_internal->hasPrefix(*NXA_INTERNAL_OBJECT_FOR(prefix));
 }
 
 boolean String::hasPrefix(const character* prefix) const
 {
-    return internal->hasPrefix(prefix);
+    return nxa_internal->hasPrefix(prefix);
 }
 
 boolean String::hasPostfix(const String& postfix) const
 {
-    return internal->hasPostfix(*postfix.internal);
+    return nxa_internal->hasPostfix(*NXA_INTERNAL_OBJECT_FOR(postfix));
 }
 
 boolean String::hasPostfix(const character* postfix) const
 {
-    return internal->hasPostfix(postfix);
+    return nxa_internal->hasPostfix(postfix);
 }
 
 boolean String::contains(const String& other) const
 {
-    return internal->contains(*other.internal);
+    return nxa_internal->contains(*NXA_INTERNAL_OBJECT_FOR(other));
 }
 
 boolean String::contains(const character* other) const
 {
-    return internal->contains(other);
+    return nxa_internal->contains(other);
 }
 
 boolean String::hasNonPrintableCharacters() const
 {
-    return internal->hasNonPrintableCharacters();
+    return nxa_internal->hasNonPrintableCharacters();
 }
 
 count String::indexOfFirstOccurenceOf(const String& other) const
 {
-    return internal->indexOfFirstOccurenceOf(other);
+    return nxa_internal->indexOfFirstOccurenceOf(other);
 }
 
 count String::indexOfFirstOccurenceOf(const character* other) const
 {
-    return internal->indexOfFirstOccurenceOf(other);
+    return nxa_internal->indexOfFirstOccurenceOf(other);
 }
 
 count String::indexOfLastOccurenceOf(const String& other) const
 {
-    return internal->indexOfLastOccurenceOf(other);
+    return nxa_internal->indexOfLastOccurenceOf(other);
 }
 
 count String::indexOfLastOccurenceOf(const character* other) const
 {
-    return internal->indexOfLastOccurenceOf(other);
+    return nxa_internal->indexOfLastOccurenceOf(other);
 }
 
 // -- Operators
@@ -310,7 +288,8 @@ namespace NxA {
 
 bool operator<(const String& first, const String& second)
 {
-    return *(first.internal) < *(second.internal);
+    using Internal = MutableStringInternal;
+    return *NXA_INTERNAL_OBJECT_FOR(first) < *NXA_INTERNAL_OBJECT_FOR(second);
 }
 
 String operator"" _String(const character* str, count length)

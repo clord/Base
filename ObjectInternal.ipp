@@ -19,27 +19,35 @@
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-// -- Instance Methods
+#if !defined(NXA_OBJECT_INTERNAL_CLASS)
+    #define NXA_CAT_SUB_MACRO(A, B) A ## B
+    #define NXA_CAT(A, B) NXA_CAT_SUB_MACRO(A, B)
+    #define NXA_OBJECT_INTERNAL_CLASS NXA_CAT(NXA_OBJECT_CLASS, Internal)
+#endif
 
-#if !defined(NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL)
-    const character* className() const
-    #ifdef NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS
-        override
+using Internal = NXA_OBJECT_INTERNAL_CLASS;
+
+#if !defined(NXA_INTERNAL_OBJECT_FOR)
+    #define NXA_INTERNAL_OBJECT_FOR(other) static_cast<Internal*>(other.get())
+#endif
+
+public:
+    // -- Instance Methods
+    #if !defined(NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME)
+        #ifdef NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL
+            virtual const character* className() const = 0;
+        #else
+            const character* className() const
+            #ifdef NXA_OBJECT_BASE_CLASS
+                override
+            #endif
+            {
+                return NXA_OBJECT_CLASS::staticClassNameConst;
+            }
+        #endif
     #endif
-    {
-        return NXA_OBJECT_CLASS::staticClassNameConst;
-    }
-#endif
 
-#ifdef NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS
-    virtual std::shared_ptr<NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS> baseInternalSharedPointer() override
-    {
-        return std::static_pointer_cast<NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS>(std::make_shared<Internal>(*this));
-    }
-#elif defined(NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL)
-    virtual std::shared_ptr<Internal> baseInternalSharedPointer() = 0;
-#endif
-
-#undef NXA_OBJECT_CLASS
-#undef NXA_BASE_INTERNAL_OBJECT_IS_IN_CLASS
-#undef NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL
+    #undef NXA_OBJECT_CLASS
+    #undef NXA_OBJECT_BASE_CLASS
+    #undef NXA_INTERNAL_OBJECT_IS_PURE_VIRTUAL
+    #undef NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME

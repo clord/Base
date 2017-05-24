@@ -78,7 +78,7 @@ struct MutableBlobInternal : public std::vector<byte>
             return false;
         }
 
-        for (integer index = 0; index < this->size(); ++index) {
+        for (count index = 0; index < this->size(); ++index) {
             if (this->std::vector<byte>::operator[](index) != other.std::vector<byte>::operator[](index)) {
                 return false;
             }
@@ -87,13 +87,13 @@ struct MutableBlobInternal : public std::vector<byte>
         return true;
     }
 
-    const byte& operator[](integer index) const
+    const byte& operator[](count index) const
     {
         NXA_ASSERT_TRUE(index >= 0 && index < this->size());
         return this->std::vector<byte>::operator[](index);
     }
 
-    byte& operator[](integer index)
+    byte& operator[](count index)
     {
         NXA_ASSERT_TRUE(index >= 0 && index < this->size());
         return this->std::vector<byte>::operator[](index);
@@ -129,7 +129,14 @@ struct MutableBlobInternal : public std::vector<byte>
 
     String base64String() const;
 
-    void append(MutableBlobInternal other)
+    void appendMemoryWithSize(const byte* data, count size)
+    {
+        for (count index = 0; index < size; ++index) {
+            this->insert(this->end(), 1, data[index]);
+        }
+    }
+
+    void append(MutableBlobInternal& other)
     {
         this->insert(this->end(), other.begin(), other.end());
     }
@@ -154,7 +161,7 @@ struct MutableBlobInternal : public std::vector<byte>
         this->clear();
     }
 
-    void padToAlignment(integer32 alignment)
+    void padToAlignment(count alignment)
     {
         count paddingSize = (((this->size() + alignment - 1) / alignment) * alignment) - this->size();
         if (paddingSize > 0) {

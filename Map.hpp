@@ -25,7 +25,7 @@
 #include <Base/String.hpp>
 #include <Base/MutableString.hpp>
 #include <Base/MutableMap.hpp>
-#include <Base/Internal/MutableMap.hpp>
+#include <Base/Internal/MutableMapInternal.hpp>
 
 #include <mutex>
 
@@ -34,19 +34,18 @@ namespace NxA {
 // -- Class
 
 template <typename Tkey, typename Tvalue>
-class Map
+class Map : protected std::shared_ptr<MutableMapInternal<const Tkey, Tvalue>>
 {
     using Internal = MutableMapInternal<const Tkey, Tvalue>;
-    std::shared_ptr<MutableMapInternal<const Tkey, Tvalue>> internal;
 
     friend MutableString;
 
 public:
     // -- Constructors/Destructors
-    Map() : internal{std::make_shared<MutableMapInternal<const Tkey, Tvalue>>()} { }
+    Map() : std::shared_ptr<Internal>{ std::make_shared<MutableMapInternal<const Tkey, Tvalue>>() } { }
     Map(const Map&) = default;
     Map(Map&&) = default;
-    Map(MutableMap<Tkey, Tvalue>&& other) : internal{std::move(other.internal)} { }
+    Map(MutableMap<Tkey, Tvalue>&& other) : std::shared_ptr<Internal>{ std::move(other.internal) } { }
     ~Map() = default;
 
     // -- Class Methods
@@ -82,11 +81,14 @@ public:
     Map& operator=(const Map& other) = default;
     bool operator==(const Map& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
     bool operator!=(const Map& other) const
     {
@@ -94,11 +96,14 @@ public:
     }
     bool operator==(const MutableMap<Tkey, Tvalue>& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
     bool operator!=(const MutableMap<Tkey, Tvalue>& other) const
     {
@@ -106,15 +111,15 @@ public:
     }
     const Tvalue& operator[](const Tkey& key) const
     {
-        return internal->operator[](key);
+        return this->get()->operator[](key);
     }
     Tvalue& operator[](const Tkey& key)
     {
-        return internal->operator[](key);
+        return this->get()->operator[](key);
     }
     Tvalue& operator[](Tkey&& key)
     {
-        return internal->operator[](std::move(key));
+        return this->get()->operator[](std::move(key));
     }
 
     // -- Instance Methods
@@ -130,45 +135,45 @@ public:
 
     const_iterator begin() const
     {
-        return internal->begin();
+        return this->get()->begin();
     }
 
     const_iterator cbegin() const
     {
-        return internal->cbegin();
+        return this->get()->cbegin();
     }
 
     const_iterator end() const
     {
-        return internal->end();
+        return this->get()->end();
     }
 
     const_iterator cend() const
     {
-        return internal->cend();
+        return this->get()->cend();
     }
 
     count length() const
     {
-        return internal->length();
+        return this->get()->length();
     }
 
     Tvalue& valueForKey(const Tkey& key)
     {
-        return internal->operator[](key);
+        return this->get()->operator[](key);
     }
     const Tvalue& valueForKey(const Tkey& key) const
     {
-        return internal->operator[](key);
+        return this->get()->operator[](key);
     }
     Tvalue& valueForKey(Tkey&& key)
     {
-        return internal->operator[](std::move(key));
+        return this->get()->operator[](std::move(key));
     }
 
     Optional<Tvalue> maybeValueForKey(const Tkey& key) const
     {
-        return internal->maybeValueForKey(key);
+        return this->get()->maybeValueForKey(key);
     }
 };
     

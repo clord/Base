@@ -19,28 +19,12 @@
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#pragma once
+#if !defined(NXA_OBJECT_INTERNAL_CLASS)
+    #define NXA_CAT_SUB_MACRO(A, B) A ## B
+    #define NXA_CAT(A, B) NXA_CAT_SUB_MACRO(A, B)
+    #define NXA_OBJECT_INTERNAL_CLASS NXA_CAT(NXA_OBJECT_CLASS, Internal)
+#endif
 
-#include <Base/Types.hpp>
+class NXA_OBJECT_INTERNAL_CLASS;
 
-namespace NxA {
-
-#define NXA_OBJECT_CLASS                            Date
-
-#include <Base/ObjectForwardDeclarations.ipp>
-
-class String;
-
-class Date : protected NXA_OBJECT
-{
-    #include <Base/ObjectDeclaration.ipp>
-
-public:
-    // -- Class Methods
-    static String formattedStringWithTimestampAndFormat(timestamp, const character*);
-
-    static timestamp currentDateInSecondsSinceJanuary1st1970();
-    static timestamp currentGMTDateInSecondsSinceJanuary1st1970();
-};
-
-}
+#define NXA_OBJECT std::shared_ptr<NXA_OBJECT_INTERNAL_CLASS>

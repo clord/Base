@@ -22,21 +22,22 @@
 #pragma once
 
 #include <Base/Types.hpp>
-#include <Base/Internal/MutableString.hpp>
+#include <Base/Internal/MutableStringInternal.hpp>
 #include <Base/String.hpp>
 
 namespace NxA {
+
+#define NXA_OBJECT_CLASS                    MutableString
+#define NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME
+
+#include <Base/ObjectForwardDeclarations.ipp>
 
 // -- Forward Declarations
 class Blob;
 
 // -- Public Interface
-class MutableString
+class MutableString : protected NXA_OBJECT
 {
-    static constexpr auto staticClassNameConst = "MutableString";
-
-    #define NXA_OBJECT_CLASS                   MutableString
-    #define NXA_INTERNAL_OBJECT_CLASS          MutableStringInternal
     #include <Base/ObjectDeclaration.ipp>
 
     friend String;
@@ -51,9 +52,7 @@ public:
 
     // -- Provide a statically-sized character constant, which saves the runtime from computing the length.
     template <count size>
-    MutableString(const character (&chars)[size]) : MutableString{chars, size - 1}
-    {
-    }
+    MutableString(const character (&chars)[size]) : MutableString{ chars, size - 1 } { }
 
     // -- Factory Methods
     template <typename... FormatArguments>
@@ -64,7 +63,7 @@ public:
 
     static MutableString stringWith(const character* other)
     {
-        return {other, strlen(other)};
+        return { other, strlen(other) };
     }
 
     static MutableString stringWithUTF16(const Blob&);
@@ -76,20 +75,22 @@ public:
 
     // -- Operators
     bool operator==(const String& other) const;
-
-    bool operator!=(const String& other) const
+    inline bool operator!=(const String& other) const
     {
         return !this->operator==(other);
     }
-
     bool operator==(const character*) const;
-
-    bool operator!=(const character* other) const
+    inline bool operator!=(const character* other) const
     {
         return !this->operator==(other);
     }
 
     // -- Instance Methods
+    const character* className() const
+    {
+        return MutableString::staticClassNameConst;
+    }
+    
     count length() const;
 
     boolean isEmpty() const

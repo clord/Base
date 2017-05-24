@@ -47,11 +47,11 @@ class MutableSet : protected std::shared_ptr<MutableSetInternal<T>>
 public:
     // -- Constructors/Destructors
     MutableSet() : std::shared_ptr<Internal>{ std::make_shared<Internal>() } { }
-    MutableSet(const MutableSet& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other) } { }
-    MutableSet(std::initializer_list<T> other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other) } { }
+    MutableSet(const MutableSet& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
+    MutableSet(std::initializer_list<T> other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
     MutableSet(MutableSet&& other) = default;
     ~MutableSet() = default;
-    MutableSet(const Set<T>& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other) } { }
+    MutableSet(const Set<T>& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
     MutableSet(Set<T>&& other) : std::shared_ptr<Internal>{ std::move(other) } { }
 
     // -- Class Methods

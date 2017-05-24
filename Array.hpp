@@ -98,22 +98,13 @@ public:
     using const_iterator = typename Internal::const_iterator;
 
     // -- Operators
-    Array& operator=(Array&& other)
-    {
-        this->std::shared_ptr<Internal>::operator=(other);
-        return *this;
-    }
-
-    Array& operator=(const Array& other)
-    {
-        this->std::shared_ptr<Internal>::operator=(other);
-        return *this;
-    }
+    Array& operator=(Array&&) = default;
+    Array& operator=(const Array&) = default;
 
     template <template <typename, typename...> class I>
     Array& operator=(const MutableArray<T, I>& other)
     {
-        (*this) = other;
+        this->std::shared_ptr<Internal>::operator=(std::make_shared<Internal>(*other));
         return *this;
     }
 

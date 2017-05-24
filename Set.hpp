@@ -46,7 +46,7 @@ public:
     // -- Constructors/Destructors
     Set() : std::shared_ptr<Internal>{ std::make_shared<Internal>() } { }
     Set(const Set<T>& other) : std::shared_ptr<Internal>{ other } { }
-    Set(std::initializer_list<T> other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other) } { }
+    Set(std::initializer_list<T> other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
     Set(Set&& other) = default;
     Set(const MutableSet<T>& other) : std::shared_ptr<Internal>{std::make_shared<Internal>(*other)} { }
     Set(MutableSet<T>&& other) : std::shared_ptr<Internal>{ std::move(other) } { }

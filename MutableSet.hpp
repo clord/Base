@@ -175,6 +175,10 @@ public:
     {
         return this->get()->add(object);
     }
+    boolean addingObjectCausedAnInsertion(T object)
+    {
+        return this->get()->addingObjectCausedAnInsertion(object);
+    }
 
     template <class... ConstructorArguments>
     void emplaceAdd(ConstructorArguments&&... arguments)

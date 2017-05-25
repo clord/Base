@@ -301,6 +301,38 @@ TEST(Base_Set, Contains_ObjectNotInTheSet_ReturnsFalse)
     ASSERT_FALSE(test.contains(object3));
 }
 
+TEST(Base_Set, addingObjectCausedAnInsertion_ObjectAlreadyInTheSet_ReturnsFalse)
+{
+    // -- Given.
+    MutableSet<String> test;
+    auto object1 = String("Test");
+    auto object2 = String("Test2");
+    test.add(object1);
+    test.add(object2);
+
+    // -- When.
+    auto result = test.addingObjectCausedAnInsertion(String("Test2"));
+
+    // -- Then.
+    ASSERT_FALSE(result);
+}
+
+TEST(Base_Set, addingObjectCausedAnInsertion_ObjectNotInTheSet_ReturnsTrue)
+{
+    // -- Given.
+    MutableSet<String> test;
+    auto object1 = String("Test");
+    auto object2 = String("Test2");
+    test.add(object1);
+    test.add(object2);
+
+    // -- When.
+    auto result = test.addingObjectCausedAnInsertion(String("Test3"));
+
+    // -- Then.
+    ASSERT_TRUE(result);
+}
+
 TEST(Base_Set, Find_ObjectInEndWithSameObject_ReturnsPositionCorrectly)
 {
     // -- Given.

@@ -266,7 +266,7 @@ String File::userHomeDirectoryPath()
         homeDirectory = getenv("HOME");
     }
 
-    return {homeDirectory};
+    return String{homeDirectory};
 #elif defined(_WIN32)
     wchar_t* path = NULL;
 

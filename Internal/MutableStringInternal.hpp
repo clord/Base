@@ -69,7 +69,7 @@ struct MutableStringInternal : public std::string
 
         {
             std::string buffer;
-            buffer.resize(sizeGuess, '\0');
+            buffer.resize(sizeGuess);
 
             // -- safe to use snprintf instead of vsnprintf because buffer is unique
             finalStringLength = std::snprintf(&buffer[0], sizeGuess, format, args...);

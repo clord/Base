@@ -45,6 +45,12 @@ class String : protected NXA_OBJECT
     friend bool operator<(const String&, const String&);
 
 public:
+    // -- Constants
+    enum class UTF8Flag {
+        NeedsNormalizing,
+        IsNormalized,
+    };
+
     // -- Constructors/Destructors
     String();
     String(const character*, count);
@@ -69,13 +75,10 @@ public:
         return format;
     }
 
-    static String stringWithUTF8(const character* other)
-    {
-        return {other, strlen(other)};
-    }
+    static String stringWithUTF8(const character* other, UTF8Flag normalize = UTF8Flag::IsNormalized);
     static String stringWithMemoryAndLength(const character* other, count length)
     {
-        return {other, length};
+        return { other, length };
     }
 
     static String stringWithRepeatedCharacter(count, character);

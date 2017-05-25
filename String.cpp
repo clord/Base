@@ -112,6 +112,29 @@ String String::stringByFilteringNonPrintableCharactersIn(const String& other)
     return {Internal::stringByFilteringNonPrintableCharactersIn(other)};
 }
 
+String String::stringWithUTF8(const character* other, UTF8Flag normalize)
+{
+    if (normalize == UTF8Flag::NeedsNormalizing) {
+        size_t inputSize = ::strlen(other);
+
+        if (::utf8isnormalized(other, inputSize, UTF8_NORMALIZE_DECOMPOSE, NULL) != UTF8_NORMALIZATION_RESULT_YES) {
+            int32_t errors;
+
+            size_t convertedSize = utf8normalize(other, inputSize, NULL, 0, UTF8_NORMALIZE_DECOMPOSE, &errors);
+            if ((convertedSize > 0) && (errors == UTF8_ERR_NONE)) {
+                std::string buffer;
+                buffer.resize(convertedSize);
+
+                utf8normalize(other, inputSize, &buffer[0], convertedSize, UTF8_NORMALIZE_DECOMPOSE, NULL);
+
+                return String{ std::move(buffer) };
+            }
+        }
+    }
+
+    return { other, strlen(other) };
+}
+
 // -- Class Methods
 
 uinteger32 String::hashFor(const character* string)

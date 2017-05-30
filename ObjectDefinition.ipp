@@ -19,49 +19,60 @@
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-// -- Constructors & Destructors
+#if !defined(NXA_OBJECT_INTERNAL_BASE_CLASS)
+    #define NXA_CAT_SUB_MACRO(A, B) A ## B
+    #define NXA_CAT(A, B) NXA_CAT_SUB_MACRO(A, B)
+    #define NXA_OBJECT_INTERNAL_BASE_CLASS NXA_CAT(NXA_OBJECT_BASE_CLASS, Internal)
+    #undef NXA_CAT_SUB_MACRO
+    #undef NXA_CAT
+#endif
 
-#ifdef NXA_INTERNAL_OBJECT_IS_VIRTUAL
-    #ifdef NXA_INTERNAL_OBJECT_IS_DERIVED_FROM_CLASS
-        NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(const NXA_OBJECT_CLASS& other) : NXA_INTERNAL_OBJECT_IS_DERIVED_FROM_CLASS{ std::make_shared<Internal>(static_cast<NXA_OBJECT_CLASS::Internal&>(*other.internal)) } { }
+// -- Constructors & Destructors
+#ifdef NXA_INTERNAL_OBJECT_SHOULD_NEVER_BE_COPIED
+    #ifdef NXA_OBJECT_BASE_CLASS
+        NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(const NXA_OBJECT_CLASS& other) : NXA_OBJECT_BASE_CLASS{ other } { }
     #else
-        NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(const NXA_OBJECT_CLASS& other) : internal{ other.internal->baseInternalSharedPointer() } { }
+        NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(const NXA_OBJECT_CLASS& other) : std::shared_ptr<Internal>{ other } { }
     #endif
-#elif defined(NXA_OBJECT_IS_IMMUTABLE)
-    NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(const NXA_OBJECT_CLASS&) = default;
+#else
+    #ifdef NXA_OBJECT_BASE_CLASS
+        NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(const NXA_OBJECT_CLASS& other) : NXA_OBJECT_BASE_CLASS{ std::make_shared<NXA_OBJECT_INTERNAL_BASE_CLASS>(*other) } { }
+    #else
+        NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(const NXA_OBJECT_CLASS& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
+    #endif
 #endif
 
 NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(NXA_OBJECT_CLASS&&) = default;
 NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(NXA_OBJECT_CLASS&) = default;
-#ifdef NXA_INTERNAL_OBJECT_IS_DERIVED_FROM_CLASS
-    NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(std::shared_ptr<Internal>&& other) : NXA_INTERNAL_OBJECT_IS_DERIVED_FROM_CLASS{ std::move(other) } { }
+#ifdef NXA_OBJECT_BASE_CLASS
+    NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(std::shared_ptr<Internal>&& other) : NXA_OBJECT_BASE_CLASS{ std::move(other) } { }
 #else
-    NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(std::shared_ptr<Internal>&& other) : internal{ std::move(other) } { }
+    NXA_OBJECT_CLASS::NXA_OBJECT_CLASS(std::shared_ptr<Internal>&& other) : std::shared_ptr<Internal>{ std::move(other) } { }
 #endif
 NXA_OBJECT_CLASS::~NXA_OBJECT_CLASS() = default;
 
 // -- Operators
-
 NXA_OBJECT_CLASS& NXA_OBJECT_CLASS::operator=(NXA_OBJECT_CLASS&&) = default;
 NXA_OBJECT_CLASS& NXA_OBJECT_CLASS::operator=(const NXA_OBJECT_CLASS&) = default;
 boolean NXA_OBJECT_CLASS::operator==(const NXA_OBJECT_CLASS& other) const
 {
-    if (internal == other.internal) {
+    if (this->get() == other.get()) {
         return true;
     }
 
-    return *internal == *(other.internal);
+    return *(this->get()) == *(other.get());
 }
 
 // -- Instance Methods
-
-const character* NXA_OBJECT_CLASS::className() const
-{
-    return internal->className();
-}
+#if !defined(NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME)
+    const character* NXA_OBJECT_CLASS::className() const
+    {
+        return nxa_internal->className();
+    }
+#endif
 bool NXA_OBJECT_CLASS::classNameIs(const character* className) const
 {
-    return !::strcmp(internal->className(), className);
+    return !::strcmp(nxa_internal->className(), className);
 }
 
 String NXA_OBJECT_CLASS::description() const
@@ -71,6 +82,7 @@ String NXA_OBJECT_CLASS::description() const
 }
 
 #undef NXA_OBJECT_CLASS
-#undef NXA_OBJECT_IS_IMMUTABLE
-#undef NXA_INTERNAL_OBJECT_IS_VIRTUAL
-#undef NXA_INTERNAL_OBJECT_IS_DERIVED_FROM_CLASS
+#undef NXA_OBJECT_BASE_CLASS
+#undef NXA_OBJECT_INTERNAL_BASE_CLASS
+#undef NXA_INTERNAL_OBJECT_SHOULD_NEVER_BE_COPIED
+#undef NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME

@@ -23,7 +23,7 @@
 
 #include <Base/Assert.hpp>
 #include <Base/Types.hpp>
-#include <Base/Internal/MutableString.hpp>
+#include <Base/Internal/MutableStringInternal.hpp>
 
 #include <algorithm>
 #include <vector>

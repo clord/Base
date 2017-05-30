@@ -73,7 +73,7 @@ struct MutableStringInternal : public std::string
 
         {
             std::string buffer;
-            buffer.resize(sizeGuess, '\0');
+            buffer.resize(sizeGuess);
 
             // -- safe to use snprintf instead of vsnprintf because buffer is unique
             finalStringLength = std::snprintf(&buffer[0], sizeGuess, format, args...);
@@ -100,18 +100,20 @@ struct MutableStringInternal : public std::string
 
     static std::shared_ptr<MutableStringInternal> stringByFilteringNonPrintableCharactersIn(const String& other);
 
-    template <typename A>
-    static std::shared_ptr<MutableStringInternal> stringByJoiningArrayWithString(const A& array, std::shared_ptr<MutableStringInternal> join)
+    template <typename ArrayType>
+    static std::shared_ptr<MutableStringInternal> stringByJoiningArrayWithString(const ArrayType& array, MutableStringInternal& join)
     {
         std::string result;
-        auto i = array.begin();
-        while (i != array.end()) {
-            result.append(i->asStdString());
-            ++i;
-            if (i != array.end()) {
-                result.append(join->asStdString());
+
+        auto iterator = array.begin();
+        while (iterator != array.end()) {
+            result.append(iterator->asStdString());
+
+            if (++iterator != array.end()) {
+                result.append(join.asStdString());
             }
         }
+
         return std::make_shared<MutableStringInternal>(std::move(result));
     }
 

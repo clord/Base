@@ -114,6 +114,12 @@ struct MutableSetInternal : public std::set<T>
         this->insert(object);
     }
 
+    boolean addingObjectCausedAnInsertion(T object)
+    {
+        auto result = std::set<T>::insert(object);
+        return result.second;
+    }
+
     void add(MutableSetInternal<T> other)
     {
         for (auto object : other) {

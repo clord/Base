@@ -20,9 +20,10 @@
 //
 
 #include <Base/Types.hpp>
+#include <Base/Describe.hpp>
 #include <Base/MutableString.hpp>
 #include <Base/String.hpp>
-#include <Base/Internal/MutableString.hpp>
+#include <Base/Internal/MutableStringInternal.hpp>
 #include <Base/Exception.hpp>
 #include <Base/Platform.hpp>
 #include <Base/Assert.hpp>
@@ -30,199 +31,187 @@
 
 using namespace NxA;
 
+#define NXA_OBJECT_CLASS                    MutableString
+#define NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME
+
+#include <Base/ObjectDefinition.ipp>
+
 // -- Constructors/Destructors
 
-MutableString::MutableString() : internal{std::make_shared<Internal>()} { }
-MutableString::MutableString(const String& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-MutableString::MutableString(const std::string& other) : internal{std::make_shared<Internal>(other)} { }
-MutableString::MutableString(std::string&& other) : internal{std::make_shared<Internal>(std::move(other))} { }
-MutableString::MutableString(const character* other, size_t size) : internal{std::make_shared<Internal>(other, size)} { }
-MutableString::MutableString(std::shared_ptr<Internal>&& other) : internal{std::move(other)} { }
-MutableString::~MutableString() = default;
-MutableString::MutableString(MutableString&&) = default;
-
+MutableString::MutableString() : std::shared_ptr<Internal>{ std::make_shared<Internal>() } { }
+MutableString::MutableString(const String& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other.asStdString()) } { }
+MutableString::MutableString(const std::string& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other) } { }
+MutableString::MutableString(std::string&& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(std::move(other)) } { }
+MutableString::MutableString(const character* other, size_t size) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other, size) } { }
 
 // -- Factory Methods
 
 MutableString MutableString::stringWithUTF16(const Blob& other)
 {
-    return {Internal::stringWithUTF16(other)};
+    return { Internal::stringWithUTF16(other) };
 }
 
 MutableString MutableString::stringWithRepeatedCharacter(count number, character specificChar)
 {
-    return {Internal::stringWithRepeatedCharacter(number, specificChar)};
+    return { Internal::stringWithRepeatedCharacter(number, specificChar) };
 }
 
-template <template <typename> class I>
-MutableString MutableString::stringByJoiningArrayWithString(const Array<String, I>& array, String join)
+template <template <typename> class Implementation>
+MutableString MutableString::stringByJoiningArrayWithString(const Array<String, Implementation>& array, String join)
 {
-    return {Internal::stringByJoiningArrayWithString(array, join)};
+    return { Internal::stringByJoiningArrayWithString(array, *NXA_INTERNAL_OBJECT_FOR(join)) };
 }
 
 // -- Operators
 
 bool MutableString::operator==(const String& other) const
 {
-    return internal->operator==(*other.internal);
+    return nxa_internal->operator==(*NXA_INTERNAL_OBJECT_FOR(other));
 }
 
 bool MutableString::operator==(const character* other) const
 {
-    return internal->operator==(other);
-}
-
-boolean MutableString::operator==(const MutableString& other) const
-{
-    if (internal == other.internal) {
-        return true;
-    }
-    return *internal == *(other.internal);
+    return nxa_internal->operator==(other);
 }
 
 // -- Instance Methods
 
-boolean MutableString::classNameIs(const character* className) const
-{
-    return !::strcmp(MutableString::staticClassName(), className);
-}
-
 String MutableString::description(const DescriberState& state) const
 {
-    return String(*internal);
+    return String(*nxa_internal);
 }
 
 count MutableString::length() const
 {
-    return internal->length();
+    return nxa_internal->length();
 }
 
 uinteger32 MutableString::hash() const
 {
-    return internal->hash();
+    return nxa_internal->hash();
 }
 
 integer MutableString::integerValue() const
 {
-    return internal->integerValue();
+    return nxa_internal->integerValue();
 }
 
 decimal3 MutableString::decimalValue() const
 {
-    return internal->decimalValue();
+    return nxa_internal->decimalValue();
 }
 
 const std::string& MutableString::asStdString() const
 {
-    return internal->asStdString();
+    return nxa_internal->asStdString();
 }
 
 const character* MutableString::asUTF8() const
 {
-    return internal->asUTF8();
+    return nxa_internal->asUTF8();
 }
 
 Blob MutableString::asUTF16() const
 {
-    return internal->asUTF16();
+    return nxa_internal->asUTF16();
 }
 
 void MutableString::append(const String& other)
 {
-    internal->append(*other.internal);
+    nxa_internal->append(*NXA_INTERNAL_OBJECT_FOR(other));
 }
 
 void MutableString::append(const character* other)
 {
-    internal->append(other);
+    nxa_internal->append(other);
 }
 
 void MutableString::append(character other)
 {
-    internal->append(other);
+    nxa_internal->append(other);
 }
 
 Array<String> MutableString::splitBySeparator(character separator) const
 {
-    return internal->splitBySeparator(separator);
+    return nxa_internal->splitBySeparator(separator);
 }
 
 MutableString MutableString::utfSeek(count skip) const
 {
-    return {internal->utfSeek(skip)};
+    return { nxa_internal->utfSeek(skip) };
 }
 
 MutableString MutableString::subString(count start, count end) const
 {
-    return {internal->subString(start, end)};
+    return { nxa_internal->subString(start, end) };
 }
 
 MutableString MutableString::lowerCaseString() const
 {
-    return {internal->lowerCaseString()};
+    return { nxa_internal->lowerCaseString() };
 }
 
 MutableString MutableString::upperCaseString() const
 {
-    return {internal->upperCaseString()};
+    return { nxa_internal->upperCaseString() };
 }
 
 boolean MutableString::hasPrefix(const String& prefix) const
 {
-    return internal->hasPrefix(*prefix.internal);
+    return nxa_internal->hasPrefix(*NXA_INTERNAL_OBJECT_FOR(prefix));
 }
 
 boolean MutableString::hasPrefix(const character* prefix) const
 {
-    return internal->hasPrefix(prefix);
+    return nxa_internal->hasPrefix(prefix);
 }
 
 boolean MutableString::hasPostfix(const String& postfix) const
 {
-    return internal->hasPostfix(*postfix.internal);
+    return nxa_internal->hasPostfix(*NXA_INTERNAL_OBJECT_FOR(postfix));
 }
 
 boolean MutableString::hasPostfix(const character* postfix) const
 {
-    return internal->hasPostfix(postfix);
+    return nxa_internal->hasPostfix(postfix);
 }
 
 boolean MutableString::contains(const String& other) const
 {
-    return internal->contains(*other.internal);
+    return nxa_internal->contains(*NXA_INTERNAL_OBJECT_FOR(other));
 }
 
 boolean MutableString::contains(const character* other) const
 {
-    return internal->contains(other);
+    return nxa_internal->contains(other);
 }
 
 boolean MutableString::hasNonPrintableCharacters() const
 {
-    return internal->hasNonPrintableCharacters();
+    return nxa_internal->hasNonPrintableCharacters();
 }
 
 count MutableString::indexOfFirstOccurenceOf(const String& other) const
 {
-    return internal->indexOfFirstOccurenceOf(other);
+    return nxa_internal->indexOfFirstOccurenceOf(other);
 }
 
 count MutableString::indexOfFirstOccurenceOf(const character* other) const
 {
-    return internal->indexOfFirstOccurenceOf(other);
+    return nxa_internal->indexOfFirstOccurenceOf(other);
 }
 
 count MutableString::indexOfLastOccurenceOf(const String& other) const
 {
-    return internal->indexOfLastOccurenceOf(other);
+    return nxa_internal->indexOfLastOccurenceOf(other);
 }
 
 count MutableString::indexOfLastOccurenceOf(const character* other) const
 {
-    return internal->indexOfLastOccurenceOf(other);
+    return nxa_internal->indexOfLastOccurenceOf(other);
 }
 
 void MutableString::replaceOccurenceOfStringWith(const character* occurence, const character* replacement)
 {
-    return internal->replaceOccurenceOfStringWith(occurence, replacement);
+    return nxa_internal->replaceOccurenceOfStringWith(occurence, replacement);
 }

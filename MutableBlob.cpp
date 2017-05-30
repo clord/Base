@@ -21,151 +21,135 @@
 
 #include "Base/MutableBlob.hpp"
 #include "Base/Blob.hpp"
-#include "Base/Internal/MutableBlob.hpp"
+#include "Base/Internal/MutableBlobInternal.hpp"
 #include "Base/String.hpp"
 #include "Base/Assert.hpp"
+#include "Base/Describe.hpp"
 
 using namespace NxA;
 
-// -- Constructors/Destructors
+#define NXA_OBJECT_CLASS                    MutableBlob
+#define NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME
 
-MutableBlob::MutableBlob() : internal{std::make_shared<Internal>()} { }
-MutableBlob::MutableBlob(const Blob& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-MutableBlob::MutableBlob(const MutableBlob& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-MutableBlob::MutableBlob(MutableBlob&&) = default;
-MutableBlob::MutableBlob(MutableBlob&) = default;
-MutableBlob::MutableBlob(std::shared_ptr<Internal>&& other) : internal{std::move(other)} { }
-MutableBlob::~MutableBlob() = default;
+#include <Base/ObjectDefinition.ipp>
 
-// -- mark Factory Methods
+// -- Factory Methods
 
 MutableBlob MutableBlob::blobWithCapacity(count size)
 {
-    return {Internal::blobWithCapacity(size)};
+    return { Internal::blobWithCapacity(size) };
 }
 
 MutableBlob MutableBlob::blobWithMemoryAndSize(const byte* other, count size)
 {
-    return {Internal::blobWithMemoryAndSize(other, size)};
+    return { Internal::blobWithMemoryAndSize(other, size) };
 }
 
 MutableBlob MutableBlob::blobWithBase64String(const String& string)
 {
-    return {Internal::blobWithBase64String(string)};
+    return { Internal::blobWithBase64String(string) };
 }
 
 MutableBlob MutableBlob::blobWithStringWithTerminator(const String& string)
 {
-    return {Internal::blobWithStringWithTerminator(string)};
+    return { Internal::blobWithStringWithTerminator(string) };
 }
 
 MutableBlob MutableBlob::blobWithStringWithoutTerminator(const String& string)
 {
-    return {Internal::blobWithStringWithoutTerminator(string)};
+    return { Internal::blobWithStringWithoutTerminator(string) };
 }
+
+// -- Constructors/Destructors
+
+MutableBlob::MutableBlob() : std::shared_ptr<Internal>{ std::make_shared<Internal>() } { }
+MutableBlob::MutableBlob(const Blob& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other)} { }
 
 // -- Operators
 
-MutableBlob& MutableBlob::operator=(MutableBlob&&) = default;
-
-MutableBlob& MutableBlob::operator=(const MutableBlob&) = default;
-
-boolean MutableBlob::operator==(const MutableBlob& other) const
+byte& MutableBlob::operator[](count index)
 {
-    if (internal == other.internal) {
-        return true;
-    }
-    return *internal == *(other.internal);
+    return nxa_internal->operator[](index);
 }
 
-byte& MutableBlob::operator[](integer index)
+const byte& MutableBlob::operator[](count  index) const
 {
-    return internal->operator[](index);
+    return nxa_internal->operator[](index);
 }
 
-const byte& MutableBlob::operator[](integer index) const
+bool MutableBlob::operator==(const Blob& other) const
 {
-    return internal->operator[](index);
+    return nxa_internal->operator==(*NXA_INTERNAL_OBJECT_FOR(other));
 }
 
 // -- Instance Methods
 
-const character* MutableBlob::className() const
-{
-    return MutableBlob::staticClassName();
-}
-
-bool MutableBlob::classNameIs(const character* className) const
-{
-    return !::strcmp(MutableBlob::staticClassName(), className);
-}
-
 count MutableBlob::size() const
 {
-    return internal->size();
+    return nxa_internal->size();
 }
 
 byte* MutableBlob::data()
 {
-    return internal->data();
+    return nxa_internal->data();
 }
 
 const byte* MutableBlob::data() const
 {
-    return internal->data();
+    return nxa_internal->data();
 }
 
 Blob MutableBlob::hash()
 {
-    return {internal->hash()};
+    return { nxa_internal->hash() };
 }
 
 String MutableBlob::base64String() const
 {
-    return internal->base64String();
+    return nxa_internal->base64String();
 }
 
 void MutableBlob::fillWithZeros()
 {
-    return internal->fillWithZeros();
+    return nxa_internal->fillWithZeros();
 }
 
 void MutableBlob::append(const Blob& other)
 {
-    return internal->append(*other.internal);
+    return nxa_internal->append(*NXA_INTERNAL_OBJECT_FOR(other));
+}
+
+void MutableBlob::appendMemoryWithSize(const byte* data, count size)
+{
+    nxa_internal->appendMemoryWithSize(data, size);
 }
 
 void MutableBlob::appendWithStringTermination(const character* other)
 {
-    return internal->appendWithStringTermination(other);
+    return nxa_internal->appendWithStringTermination(other);
 }
 
 void MutableBlob::appendWithoutStringTermination(const character* other)
 {
-    return internal->appendWithoutStringTermination(other);
+    return nxa_internal->appendWithoutStringTermination(other);
 }
 
 void MutableBlob::append(const character other)
 {
-    return internal->append(other);
+    return nxa_internal->append(other);
 }
 
 void MutableBlob::removeAll()
 {
-    internal->removeAll();
+    nxa_internal->removeAll();
 }
 
-void MutableBlob::padToAlignment(integer32 alignment)
+void MutableBlob::padToAlignment(count alignment)
 {
-    internal->padToAlignment(alignment);
-}
-
-String MutableBlob::description() const
-{
-    return internal->description();
+    nxa_internal->padToAlignment(alignment);
 }
 
 String MutableBlob::description(const DescriberState& state) const
 {
-    return internal->description();
+    return nxa_internal->description();
 }

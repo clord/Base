@@ -210,12 +210,13 @@ public:
         }
     }
 
-    void add(Array<T>& objects)
+    void intersectWith(Set<T> objects)
     {
         auto internal = this->get();
-        for (auto& object : objects) {
-            internal->add(object);
-        }
+        auto intersect = std::make_shared<Internal>();
+        std::set_intersection(internal->begin(), internal->end(), objects.begin(), objects.end(),
+                              std::inserter(*intersect, intersect->begin()));
+        this->std::shared_ptr<Internal>::operator=(std::move(intersect));
     }
 
     const T& anyObject() const

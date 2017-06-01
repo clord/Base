@@ -189,7 +189,7 @@ TEST(Base_Set, EmptyAll_MutableSetWithTwoObject_CopyStillHasElements)
     MutableSet<String> test1;
     test1.add(String("Test"));
     test1.add(String("Test2"));
-    Set<String> test2{test1};
+    Set<String> test2{ test1 };
 
     // -- When.
     test1.removeAll();
@@ -205,7 +205,7 @@ TEST(Base_Set, EmptyAll_ImmutableSetWithTwoObject_CopyStillHasElements)
     MutableSet<String> test1;
     test1.add(String("Test"));
     test1.add(String("Test2"));
-    MutableSet<String> test2{test1};
+    MutableSet<String> test2{ test1 };
 
     // -- When.
     test1.removeAll();
@@ -243,12 +243,9 @@ TEST(Base_Set, Find_ObjectInTheMiddleWithSameValue_ReturnsPositionCorrectly)
 {
     // -- Given.
     MutableSet<String> test;
-    auto object1 = String("Test");
-    auto object2 = String("Test2");
-    auto object3 = String("Test3");
-    test.add(object1);
-    test.add(object2);
-    test.add(object3);
+    test.add(String("Test"));
+    test.add(String("Test2"));
+    test.add(String("Test3"));
 
     // -- When.
     auto position = test.find(String("Test2"));
@@ -261,10 +258,8 @@ TEST(Base_Set, Contains_ObjectInTheSetWithSameValue_ReturnsTrue)
 {
     // -- Given.
     MutableSet<String> test;
-    auto object1 = String("Test");
-    auto object2 = String("Test2");
-    test.add(object1);
-    test.add(object2);
+    test.add(String("Test"));
+    test.add(String("Test2"));
     auto object3 = String("Test2");
 
     // -- When.
@@ -276,24 +271,20 @@ TEST(Base_Set, Contains_ObjectAlreadyInTheSet_ReturnsTrue)
 {
     // -- Given.
     MutableSet<String> test;
-    auto object1 = String("Test");
-    auto object2 = String("Test2");
-    test.add(object1);
-    test.add(object2);
+    test.add(String("Test"));
+    test.add(String("Test2"));
 
     // -- When.
     // -- Then.
-    ASSERT_TRUE(test.contains(object2));
+    ASSERT_TRUE(test.contains(String("Test2")));
 }
 
 TEST(Base_Set, Contains_ObjectNotInTheSet_ReturnsFalse)
 {
     // -- Given.
     MutableSet<String> test;
-    auto object1 = String("Test");
-    auto object2 = String("Test2");
-    test.add(object1);
-    test.add(object2);
+    test.add(String("Test"));
+    test.add(String("Test2"));
     auto object3 = String("Test3");
 
     // -- When.
@@ -305,10 +296,8 @@ TEST(Base_Set, addingObjectCausedAnInsertion_ObjectAlreadyInTheSet_ReturnsFalse)
 {
     // -- Given.
     MutableSet<String> test;
-    auto object1 = String("Test");
-    auto object2 = String("Test2");
-    test.add(object1);
-    test.add(object2);
+    test.add(String("Test"));
+    test.add(String("Test2"));
 
     // -- When.
     auto result = test.addingObjectCausedAnInsertion(String("Test2"));
@@ -321,10 +310,8 @@ TEST(Base_Set, addingObjectCausedAnInsertion_ObjectNotInTheSet_ReturnsTrue)
 {
     // -- Given.
     MutableSet<String> test;
-    auto object1 = String("Test");
-    auto object2 = String("Test2");
-    test.add(object1);
-    test.add(object2);
+    test.add(String("Test"));
+    test.add(String("Test2"));
 
     // -- When.
     auto result = test.addingObjectCausedAnInsertion(String("Test3"));
@@ -337,16 +324,56 @@ TEST(Base_Set, Find_ObjectInEndWithSameObject_ReturnsPositionCorrectly)
 {
     // -- Given.
     MutableSet<String> test;
-    auto object1 = String("Test");
-    auto object2 = String("Test2");
-    auto object3 = String("Test3");
-    test.add(object1);
-    test.add(object2);
-    test.add(object3);
+    test.add(String("Test"));
+    test.add(String("Test2"));
+    test.add(String("Test3"));
 
     // -- When.
-    auto position = test.find(object3);
+    auto position = test.find(String("Test3"));
 
     // -- Then.
     ASSERT_TRUE(position != test.end());
+}
+
+TEST(Base_MutableSet, IntersectWith_AnotherSetWithComonObjects_ReturnsIntersection)
+{
+    // -- Given.
+    MutableSet<String> test;
+    test.add(String("Test1"));
+    test.add(String("Test2"));
+    test.add(String("Test3"));
+    MutableSet<String> test2Mut;
+    test2Mut.add(String("Test4"));
+    test2Mut.add(String("Test5"));
+    test2Mut.add(String("Test2"));
+    test2Mut.add(String("Test7"));
+    Set<String> test2{ std::move(test2Mut) };
+
+    // -- When.
+    test.intersectWith(test2);
+
+    // -- Then.
+    ASSERT_EQ(1, test.length());
+    ASSERT_TRUE(test.contains(String("Test2")));
+}
+
+TEST(Base_MutableSet, IntersectWith_AnotherSetWithNoComonObjects_ReturnsEmptyIntersection)
+{
+    // -- Given.
+    MutableSet<String> test;
+    test.add(String("Test1"));
+    test.add(String("Test2"));
+    test.add(String("Test3"));
+    MutableSet<String> test2Mut;
+    test2Mut.add(String("Test4"));
+    test2Mut.add(String("Test5"));
+    test2Mut.add(String("Test8"));
+    test2Mut.add(String("Test7"));
+    Set<String> test2{ std::move(test2Mut) };
+
+    // -- When.
+    test.intersectWith(test2);
+
+    // -- Then.
+    ASSERT_EQ(0, test.length());
 }

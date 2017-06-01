@@ -56,7 +56,6 @@ public:
     Array() : std::shared_ptr<Internal>{ std::make_shared<Internal>() } { }
     Array(const std::shared_ptr<Internal>& other) : std::shared_ptr<Internal>{ other } { }
     Array(const Array& other) : std::shared_ptr<Internal>{ other } { }
-    Array(Array&& other) noexcept : std::shared_ptr<Internal>{ std::move(other) } { }
     Array(std::initializer_list<T> other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other) } { }
     Array(MutableArray<T, Implementation, Rest...>&& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
     Array(std::vector<T>&& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(std::move(other)) } { }
@@ -99,8 +98,12 @@ public:
     using const_iterator = typename Internal::const_iterator;
 
     // -- Operators
-    Array& operator=(Array&&) = default;
-    Array& operator=(const Array&) = default;
+    template <template <typename, typename...> class I>
+    Array& operator=(const MutableArray<T, I>&& other) noexcept
+    {
+        this->std::shared_ptr<Internal>::operator=(std::make_shared<Internal>(*other));
+        return *this;
+    }
 
     template <template <typename, typename...> class I>
     Array& operator=(const MutableArray<T, I>& other)

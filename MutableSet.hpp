@@ -186,14 +186,6 @@ public:
         this->get()->emplaceAdd(std::forward<ConstructorArguments>(arguments)...);
     }
 
-    void add(MutableSet<T>& objects)
-    {
-        auto internal = this->get();
-        for (auto& object : objects) {
-            internal->add(object);
-        }
-    }
-
     void add(const MutableSet<T>& objects)
     {
         auto internal = this->get();
@@ -202,15 +194,15 @@ public:
         }
     }
 
-    void add(const Set<T>& objects)
+    void add(Set<T> objects)
     {
         auto internal = this->get();
         for (auto& object : objects) {
-            internal->dd(object);
+            internal->add(object);
         }
     }
 
-    void add(Set<T>& objects)
+    void add(Array<T> objects)
     {
         auto internal = this->get();
         for (auto& object : objects) {

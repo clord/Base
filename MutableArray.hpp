@@ -206,14 +206,6 @@ public:
         this->get()->emplaceAppend(std::forward<ConstructorArguments>(arguments)...);
     }
 
-    void append(MutableArray<T>& objects)
-    {
-        auto internal = this->get();
-        for (auto& object : objects) {
-            internal->append(object);
-        }
-    }
-
     void append(const MutableArray<T>& objects)
     {
         auto internal = this->get();
@@ -223,16 +215,7 @@ public:
     }
 
     template <template <typename, typename...> class I>
-    void append(const Array<T, I>& objects)
-    {
-        auto internal = this->get();
-        for (auto& object : objects) {
-            internal->append(object);
-        }
-    }
-
-    template <template <typename, typename...> class I>
-    void append(Array<T, I>& objects)
+    void append(Array<T, I> objects)
     {
         auto internal = this->get();
         for (auto& object : objects) {

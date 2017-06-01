@@ -31,7 +31,7 @@ class Blob;
 class Platform : private Uncopyable
 {
 public:
-    // -- Constructors & Desctructors
+    // -- Constructors & Destructors
     Platform() = delete;
 
     // -- Constants

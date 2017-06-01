@@ -23,7 +23,7 @@
 
 #include <Base/Types.hpp>
 #include <Base/Assert.hpp>
-#include <Base/Internal/MutableArray.hpp>
+#include <Base/Internal/MutableArrayInternal.hpp>
 
 #include <initializer_list>
 #include <algorithm>
@@ -39,10 +39,9 @@ namespace NxA {
 // -- Class
 
 template <class T, template <typename, typename...> class Implementation, typename... Rest>
-class Array
+class Array : protected std::shared_ptr<Implementation<T, Rest...>>
 {
     using Internal = Implementation<T, Rest...>;
-    std::shared_ptr<Internal> internal;
 
     template <typename V, template <typename, typename...> class I, typename... R>
     friend class MutableArray;
@@ -54,21 +53,21 @@ class Array
 
 public:
     // -- Constructors/Destructors
-    Array() : internal{ std::make_shared<Internal>() } { }
-    Array(const std::shared_ptr<Internal>& other) : internal{other} { }
-    Array(const Array& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    Array(Array&& other) noexcept : internal{ std::move(other.internal) } { }
-    Array(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
-    Array(MutableArray<T, Implementation, Rest...>&& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    Array(std::vector<T>&& other) : internal{ std::make_shared<Internal>(std::move(other)) } { }
+    Array() : std::shared_ptr<Internal>{ std::make_shared<Internal>() } { }
+    Array(const std::shared_ptr<Internal>& other) : std::shared_ptr<Internal>{ other } { }
+    Array(const Array& other) : std::shared_ptr<Internal>{ other } { }
+    Array(Array&& other) noexcept : std::shared_ptr<Internal>{ std::move(other) } { }
+    Array(std::initializer_list<T> other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other) } { }
+    Array(MutableArray<T, Implementation, Rest...>&& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
+    Array(std::vector<T>&& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(std::move(other)) } { }
 
     template <template <typename, typename...> class I, typename... R>
-    Array(const MutableArray<T, I, R...>& other) : internal{ std::make_shared<Internal>(std::vector<T>{other.internal->begin(), other.internal->end()}) } { }
+    Array(const MutableArray<T, I, R...>& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(std::vector<T>{ other->begin(), other->end() }) } { }
     template <template <typename, typename...> class I, typename... R>
-    Array(const Array<T, I, R...>& other) : internal{ std::make_shared<Internal>(std::vector<T>{other.internal->begin(), other.internal->end()}) } { }
+    Array(const Array<T, I, R...>& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(std::vector<T>{ other->begin(), other->end() }) } { }
 
     template <typename V, template <typename, typename...> class I, typename = std::enable_if_t<std::is_convertible<V, T>::value>>
-    Array(const Array<V, I>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    Array(const Array<V, I>& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
     ~Array() { }
 
     // -- Class Methods
@@ -100,32 +99,26 @@ public:
     using const_iterator = typename Internal::const_iterator;
 
     // -- Operators
-    Array& operator=(Array&& other)
-    {
-        internal = std::move(other.internal);
-        return *this;
-    }
-
-    Array& operator=(const Array& other)
-    {
-        internal = std::make_shared<Internal>(*other.internal);
-        return *this;
-    }
+    Array& operator=(Array&&) = default;
+    Array& operator=(const Array&) = default;
 
     template <template <typename, typename...> class I>
     Array& operator=(const MutableArray<T, I>& other)
     {
-        internal = std::make_shared<Internal>(*other.internal);
+        this->std::shared_ptr<Internal>::operator=(std::make_shared<Internal>(*other));
         return *this;
     }
 
     bool operator==(const Array& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
 
     bool operator!=(const Array& other) const
@@ -136,11 +129,14 @@ public:
     template <template <typename, typename...> class I>
     bool operator==(const MutableArray<T, I>& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
 
     template <template <typename, typename...> class I>
@@ -151,12 +147,12 @@ public:
 
     const T& operator[](count index) const
     {
-        return internal->operator[](index);
+        return this->get()->operator[](index);
     }
 
     T& operator[](count index)
     {
-        return internal->operator[](index);
+        return this->get()->operator[](index);
     }
 
     // -- Instance Methods
@@ -172,72 +168,72 @@ public:
 
     iterator begin() noexcept
     {
-        return internal->begin();
+        return this->get()->begin();
     }
 
     iterator end() noexcept
     {
-        return internal->end();
+        return this->get()->end();
     }
 
     const_iterator begin() const noexcept
     {
-        return internal->cbegin();
+        return this->get()->cbegin();
     }
 
     const_iterator end() const noexcept
     {
-        return internal->cend();
+        return this->get()->cend();
     }
 
     const_iterator cbegin() const noexcept
     {
-        return internal->cbegin();
+        return this->get()->cbegin();
     }
 
     const_iterator cend() const noexcept
     {
-        return internal->cend();
+        return this->get()->cend();
     }
 
     count length() const
     {
-        return internal->length();
+        return this->get()->length();
     }
 
     const T& firstObject() const
     {
-        return internal->firstObject();
+        return this->get()->firstObject();
     }
 
     T& firstObject()
     {
-        return internal->firstObject();
+        return this->get()->firstObject();
     }
 
     const T& lastObject() const
     {
-        return internal->lastObject();
+        return this->get()->lastObject();
     }
 
     T& lastObject()
     {
-        return internal->lastObject();
+        return this->get()->lastObject();
     }
 
     boolean contains(const T& object) const
     {
-        return internal->contains(object);
+        return this->get()->contains(object);
     }
 
     iterator find(const T& object)
     {
-        return internal->find(object);
+        return this->get()->find(object);
     }
 
     const_iterator find(const T& object) const
     {
-        return internal->find(object);
+        return this->get()->find(object);
     }
 };
 

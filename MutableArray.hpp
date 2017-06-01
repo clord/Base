@@ -23,7 +23,7 @@
 
 #include <Base/Types.hpp>
 #include <Base/Assert.hpp>
-#include <Base/Internal/MutableArray.hpp>
+#include <Base/Internal/MutableArrayInternal.hpp>
 
 #include <initializer_list>
 #include <algorithm>
@@ -38,10 +38,9 @@ namespace NxA {
 // -- Class
 
 template <class T, template <typename, typename...> class Implementation, typename... Rest>
-class MutableArray
+class MutableArray : protected std::shared_ptr<Implementation<T, Rest...>>
 {
     using Internal = Implementation<T, Rest...>;
-    std::shared_ptr<Internal> internal;
 
     template <typename V, template <typename, typename...> class I, typename... R>
     friend class MutableArray;
@@ -53,16 +52,16 @@ class MutableArray
 
 public:
     // -- Constructors/Destructors
-    MutableArray() : internal{ std::make_shared<Internal>() } { }
-    MutableArray(const std::shared_ptr<Internal>& other) : internal{other} { }
-    MutableArray(const MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableArray(MutableArray& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableArray(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
-    MutableArray(MutableArray<T, Implementation, Rest...>&& other) : internal{ std::move(other.internal) } { }
+    MutableArray() : std::shared_ptr<Internal>{ std::make_shared<Internal>() } { }
+    MutableArray(const std::shared_ptr<Internal>& other) : std::shared_ptr<Internal>{ other } { }
+    MutableArray(const MutableArray& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
+    MutableArray(MutableArray& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
+    MutableArray(std::initializer_list<T> other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(other) } { }
+    MutableArray(MutableArray<T, Implementation, Rest...>&& other) :std::shared_ptr<Internal>{ std::move(other) } { }
     template <template <typename, typename...> class I, typename... R>
-    MutableArray(const MutableArray<T, I, R...>& other) : internal{ std::make_shared<Internal>(std::vector<T>{other.internal->begin(), other.internal->end()}) } { }
+    MutableArray(const MutableArray<T, I, R...>& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(std::vector<T>{other->begin(), other->end()}) } { }
     template <template <typename, typename...> class I, typename... R>
-    MutableArray(const Array<T, I, R...>& other) : internal{ std::make_shared<Internal>(std::vector<T>{other.internal->begin(), other.internal->end()}) } { }
+    MutableArray(const Array<T, I, R...>& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(std::vector<T>{other->begin(), other->end()}) } { }
     ~MutableArray() { }
 
     // -- Class Methods
@@ -97,17 +96,20 @@ public:
 
     MutableArray& operator=(const MutableArray& other)
     {
-        internal = std::make_shared<Internal>(*other.internal);
+        this->std::shared_ptr<Internal>::operator=(std::make_shared<Internal>(*other));
         return *this;
     }
 
     bool operator==(const MutableArray& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
 
     bool operator!=(const MutableArray& other) const
@@ -118,11 +120,14 @@ public:
     template <template <typename, typename...> class I>
     bool operator==(const Array<T, I>& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
 
     template <template <typename, typename...> class I>
@@ -133,12 +138,12 @@ public:
 
     const T& operator[](count index) const
     {
-        return internal->operator[](index);
+        return this->get()->operator[](index);
     }
 
     T& operator[](count index)
     {
-        return internal->operator[](index);
+        return this->get()->operator[](index);
     }
 
     // -- Instance Methods
@@ -154,52 +159,53 @@ public:
 
     iterator begin() noexcept
     {
-        return internal->begin();
+        return this->get()->begin();
     }
 
     const_iterator begin() const noexcept
     {
-        return internal->begin();
+        return this->get()->begin();
     }
 
     iterator end() noexcept
     {
-        return internal->end();
+        return this->get()->end();
     }
 
     const_iterator end() const noexcept
     {
-        return internal->end();
+        return this->get()->end();
     }
 
     const_iterator cbegin() const noexcept
     {
-        return internal->cbegin();
+        return this->get()->cbegin();
     }
 
     const_iterator cend() const noexcept
     {
-        return internal->cend();
+        return this->get()->cend();
     }
 
     void reserve(count amount)
     {
-        return internal->reserve(amount);
+        return this->get()->reserve(amount);
     }
 
     void append(T object)
     {
-        return internal->append(object);
+        return this->get()->append(object);
     }
 
     template<class... ConstructorArguments>
     void emplaceAppend(ConstructorArguments &&... arguments)
     {
-        internal->emplaceAppend(std::forward<ConstructorArguments>(arguments)...);
+        this->get()->emplaceAppend(std::forward<ConstructorArguments>(arguments)...);
     }
 
     void append(MutableArray<T>& objects)
     {
+        auto internal = this->get();
         for (auto& object : objects) {
             internal->append(object);
         }
@@ -207,6 +213,7 @@ public:
 
     void append(const MutableArray<T>& objects)
     {
+        auto internal = this->get();
         for (auto& object : objects) {
             internal->append(object);
         }
@@ -215,6 +222,7 @@ public:
     template <template <typename, typename...> class I>
     void append(const Array<T, I>& objects)
     {
+        auto internal = this->get();
         for (auto& object : objects) {
             internal->append(object);
         }
@@ -223,6 +231,7 @@ public:
     template <template <typename, typename...> class I>
     void append(Array<T, I>& objects)
     {
+        auto internal = this->get();
         for (auto& object : objects) {
             internal->append(object);
         }
@@ -230,72 +239,72 @@ public:
 
     void insertAt(T object, const_iterator position)
     {
-        internal->insertAt(object, position);
+        this->get()->insertAt(object, position);
     }
 
     void remove(const T& object)
     {
-        internal->remove(object);
+        this->get()->remove(object);
     }
 
     void removeAll()
     {
-        internal->removeAll();
+        this->get()->removeAll();
     }
 
     count length() const
     {
-        return internal->length();
+        return this->get()->length();
     }
 
     const T& firstObject() const
     {
-        return internal->firstObject();
+        return this->get()->firstObject();
     }
 
     T& firstObject()
     {
-        return internal->firstObject();
+        return this->get()->firstObject();
     }
 
     const T& lastObject() const
     {
-        return internal->lastObject();
+        return this->get()->lastObject();
     }
 
     T& lastObject()
     {
-        return internal->lastObject();
+        return this->get()->lastObject();
     }
 
     boolean contains(const T& object) const
     {
-        return internal->contains(object);
+        return this->get()->contains(object);
     }
 
     iterator find(const T& object)
     {
-        return internal->find(object);
+        return this->get()->find(object);
     }
 
     const_iterator find(const T& object) const
     {
-        return internal->find(object);
+        return this->get()->find(object);
     }
 
     void removeObjectAt(const_iterator objectPosition)
     {
-        internal->removeObjectAt(objectPosition);
+        this->get()->removeObjectAt(objectPosition);
     }
 
     void sort()
     {
-        internal->sort();
+        this->get()->sort();
     }
 
     void rearrange(Array<T> movingTs, size_t to)
     {
-        internal->rearrange(movingTs, to);
+        this->get()->rearrange(movingTs, to);
     }
 
 };

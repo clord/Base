@@ -23,7 +23,7 @@
 
 #include <Base/Types.hpp>
 #include <Base/String.hpp>
-#include <Base/Internal/MutableMap.hpp>
+#include <Base/Internal/MutableMapInternal.hpp>
 
 #include <mutex>
 
@@ -35,20 +35,19 @@ class Map;
 // -- Class
 
 template <typename Tkey, typename Tvalue>
-class MutableMap
+class MutableMap : protected std::shared_ptr<MutableMapInternal<const Tkey, Tvalue>>
 {
     using Internal = MutableMapInternal<const Tkey, Tvalue>;
-    std::shared_ptr<MutableMapInternal<const Tkey, Tvalue>> internal;
 
     friend Map<const Tkey, Tvalue>;
 
 public:
     // -- Constructors/Destructors
-    MutableMap() : internal{ std::make_shared<MutableMapInternal<const Tkey, Tvalue>>() } { }
-    MutableMap(const MutableMap& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableMap(MutableMap& other) : internal{other.internal} { }
+    MutableMap() : std::shared_ptr<Internal>{ std::make_shared<MutableMapInternal<const Tkey, Tvalue>>() } { }
+    MutableMap(const MutableMap& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
+    MutableMap(MutableMap& other) : std::shared_ptr<Internal>{ other } { }
     MutableMap(MutableMap&&) = default;
-    MutableMap(const Map<Tkey, Tvalue>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
+    MutableMap(const Map<Tkey, Tvalue>& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
     ~MutableMap() = default;
 
     // -- Class Methods
@@ -83,41 +82,47 @@ public:
     MutableMap& operator=(MutableMap&&) = default;
     MutableMap& operator=(const MutableMap& other)
     {
-        this->internal = std::make_shared<Internal>(*other.internal);
+        this->std::shared_ptr<Internal>::operator=(other);
         return *this;
     }
 
     bool operator==(const MutableMap& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
 
     bool operator==(const Map<Tkey, Tvalue>& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
 
     const Tvalue& operator[](const Tkey& key) const
     {
-        return internal->operator[](key);
+        return this->get()->operator[](key);
     }
 
     Tvalue& operator[](const Tkey& key)
     {
-        return internal->operator[](key);
+        return this->get()->operator[](key);
     }
 
     Tvalue& operator[](Tkey&& key)
     {
-        return internal->operator[](std::move(key));
+        return this->get()->operator[](std::move(key));
     }
 
     // -- Instance Methods
@@ -133,82 +138,82 @@ public:
 
     iterator begin()
     {
-        return internal->begin();
+        return this->get()->begin();
     }
 
     const_iterator begin() const
     {
-        return internal->begin();
+        return this->get()->begin();
     }
 
     const_iterator cbegin() const
     {
-        return internal->cbegin();
+        return this->get()->cbegin();
     }
 
     iterator end()
     {
-        return internal->end();
+        return this->get()->end();
     }
 
     const_iterator end() const
     {
-        return internal->end();
+        return this->get()->end();
     }
     const_iterator cend() const
     {
-        return internal->cend();
+        return this->get()->cend();
     }
 
     count length() const
     {
-        return internal->length();
+        return this->get()->length();
     }
 
     boolean setValueForKeyCausedAnInsertion(const Tvalue& value, const Tkey& key)
     {
-        return internal->setValueForKeyCausedAnInsertion(value, key);
+        return this->get()->setValueForKeyCausedAnInsertion(value, key);
     }
     void setValueForKey(const Tvalue& value, const Tkey& key)
     {
-        internal->setValueForKeyCausedAnInsertion(value, key);
+        this->get()->setValueForKeyCausedAnInsertion(value, key);
     }
 
     Tvalue& valueForKey(const Tkey& key)
     {
-        return internal->valueForKey(key);
+        return this->get()->valueForKey(key);
     }
     const Tvalue& valueForKey(const Tkey& key) const
     {
-        return internal->operator[](key);
+        return this->get()->operator[](key);
     }
     Tvalue& valueForKey(Tkey&& key)
     {
-        return internal->valueForKey(std::move(key));
+        return this->get()->valueForKey(std::move(key));
     }
 
     Optional<Tvalue> maybeValueForKey(const Tkey& key) const
     {
-        return internal->maybeValueForKey(key);
+        return this->get()->maybeValueForKey(key);
     }
 
     boolean removeValueForKeyCausedARemoval(const Tkey& key)
     {
-        return internal->removeValueForKeyCausedARemoval(key);
+        return this->get()->removeValueForKeyCausedARemoval(key);
     }
     void removeValueForKey(const Tkey& key)
     {
-        internal->removeValueForKeyCausedARemoval(key);
+        this->get()->removeValueForKeyCausedARemoval(key);
     }
 
     void removeValueAt(const_iterator position)
     {
-        internal->removeValueAt(position);
+        this->get()->removeValueAt(position);
     }
 
     void removeAll()
     {
-        internal->removeAll();
+        this->get()->removeAll();
     }
 };
     

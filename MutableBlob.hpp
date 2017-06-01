@@ -26,19 +26,19 @@
 
 namespace NxA {
 
+#define NXA_OBJECT_CLASS                    MutableBlob
+#define NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME
+
+#include <Base/ObjectForwardDeclarations.ipp>
+
 // -- Forward Declarations
-struct MutableBlobInternal;
 class String;
 class Blob;
 class DescriberState;
 
 // -- Public Interface
-class MutableBlob
+class MutableBlob : protected NXA_OBJECT
 {
-    static constexpr auto staticClassNameConst = "MutableBlob";
-
-    #define NXA_OBJECT_CLASS                    MutableBlob
-    #define NXA_INTERNAL_OBJECT_CLASS           MutableBlobInternal
     #include <Base/ObjectDeclaration.ipp>
 
     friend Blob;
@@ -56,10 +56,20 @@ public:
     static MutableBlob blobWithStringWithoutTerminator(const String&);
 
     // -- Operators
-    const byte& operator[](integer) const;
-    byte& operator[](integer index);
+    const byte& operator[](count) const;
+    byte& operator[](count);
+    bool operator==(const Blob& other) const;
+    inline bool operator!=(const Blob& other) const
+    {
+        return !this->operator==(other);
+    }
 
     // -- Instance Methods
+    const character* className() const
+    {
+        return MutableBlob::staticClassNameConst;
+    }
+    
     count size() const;
 
     const byte* data() const;
@@ -71,13 +81,14 @@ public:
     String base64String() const;
 
     void append(const Blob&);
+    void appendMemoryWithSize(const byte*, count);
     void appendWithStringTermination(const character*);
     void appendWithoutStringTermination(const character*);
     void append(const character);
 
     void removeAll();
 
-    void padToAlignment(integer32);
+    void padToAlignment(count);
 };
     
 }

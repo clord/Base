@@ -24,7 +24,7 @@
 #include <Base/Types.hpp>
 #include <Base/String.hpp>
 #include <Base/MutableSet.hpp>
-#include <Base/Internal/MutableSet.hpp>
+#include <Base/Internal/MutableSetInternal.hpp>
 
 #include <algorithm>
 #include <vector>
@@ -36,21 +36,20 @@ namespace NxA {
 // -- Class
 
 template <class T>
-class Set
+class Set : std::shared_ptr<MutableSetInternal<T>>
 {
     using Internal = MutableSetInternal<T>;
-    std::shared_ptr<Internal> internal = std::make_shared<Internal>();
 
     friend class MutableSet<T>;
 
 public:
     // -- Constructors/Destructors
-    Set() = default;
-    Set(const Set<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    Set(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
+    Set() : std::shared_ptr<Internal>{ std::make_shared<Internal>() } { }
+    Set(const Set<T>& other) : std::shared_ptr<Internal>{ other } { }
+    Set(std::initializer_list<T> other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
     Set(Set&& other) = default;
-    Set(const MutableSet<T>& other) : internal{std::make_shared<Internal>(*other.internal)} { }
-    Set(MutableSet<T>&& other) : internal{ std::move(other.internal) } { }
+    Set(const MutableSet<T>& other) : std::shared_ptr<Internal>{std::make_shared<Internal>(*other)} { }
+    Set(MutableSet<T>&& other) : std::shared_ptr<Internal>{ std::move(other) } { }
     ~Set() = default;
 
     // -- Class Methods
@@ -84,23 +83,25 @@ public:
     // -- Operators
     Set& operator=(const Set& other)
     {
-        internal = std::make_shared<Internal>(*other.internal);
+        this->std::shared_ptr<Internal>::operator=(other);
         return *this;
     }
-
     Set& operator=(const MutableSet<T>& other)
     {
-        internal = std::make_shared<Internal>(*other.internal);
+        this->std::shared_ptr<Internal>::operator=(std::make_shared<Internal>(*other));
         return *this;
     }
 
     bool operator==(const Set& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
 
     bool operator!=(const Set& other) const
@@ -110,11 +111,14 @@ public:
 
     bool operator==(const MutableSet<T>& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
 
     bool operator!=(const MutableSet<T>& other) const
@@ -135,47 +139,47 @@ public:
 
     const_iterator begin() const noexcept
     {
-        return internal->begin();
+        return this->get()->begin();
     }
 
     const_iterator end() const noexcept
     {
-        return internal->end();
+        return this->get()->end();
     }
 
     const_iterator cbegin() const noexcept
     {
-        return internal->cbegin();
+        return this->get()->cbegin();
     }
 
     const_iterator cend() const noexcept
     {
-        return internal->cend();
+        return this->get()->cend();
     }
 
     count length() const
     {
-        return internal->length();
+        return this->get()->length();
     }
 
     const T& anyObject() const
     {
-        return internal->anyObject();
+        return this->get()->anyObject();
     }
 
     boolean contains(const T& object) const
     {
-        return internal->contains(object);
+        return this->get()->contains(object);
     }
 
     const_iterator find(const T& object) const
     {
-        return internal->find(object);
+        return this->get()->find(object);
     }
 
     String description(const DescriberState& state) const
     {
-        return internal->description(state);
+        return this->get()->description(state);
     }
 };
     

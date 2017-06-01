@@ -26,17 +26,18 @@
 
 namespace NxA {
 
-struct MutableBlobInternal;
+#define NXA_OBJECT_CLASS                    Blob
+#define NXA_OBJECT_INTERNAL_CLASS           MutableBlobInternal
+#define NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME
+
+#include <Base/ObjectForwardDeclarations.ipp>
+    
 class MutableBlob;
 class String;
 class DescriberState;
 
-class Blob
+class Blob : protected NXA_OBJECT
 {
-    static constexpr auto staticClassNameConst = "Blob";
-
-    #define NXA_OBJECT_CLASS                    Blob
-    #define NXA_INTERNAL_OBJECT_CLASS           MutableBlobInternal
     #include <Base/ObjectDeclaration.ipp>
 
     friend MutableBlob;
@@ -58,9 +59,14 @@ public:
     static String base64StringFor(const byte*, count);
 
     // -- Operators
-    const byte& operator[](integer) const;
+    const byte& operator[](count) const;
 
     // -- Instance Methods
+    const character* className() const
+    {
+        return Blob::staticClassNameConst;
+    }
+
     boolean isEmpty() const
     {
         return (this->size() == 0);

@@ -22,27 +22,35 @@
 #pragma once
 
 #include <Base/Types.hpp>
-#include <Base/Internal/MutableString.hpp>
+#include <Base/Internal/MutableStringInternal.hpp>
 
 namespace NxA {
+
+#define NXA_OBJECT_CLASS                            String
+#define NXA_OBJECT_INTERNAL_CLASS                   MutableStringInternal
+#define NXA_OBJECT_HAS_A_CUSTOM_CLASS_NAME
+
+#include <Base/ObjectForwardDeclarations.ipp>
 
 // -- Forward Declarations
 class MutableString;
 class Blob;
 
 // -- Public Interface
-class String
+class String : protected NXA_OBJECT
 {
-    static constexpr auto staticClassNameConst = "String";
-
-    #define NXA_OBJECT_CLASS                   String
-    #define NXA_INTERNAL_OBJECT_CLASS          MutableStringInternal
     #include <Base/ObjectDeclaration.ipp>
 
     friend MutableString;
     friend bool operator<(const String&, const String&);
 
 public:
+    // -- Constants
+    enum class UTF8Flag {
+        NeedsNormalizing,
+        IsNormalized,
+    };
+
     // -- Constructors/Destructors
     String();
     String(const character*, count);
@@ -67,11 +75,7 @@ public:
         return format;
     }
 
-    static String stringWithUTF8(const character* other)
-    {
-        return {other, strlen(other)};
-    }
-
+    static String stringWithUTF8(const character* other, UTF8Flag normalize = UTF8Flag::IsNormalized);
     static String stringWithMemoryAndLength(const character* other, count length)
     {
         return {other, length};
@@ -85,10 +89,10 @@ public:
 
     static String stringByFilteringNonPrintableCharactersIn(const String&);
 
-    template <typename A>
-    static String stringByJoiningArrayWithString(const A& array, String join)
+    template <typename ArrayType>
+    static String stringByJoiningArrayWithString(const ArrayType& array, String join)
     {
-        return {Internal::stringByJoiningArrayWithString(array, join.internal)};
+        return { Internal::stringByJoiningArrayWithString(array, *NXA_INTERNAL_OBJECT_FOR(join)) };
     }
 
     // -- Class Methods
@@ -97,22 +101,27 @@ public:
 
     // -- Operators
     bool operator==(const character*) const;
-    bool operator!=(const character* other) const
+    inline bool operator!=(const character* other) const
     {
         return !this->operator==(other);
     }
     bool operator==(const MutableString& other) const;
-    bool operator!=(const MutableString& other) const
+    inline bool operator!=(const MutableString& other) const
     {
         return !this->operator==(other);
     }
 
     // -- Instance Methods
+    const character* className() const
+    {
+        return String::staticClassNameConst;
+    }
+    
     count length() const;
     boolean isEmpty() const
     {
         return this->length() == 0;
-    };
+    }
     uinteger32 hash() const;
     integer32 compare(const String& other) const;
     integer32 compare(const char* other) const;

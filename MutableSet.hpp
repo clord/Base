@@ -23,7 +23,7 @@
 
 #include <Base/Types.hpp>
 #include <Base/String.hpp>
-#include <Base/Internal/MutableSet.hpp>
+#include <Base/Internal/MutableSetInternal.hpp>
 
 #include <algorithm>
 #include <vector>
@@ -38,22 +38,21 @@ template <typename T>
 class Set;
 
 template <class T>
-class MutableSet
+class MutableSet : protected std::shared_ptr<MutableSetInternal<T>>
 {
     using Internal = MutableSetInternal<T>;
-    std::shared_ptr<Internal> internal = std::make_shared<Internal>();
 
     friend class Set<T>;
 
 public:
     // -- Constructors/Destructors
-    MutableSet() = default;
-    MutableSet(const MutableSet& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableSet(std::initializer_list<T> other) : internal{ std::make_shared<Internal>(other) } { }
+    MutableSet() : std::shared_ptr<Internal>{ std::make_shared<Internal>() } { }
+    MutableSet(const MutableSet& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
+    MutableSet(std::initializer_list<T> other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
     MutableSet(MutableSet&& other) = default;
     ~MutableSet() = default;
-    MutableSet(const Set<T>& other) : internal{ std::make_shared<Internal>(*other.internal) } { }
-    MutableSet(Set<T>&& other) : internal{ std::move(other.internal) } { }
+    MutableSet(const Set<T>& other) : std::shared_ptr<Internal>{ std::make_shared<Internal>(*other) } { }
+    MutableSet(Set<T>&& other) : std::shared_ptr<Internal>{ std::move(other) } { }
 
     // -- Class Methods
     static const character* staticClassName()
@@ -87,16 +86,19 @@ public:
     MutableSet& operator=(MutableSet&& other) = default;
     MutableSet& operator=(const MutableSet& other)
     {
-        internal = std::make_shared<Internal>(*other.internal);
+        this->std::shared_ptr<Internal>::operator=(std::make_shared<Internal>(*other));
         return *this;
     }
     bool operator==(const MutableSet& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
     bool operator!=(const MutableSet& other) const
     {
@@ -104,11 +106,14 @@ public:
     }
     bool operator==(const Set<T>& other) const
     {
-        if (internal == other.internal) {
+        auto internal = this->get();
+        auto otherInternal = other.get();
+
+        if (internal == otherInternal) {
             return true;
         }
 
-        return *internal == *(other.internal);
+        return *internal == *otherInternal;
     }
     bool operator!=(const Set<T>& other) const
     {
@@ -128,57 +133,62 @@ public:
 
     iterator begin() noexcept
     {
-        return internal->begin();
+        return this->get()->begin();
     }
 
     const_iterator begin() const noexcept
     {
-        return internal->begin();
+        return this->get()->begin();
     }
 
     iterator end() noexcept
     {
-        return internal->end();
+        return this->get()->end();
     }
 
     const_iterator end() const noexcept
     {
-        return internal->end();
+        return this->get()->end();
     }
 
     const_iterator cbegin() const noexcept
     {
-        return internal->cbegin();
+        return this->get()->cbegin();
     }
 
     const_iterator cend() const noexcept
     {
-        return internal->cend();
+        return this->get()->cend();
     }
 
     count length() const
     {
-        return internal->length();
+        return this->get()->length();
     }
 
     void removeAll()
     {
-        return internal->removeAll();
+        return this->get()->removeAll();
     }
 
     void add(T object)
     {
-        return internal->add(object);
+        return this->get()->add(object);
+    }
+    boolean addingObjectCausedAnInsertion(T object)
+    {
+        return this->get()->addingObjectCausedAnInsertion(object);
     }
 
     template <class... ConstructorArguments>
     void emplaceAdd(ConstructorArguments&&... arguments)
     {
-        internal->emplaceAdd(std::forward<ConstructorArguments>(arguments)...);
+        this->get()->emplaceAdd(std::forward<ConstructorArguments>(arguments)...);
     }
 
     void add(MutableSet<T>& objects)
     {
+        auto internal = this->get();
         for (auto& object : objects) {
             internal->add(object);
         }
@@ -186,6 +196,7 @@ public:
 
     void add(const MutableSet<T>& objects)
     {
+        auto internal = this->get();
         for (auto& object : objects) {
             internal->add(object);
         }
@@ -193,6 +204,7 @@ public:
 
     void add(const Set<T>& objects)
     {
+        auto internal = this->get();
         for (auto& object : objects) {
             internal->dd(object);
         }
@@ -200,6 +212,7 @@ public:
 
     void add(Set<T>& objects)
     {
+        auto internal = this->get();
         for (auto& object : objects) {
             internal->add(object);
         }
@@ -207,6 +220,7 @@ public:
 
     void add(Array<T>& objects)
     {
+        auto internal = this->get();
         for (auto& object : objects) {
             internal->add(object);
         }
@@ -214,27 +228,27 @@ public:
 
     const T& anyObject() const
     {
-        return internal->anyObject();
+        return this->get()->anyObject();
     }
 
     boolean contains(const T& object) const
     {
-        return internal->contains(object);
+        return this->get()->contains(object);
     }
 
     iterator find(const T& object)
     {
-        return internal->find(object);
+        return this->get()->find(object);
     }
 
     const_iterator find(const T& object) const
     {
-        return internal->find(object);
+        return this->get()->find(object);
     }
 
     String description() const
     {
-        return internal->description();
+        return this->get()->description();
     }
 };
 

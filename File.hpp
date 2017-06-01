@@ -77,7 +77,6 @@ public:
         return {std::move(result)};
     }
 
-
     static boolean fileExistsAt(const String&);
     static boolean directoryExistsAt(const String&);
     static count sizeOfFileAt(const String&);

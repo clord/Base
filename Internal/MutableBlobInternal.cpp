@@ -372,7 +372,7 @@ void MurmurHash3_x64_128(const void* key, const int len, const uint32_t seed, vo
 
 // -- MutableBlobInternal Class
 
-#include "Base/Internal/MutableBlob.hpp"
+#include "Base/Internal/MutableBlobInternal.hpp"
 #include "Base/String.hpp"
 
 using namespace NxA;
@@ -443,7 +443,7 @@ String MutableBlobInternal::description() const
 {
     MutableString result;
 
-    for (integer index = 0; index < this->size(); ++index) {
+    for (count index = 0; index < this->size(); ++index) {
         result.append(String::stringWithFormat("%02x", (*this)[index]));
     }
 

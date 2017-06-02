@@ -416,6 +416,9 @@ public:
         return static_cast<integer>(sizeof...(Types) - VariantDetail::DirectTypeIndex<T, Types...>::index - 1);
     }
 
+    template <typename F, typename V>
+    friend struct VariantDetail::CompareVariant;
+
     template <typename F, typename V, typename... Ts>
     friend struct VariantDetail::Apply;
 

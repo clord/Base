@@ -4,8 +4,8 @@ add_library(Base
    Blob.cpp
    Date.cpp
    File.cpp
-   Internal/MutableBlob.cpp
-   Internal/MutableString.cpp
+   Internal/MutableBlobInternal.cpp
+   Internal/MutableStringInternal.cpp
    Vendor/utf8rewind/source/utf8rewind.c
    Vendor/utf8rewind/source/unicodedatabase.c
    Vendor/utf8rewind/source/internal/casemapping.c

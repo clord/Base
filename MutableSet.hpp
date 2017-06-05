@@ -166,11 +166,6 @@ public:
         return this->get()->length();
     }
 
-    void removeAll()
-    {
-        return this->get()->removeAll();
-    }
-
     void add(T object)
     {
         return this->get()->add(object);
@@ -179,13 +174,11 @@ public:
     {
         return this->get()->addingObjectCausedAnInsertion(object);
     }
-
     template <class... ConstructorArguments>
     void emplaceAdd(ConstructorArguments&&... arguments)
     {
         this->get()->emplaceAdd(std::forward<ConstructorArguments>(arguments)...);
     }
-
     void add(const MutableSet<T>& objects)
     {
         auto internal = this->get();
@@ -193,7 +186,6 @@ public:
             internal->add(object);
         }
     }
-
     void add(Set<T> objects)
     {
         auto internal = this->get();
@@ -201,13 +193,42 @@ public:
             internal->add(object);
         }
     }
-
     void add(Array<T> objects)
     {
         auto internal = this->get();
         for (auto& object : objects) {
             internal->add(object);
         }
+    }
+
+    void remove(T object)
+    {
+        return this->get()->remove(object);
+    }
+    void remove(const MutableSet<T>& objects)
+    {
+        auto internal = this->get();
+        for (auto& object : objects) {
+            internal->remove(object);
+        }
+    }
+    void remove(Set<T> objects)
+    {
+        auto internal = this->get();
+        for (auto& object : objects) {
+            internal->remove(object);
+        }
+    }
+    void remove(Array<T> objects)
+    {
+        auto internal = this->get();
+        for (auto& object : objects) {
+            internal->remove(object);
+        }
+    }
+    void removeAll()
+    {
+        return this->get()->removeAll();
     }
 
     void intersectWith(Set<T> objects)

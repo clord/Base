@@ -165,6 +165,10 @@ public:
     {
         return this->get()->length();
     }
+    boolean isEmpty() const
+    {
+        return this->get()->length() == 0;
+    }
 
     void add(T object)
     {

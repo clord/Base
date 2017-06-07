@@ -237,7 +237,7 @@ Array<String> File::pathsForFilesInDirectory(const String& path)
         throw FileError::exceptionWith("Error listing content of directory at '%s'.", path.asUTF8());
     }
 
-    return {std::move(pathsFound)};
+    return { std::move(pathsFound) };
 }
 
 String File::temporaryDirectoryPath()
